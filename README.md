@@ -111,8 +111,7 @@ Moves is an application that helps users decide on what to do, such as weekend a
 [make sure to specify what each star rating means (e.g. )]
 
 ## Wireframe
-[Add picture of your hand sketched wireframes in this section]
-<img src="YOUR_WIREFRAME_IMAGE_URL" width=600>
+<img src="https://github.com/hkim00/moves/blob/master/wireframes.jpg" width=600>
 
 ### [BONUS] Digital Wireframes & Mockups
 
@@ -128,5 +127,3 @@ Moves is an application that helps users decide on what to do, such as weekend a
 - [OPTIONAL: List endpoints if using existing API such as Yelp]
 
 
-**Wireframing**
-<img src="https://github.com/hkim00/moves/blob/master/wireframes.jpg" width=600>
