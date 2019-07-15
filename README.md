@@ -113,12 +113,142 @@ Moves is an application that helps users decide on what to do, such as weekend a
 ### [BONUS] Interactive Prototype
 
 ## Schema 
-[This section will be completed in Unit 9]
+
 ### Models
-[Add table of models]
+**Move**
+ 
+ | Property      | Type     | Description |
+   | ------------- | -------- | ------------|
+   | objectId      | String   | unique id for each move (default field) |
+   | image         | File     | image associated with move |
+   | title       | String   | name of move |
+   | timeNeeded | Number   | amount of time needed for move |
+   | partySize    | Number   | number of people participating in move |
+   | distanceTo     | Number | distance from current location to move |
+   | price     | Number | cost to participate in move |
+   | favorited     | Boolean | favorite moves that user has done |
+   | saved     | Boolean | moves that user wants to do in the future |
+   | hours     | Number | hours available for move |
+   | needsRes     | Boolean | if move needs a reservation or not | 
+   | busyness     | File (?) | hours that move is bussiest (google graph) | 
+   | description     | String | description/details of move | 
+   | Category     | String | category of Move |
+   
+
+**User**
+
+| Property | Type | Description |
+| -------- | -------- | -------- |
+| objectId      | String   | unique id for each user (default field) |
+| name     | String    | Name of user    |
+| age     | Number    | age of user     |
+| gender     | String     | gender of user    |
+| address     | String     | current location of user     |
+| foodPreferencesList     | Pointer to PreferencesList     | preferences chosen when creating account    |
+| attractionPreferencesList     | Pointer to PreferencesList     | preferences chosen when creating account    |
+| activityPreferencesList     | Pointer to PreferencesList     | preferences chosen when creating account    |
+| eventPreferencesList     | Pointer to PreferencesList     | preferences chosen when creating account    |
+| favoritesList | Pointer to FavoritesList | favorite moves that user has done| 
+| savedList | Pointer to SavedList | moves that user may want to do in the future | 
+
+**FoodPreferencesList** 
+
+| Property | Type | Description |
+| -------- | -------- | -------- |
+| prefersItalian | Boolean | does user like this type of food
+| prefersMexican | Boolean | does user like this type of food
+| prefersThai | Boolean | does user like this type of food
+| prefersChinese | Boolean | does user like this type of food
+| prefersVegan | Boolean | does user like this type of food
+| prefersIndian | Boolean | does user like this type of food
+| prefersCoffeeAndTea | Boolean | does user like this type of food
+| prefersAmerican | Boolean | does user like this type of food
+| prefersAsian | Boolean | does user like this type of food
+| prefersGreek | Boolean | does user like this type of food
+| prefersLatinAmerican | Boolean | does user like this type of food
+| prefersFrench | Boolean | does user like this type of food
+| prefersJapanese | Boolean | does user like this type of food
+| prefersVietnamese | Boolean | does user like this type of food
+| prefersAfrican | Boolean | does user like this type of food
+| prefersHalal | Boolean | does user like this type of food
+| prefersGerman | Boolean | does user like this type of food
+| prefersKorean | Boolean | does user like this type of food
+| prefersLebanese | Boolean | does user like this type of food
+| prefersEthiopian | Boolean | does user like this type of food
+| prefersPakistani | Boolean | does user like this type of food
+| prefersSpanish | Boolean | does user like this type of food
+| prefersTurkish | Boolean | does user like this type of food
+| prefersCarribean | Boolean | does user like this type of food
+| prefersIndonesian | Boolean | does user like this type of food
+
+
+**AttractionPreferencesList** 
+
+| Property | Type | Description |
+| -------- | -------- | -------- 
+|prefersIndoor | boolean | does the user what to be indoors?
+|prefersOutdoor | boolean | does the user what to be outdoors?
+|prefersLandmark | boolean | does the user what to see a landmark?
+|prefersTemporary | boolean | does the user want to see a temporary attraction?
+
+
+**ActivityPreferencesList** 
+
+| Property | Type | Description |
+| -------- | -------- | -------- |
+| prefersIndoor | Boolean | does the user like indoor activities? |
+| prefersOutdoor | Boolean | does the user like outdoor activities? | 
+| prefersTours | Boolean | does the user want to go on group tours? |
+| prefersNature | Boolean | does the user want to do activities such as hiking, water sports, or walks/runs? |
+
+**EventPreferencesList** 
+
+| Property | Type | Description |
+| -------- | -------- | -------- |
+| prefersSporting | Boolean | does the user want to watch a sporting event? |
+| prefersConcerts | Boolean | does the user want to attend a concert? |
+| prefersShows | Boolean | does the user want to attend a show (e.g. comedy, magic, etc.)? |
+| prefersShows | Boolean | does the user want to attend a show (e.g. comedy, magic, plays etc.)? |
+| prefersFestivals | Boolean | does the user want to visit a festival (e.g. music festival, farmers' markets, etc.)? |
+
+
+**FavoritesList**
+| Property | Type | Description |
+| -------- | -------- | -------- |
+|FavoriteMoves | List of Moves | favorite moves that user has done
+
+**SavedList** 
+| Property | Type | Description |
+| -------- | -------- | -------- |
+|SavedMoves | List of Moves | moves that user wants to do in the future
+
+
 ### Networking
 - [Add list of network requests by screen ]
 - [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
-
-
+    - Log In Screen 
+        -  (Read/GET) Query for user profile details 
+ - Search Result Feed Screen
+      - (Read/GET) Query all posts where user is author
+         ```swift
+         let query = PFQuery(className:"Move")
+         query.whereKey("author", equalTo: currentUser)
+         query.order(byDescending: "createdAt")
+         query.findObjectsInBackground { (posts: [PFObject]?, error: Error?) in
+            if let error = error { 
+               print(error.localizedDescription)
+            } else if let posts = posts {
+               print("Successfully retrieved \(posts.count) posts.")
+           // TODO: Do something with posts...
+            }
+         }
+         ```
+   - Create Post Screen
+      - (Create/POST) Create a new post object
+   - Move Details Screen
+      - (Create/POST) Favorite a move
+      - (Delete) Unfavorite a move 
+      - (Create/POST) Save a move 
+      - (Delete) Unsave a Move 
+   - Profile Screen 
+   - History Screen 
