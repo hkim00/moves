@@ -1,10 +1,5 @@
-moves 
+Moves (What's the move?)
 ===
-
-Group Project
-===
-
-# Moves (What's the move?)
 
 ## Table of Contents
 1. [Overview](#Overview)
