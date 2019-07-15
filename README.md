@@ -213,14 +213,16 @@ Moves is an application that helps users decide on what to do, such as weekend a
 
 
 **FavoritesList**
+
 | Property | Type | Description |
 | -------- | -------- | -------- |
-|FavoriteMoves | List of Moves | favorite moves that user has done
+|FavoriteMoves | List of Moves | favorite moves that user has done |
 
 **SavedList** 
+
 | Property | Type | Description |
 | -------- | -------- | -------- |
-|SavedMoves | List of Moves | moves that user wants to do in the future
+|SavedMoves | List of Moves | moves that user wants to do in the future | 
 
 
 ### Networking
