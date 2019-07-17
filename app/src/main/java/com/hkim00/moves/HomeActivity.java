@@ -3,6 +3,7 @@ package com.hkim00.moves;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,8 +31,8 @@ public class HomeActivity extends AppCompatActivity {
 
     String time;
     String numberOfPeople;
-    String radius;
-    String price;
+    int radius;
+    int priceLevel;
 
     TextView tvLocation;
     Button btnTime;
@@ -44,8 +45,6 @@ public class HomeActivity extends AppCompatActivity {
     ImageView ivActivities;
     ImageView ivAttractions;
     ImageView ivEvents;
-
-
 
 
     @Override
@@ -110,7 +109,7 @@ public class HomeActivity extends AppCompatActivity {
 
         RequestParams params = new RequestParams();
         params.put("location","47.6289467,-122.3428731");
-        params.put("radius", "1500"); //1500 meters
+        params.put("radius", milesToMeters(1)); //1500 meters
         params.put("type","restaurant");
         params.put("key", getString(R.string.api_key));
 
@@ -147,4 +146,8 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+
+    private int milesToMeters(float miles) {
+        return (int) (miles/0.000621317);
+    }
 }
