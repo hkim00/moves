@@ -9,7 +9,8 @@ public class ParseApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-       // ParseObject.registerSubclass(Post.class);
+
+       // ParseObject.registerSubclass(xxx.class); --> will need this line to create model for users and categories
 
         final Parse.Configuration configuration = new Parse.Configuration.Builder(this)
                 .applicationId("moves-app")

@@ -9,6 +9,8 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hkim00.moves.MainActivity;
+import com.hkim00.moves.SignUpActivity;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -24,7 +26,7 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_Login);
+        setContentView(R.layout.activity_login);
 
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
@@ -42,14 +44,26 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
 
+
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             //TODO create HomeActivity class
-            Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
+            Intent intent = new Intent(LogInActivity.this, MainActivity.class);
             startActivity(intent);
         }
 
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("LogInActivity", "Sign Up Worked!");
+                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
+
 
     private void login (String username, String password){
         ParseUser.logInInBackground(username, password, new LogInCallback() {
@@ -57,10 +71,12 @@ public class LogInActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     Log.d("LoginActivity", "Login Successful!");
+
                     //TODO create HomeActivity class
-                    final Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
+                    final Intent intent = new Intent(LogInActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
+
                 } else {
                     Log.e("LoginActivity", "Login failure");
                     e.printStackTrace();
@@ -68,5 +84,6 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
     }
+
 
 }

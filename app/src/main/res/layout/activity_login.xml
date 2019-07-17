@@ -11,12 +11,11 @@
         android:layout_width="376dp"
         android:layout_height="45dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="284dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:hint="Username"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,26 +23,26 @@
         android:id="@+id/etPassword"
         android:layout_width="376dp"
         android:layout_height="45dp"
-        android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:hint="Password"
+        android:inputType="textPassword|textWebPassword"
+        android:cursorVisible="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/etUsername"
         app:layout_constraintTop_toBottomOf="@id/etUsername" />
 
     <TextView
         android:id="@+id/tvMoves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="131dp"
-        android:layout_marginLeft="131dp"
+        android:layout_marginStart="112dp"
         android:text="MOVES"
         android:textColor="#FDD835"
-        android:textSize="45dp"
+        android:textSize="55dp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@id/etUsername"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,20 +51,18 @@
 
     <Button
         android:id="@+id/btnlogIn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_width="379dp"
+        android:layout_height="50dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:background="#FDD835"
         android:text="Log In"
         android:textColor="#FBFAFB"
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/etUsername"
         app:layout_constraintTop_toBottomOf="@id/etPassword" />
 
     <TextView
@@ -92,4 +89,14 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView3" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="12dp"
+        android:text="What are the moves?"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMoves" />
 </androidx.constraintlayout.widget.ConstraintLayout>
