@@ -16,7 +16,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnFavorites;
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
-    //TODO create fragments instead of activities??
+    //TODO create fragments instead of activities(??)
     //TODO create lists for saved and favorites moves
 
 
@@ -30,8 +30,9 @@ public class ProfileActivity extends AppCompatActivity {
         rvFavorites = findViewById(R.id.rvFavorites);
         rvSaved = findViewById(R.id.rvSaved);
 
-        rvFavorites.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        rvSaved.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        //set grid view --> if bug, may be because of context retrieval method
+        rvFavorites.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
+        rvSaved.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
 
         btnFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
