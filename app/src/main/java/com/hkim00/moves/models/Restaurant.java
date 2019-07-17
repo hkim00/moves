@@ -1,16 +1,11 @@
-package models;
+package com.hkim00.moves.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
-import java.text.ParseException;
-
-@org.parceler.Parcel
 @ParseClassName("Restaurant")
 public class Restaurant extends ParseObject{
 
