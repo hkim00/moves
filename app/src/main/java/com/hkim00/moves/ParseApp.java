@@ -1,4 +1,4 @@
-package com.example.moves_login;
+package com.hkim00.moves;
 
 import android.app.Application;
 
@@ -9,6 +9,7 @@ public class ParseApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+       // ParseObject.registerSubclass(xxx.class); --> will need this line to create model for users and categories
 
         final Parse.Configuration configuration = new Parse.Configuration.Builder(this)
                 .applicationId("moves-app")
