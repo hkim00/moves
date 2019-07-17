@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Moves</string>
+    <string name="google_maps_api_key">AIzaSyDcrSpn4OZg3TjA732vsxZcvkIh5RCxW6Q</string>
 </resources>
