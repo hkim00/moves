@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,16 +32,19 @@ public class HomeActivity extends AppCompatActivity {
 
     String time;
     String numberOfPeople;
-    int radius;
+    int distance;
     int priceLevel;
 
-    TextView tvLocation;
-    Button btnTime, btnPeople, btnPlace, btnPrice;
+    TextView tvLocation, tvDistance, tvPriceLevel;
+    ImageView ivDistance, ivPrice;
+    Button btnTime, btnPeople, btnDistance, btnPrice;
 
     ConstraintLayout clCategories;
     ImageView ivFood, ivActivities, ivAttractions, ivEvents;
 
     ConstraintLayout clPrice;
+    TextView tvRightPopupTitle, tvMiles;
+    EditText etDistance;
     Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
 
 
@@ -67,8 +71,12 @@ public class HomeActivity extends AppCompatActivity {
         tvLocation = findViewById(R.id.tvLocation);
         btnTime = findViewById(R.id.btnTime);
         btnPeople = findViewById(R.id.btnPeople);
-        btnPlace = findViewById(R.id.btnPlace);
+        ivDistance = findViewById(R.id.ivDistance);
+        tvDistance = findViewById(R.id.tvDistance);
+        btnDistance = findViewById(R.id.btnDistance);
+        ivPrice = findViewById(R.id.ivPrice);
         btnPrice = findViewById(R.id.btnPrice);
+        tvPriceLevel = findViewById(R.id.tvPriceLevel);
 
         clCategories = findViewById(R.id.clCategories);
         ivFood = findViewById(R.id.ivFood);
@@ -77,6 +85,9 @@ public class HomeActivity extends AppCompatActivity {
         ivEvents = findViewById(R.id.ivEvents);
 
         clPrice = findViewById(R.id.clPrice);
+        tvRightPopupTitle = findViewById(R.id.tvRightPopupTitle);
+        tvMiles = findViewById(R.id.tvMiles);
+        etDistance = findViewById(R.id.etDistance);
         btnPriceLevel1 = findViewById(R.id.btnPriceLevel1);
         btnPriceLevel2 = findViewById(R.id.btnPriceLevel2);
         btnPriceLevel3 = findViewById(R.id.btnPriceLevel3);
@@ -87,7 +98,14 @@ public class HomeActivity extends AppCompatActivity {
         btnPrice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clPrice.setVisibility( (clPrice.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
+                toggleRightPopup("price");
+            }
+        });
+
+        btnDistance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleRightPopup("distance");
             }
         });
 
@@ -120,45 +138,44 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private void toggleRightPopup(String type) {
+        if (!(!tvRightPopupTitle.getText().toString().toLowerCase().equals(type) && clPrice.getVisibility() == View.VISIBLE)) {
+            clPrice.setVisibility((clPrice.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
+
+
+        }
+
+        if (type.equals("price")) {
+            tvRightPopupTitle.setText("Price");
+
+            btnPriceLevel1.setVisibility(View.VISIBLE);
+            btnPriceLevel2.setVisibility(View.VISIBLE);
+            btnPriceLevel3.setVisibility(View.VISIBLE);
+            btnPriceLevel4.setVisibility(View.VISIBLE);
+            tvMiles.setVisibility(View.INVISIBLE);
+            etDistance.setVisibility(View.INVISIBLE);
+
+        } else if (type.equals("distance")) {
+            tvRightPopupTitle.setText("Distance");
+
+            btnPriceLevel1.setVisibility(View.INVISIBLE);
+            btnPriceLevel2.setVisibility(View.INVISIBLE);
+            btnPriceLevel3.setVisibility(View.INVISIBLE);
+            btnPriceLevel4.setVisibility(View.INVISIBLE);
+            tvMiles.setVisibility(View.VISIBLE);
+            etDistance.setVisibility(View.VISIBLE);
+        }
+    }
+
+
     private void priceLevelSelected(int priceLevel) {
-        this.priceLevel = priceLevel;
+        int selectedColor = getResources().getColor(R.color.blue);
 
-        if (priceLevel == 1) {
-            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.navy));
-            btnPriceLevel1.setTextColor(getResources().getColor(R.color.white));
+        if (this.priceLevel == priceLevel) {
+            this.priceLevel = 0;
 
-            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
-
-        } else if (priceLevel == 2) {
-            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.navy));
-            btnPriceLevel2.setTextColor(getResources().getColor(R.color.white));
-
-            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
-
-        } else if (priceLevel == 3) {
-            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.navy));
-            btnPriceLevel3.setTextColor(getResources().getColor(R.color.white));
-
-            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
-
-        } else if (priceLevel == 4) {
-            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.navy));
-            btnPriceLevel4.setTextColor(getResources().getColor(R.color.white));
+            ivPrice.setVisibility(View.VISIBLE);
+            tvPriceLevel.setVisibility(View.INVISIBLE);
 
             btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
             btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
@@ -166,6 +183,67 @@ public class HomeActivity extends AppCompatActivity {
             btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
             btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
             btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+        } else {
+            this.priceLevel = priceLevel;
+
+            tvPriceLevel.setVisibility(View.VISIBLE);
+            ivPrice.setVisibility(View.INVISIBLE);
+
+            if (priceLevel == 1) {
+                btnPriceLevel1.setBackgroundColor(selectedColor);
+                btnPriceLevel1.setTextColor(getResources().getColor(R.color.white));
+
+                btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+                tvPriceLevel.setText("$");
+
+            } else if (priceLevel == 2) {
+                btnPriceLevel2.setBackgroundColor(selectedColor);
+                btnPriceLevel2.setTextColor(getResources().getColor(R.color.white));
+
+                btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+                tvPriceLevel.setText("$$");
+
+            } else if (priceLevel == 3) {
+                btnPriceLevel3.setBackgroundColor(selectedColor);
+                btnPriceLevel3.setTextColor(getResources().getColor(R.color.white));
+
+                btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+                tvPriceLevel.setText("$$$");
+
+            } else if (priceLevel == 4) {
+                btnPriceLevel4.setBackgroundColor(selectedColor);
+                btnPriceLevel4.setTextColor(getResources().getColor(R.color.white));
+
+                btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+                btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+                btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+
+                tvPriceLevel.setText("$$$$");
+            }
         }
     }
 
@@ -178,11 +256,15 @@ public class HomeActivity extends AppCompatActivity {
 
         btnTime.getLayoutParams().width= screenWidth/4;
         btnPeople.getLayoutParams().width= screenWidth/4;
-        btnPlace.getLayoutParams().width= screenWidth/4;
+        btnDistance.getLayoutParams().width= screenWidth/4;
         btnPrice.getLayoutParams().width= screenWidth/4;
 
         clPrice.setVisibility(View.INVISIBLE);
 
+        tvDistance.setVisibility(View.INVISIBLE);
+        distance = milesToMeters(1);
+
+        tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
 
         clCategories.post(new Runnable() {
@@ -203,9 +285,13 @@ public class HomeActivity extends AppCompatActivity {
 
         String urlTest = "location=47.6289467,-122.3428731&type=restaurant&key=" + "AIzaSyDcrSpn40Zg3TjA732vsxZcvkIh5RCxW6Q";
 
+        String distanceString = etDistance.getText().toString().trim();
+        distance = (distanceString == "") ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
+
+
         RequestParams params = new RequestParams();
         params.put("location","47.6289467,-122.3428731");
-        params.put("radius", milesToMeters(1)); //1500 meters
+        params.put("radius", distance);
         params.put("type","restaurant");
 
         if (priceLevel > 0) {
@@ -220,10 +306,6 @@ public class HomeActivity extends AppCompatActivity {
                 super.onSuccess(statusCode, headers, response);
             }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-            }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -238,11 +320,6 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                super.onSuccess(statusCode, headers, responseString);
             }
         });
     }
