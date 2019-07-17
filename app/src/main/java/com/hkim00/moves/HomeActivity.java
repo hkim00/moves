@@ -35,16 +35,13 @@ public class HomeActivity extends AppCompatActivity {
     int priceLevel;
 
     TextView tvLocation;
-    Button btnTime;
-    Button btnPeople;
-    Button btnPlace;
-    Button btnPrice;
+    Button btnTime, btnPeople, btnPlace, btnPrice;
 
     ConstraintLayout clCategories;
-    ImageView ivFood;
-    ImageView ivActivities;
-    ImageView ivAttractions;
-    ImageView ivEvents;
+    ImageView ivFood, ivActivities, ivAttractions, ivEvents;
+
+    ConstraintLayout clPrice;
+    Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
 
 
     @Override
@@ -61,7 +58,9 @@ public class HomeActivity extends AppCompatActivity {
 
         setupDesign();
 
-        getNearbyPlaces();
+        setupButtons();
+
+        //getNearbyPlaces();
     }
 
     private void getViewIds(){
@@ -70,11 +69,104 @@ public class HomeActivity extends AppCompatActivity {
         btnPeople = findViewById(R.id.btnPeople);
         btnPlace = findViewById(R.id.btnPlace);
         btnPrice = findViewById(R.id.btnPrice);
+
         clCategories = findViewById(R.id.clCategories);
         ivFood = findViewById(R.id.ivFood);
         ivActivities = findViewById(R.id.ivActivities);
         ivAttractions = findViewById(R.id.ivAttractions);
         ivEvents = findViewById(R.id.ivEvents);
+
+        clPrice = findViewById(R.id.clPrice);
+        btnPriceLevel1 = findViewById(R.id.btnPriceLevel1);
+        btnPriceLevel2 = findViewById(R.id.btnPriceLevel2);
+        btnPriceLevel3 = findViewById(R.id.btnPriceLevel3);
+        btnPriceLevel4 = findViewById(R.id.btnPriceLevel4);
+    }
+
+    private void setupButtons() {
+        btnPrice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clPrice.setVisibility( (clPrice.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
+            }
+        });
+
+        btnPriceLevel1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                priceLevelSelected(1);
+            }
+        });
+
+        btnPriceLevel2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                priceLevelSelected(2);
+            }
+        });
+
+        btnPriceLevel3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                priceLevelSelected(3);
+            }
+        });
+
+        btnPriceLevel4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                priceLevelSelected(4);
+            }
+        });
+    }
+
+    private void priceLevelSelected(int priceLevel) {
+        this.priceLevel = priceLevel;
+
+        if (priceLevel == 1) {
+            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.navy));
+            btnPriceLevel1.setTextColor(getResources().getColor(R.color.white));
+
+            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+        } else if (priceLevel == 2) {
+            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.navy));
+            btnPriceLevel2.setTextColor(getResources().getColor(R.color.white));
+
+            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+        } else if (priceLevel == 3) {
+            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.navy));
+            btnPriceLevel3.setTextColor(getResources().getColor(R.color.white));
+
+            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
+        } else if (priceLevel == 4) {
+            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.navy));
+            btnPriceLevel4.setTextColor(getResources().getColor(R.color.white));
+
+            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+            btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+        }
     }
 
 
@@ -88,6 +180,10 @@ public class HomeActivity extends AppCompatActivity {
         btnPeople.getLayoutParams().width= screenWidth/4;
         btnPlace.getLayoutParams().width= screenWidth/4;
         btnPrice.getLayoutParams().width= screenWidth/4;
+
+        clPrice.setVisibility(View.INVISIBLE);
+
+        priceLevel = 0;
 
         clCategories.post(new Runnable() {
             @Override
@@ -111,6 +207,11 @@ public class HomeActivity extends AppCompatActivity {
         params.put("location","47.6289467,-122.3428731");
         params.put("radius", milesToMeters(1)); //1500 meters
         params.put("type","restaurant");
+
+        if (priceLevel > 0) {
+            params.put("maxprice", priceLevel);
+        }
+
         params.put("key", getString(R.string.api_key));
 
         client.get(apiUrl, params, new JsonHttpResponseHandler() {
