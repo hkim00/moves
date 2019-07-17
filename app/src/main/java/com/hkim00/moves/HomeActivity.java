@@ -2,6 +2,8 @@ package com.hkim00.moves;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -94,6 +96,38 @@ public class HomeActivity extends AppCompatActivity {
         btnPriceLevel4 = findViewById(R.id.btnPriceLevel4);
     }
 
+    private void setupDesign() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        screenWidth = size.x;
+
+        btnTime.getLayoutParams().width= screenWidth/4;
+        btnPeople.getLayoutParams().width= screenWidth/4;
+        btnDistance.getLayoutParams().width= screenWidth/4;
+        btnPrice.getLayoutParams().width= screenWidth/4;
+
+        clPrice.setVisibility(View.INVISIBLE);
+
+        etDistance.addTextChangedListener(textWatcher);
+        tvDistance.setVisibility(View.INVISIBLE);
+        distance = milesToMeters(1);
+
+        tvPriceLevel.setVisibility(View.INVISIBLE);
+        priceLevel = 0;
+
+        clCategories.post(new Runnable() {
+            @Override
+            public void run() {
+                int constraintHeight = clCategories.getLayoutParams().height;
+                ivFood.getLayoutParams().height = constraintHeight/4;
+                ivActivities.getLayoutParams().height = constraintHeight/4;
+                ivAttractions.getLayoutParams().height = constraintHeight/4;
+                ivEvents.getLayoutParams().height = constraintHeight/4;
+            }
+        });
+    }
+
     private void setupButtons() {
         btnPrice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +203,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void priceLevelSelected(int priceLevel) {
-        int selectedColor = getResources().getColor(R.color.blue);
+        int selectedColor = getResources().getColor(R.color.selected_blue);
 
         if (this.priceLevel == priceLevel) {
             this.priceLevel = 0;
@@ -248,36 +282,33 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void setupDesign() {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        screenWidth = size.x;
 
-        btnTime.getLayoutParams().width= screenWidth/4;
-        btnPeople.getLayoutParams().width= screenWidth/4;
-        btnDistance.getLayoutParams().width= screenWidth/4;
-        btnPrice.getLayoutParams().width= screenWidth/4;
 
-        clPrice.setVisibility(View.INVISIBLE);
+    private final TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        tvDistance.setVisibility(View.INVISIBLE);
-        distance = milesToMeters(1);
+        }
 
-        tvPriceLevel.setVisibility(View.INVISIBLE);
-        priceLevel = 0;
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String distanceString = etDistance.getText().toString().trim();
 
-        clCategories.post(new Runnable() {
-            @Override
-            public void run() {
-                int constraintHeight = clCategories.getLayoutParams().height;
-                ivFood.getLayoutParams().height = constraintHeight/4;
-                ivActivities.getLayoutParams().height = constraintHeight/4;
-                ivAttractions.getLayoutParams().height = constraintHeight/4;
-                ivEvents.getLayoutParams().height = constraintHeight/4;
+            if (distanceString.equals("")) {
+                ivDistance.setVisibility(View.VISIBLE);
+                tvDistance.setVisibility(View.INVISIBLE);
+            } else {
+                ivDistance.setVisibility(View.INVISIBLE);
+                tvDistance.setVisibility(View.VISIBLE);
+
+                tvDistance.setText(distanceString + "mi");
             }
-        });
-    }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
 
     private void getNearbyPlaces() {
