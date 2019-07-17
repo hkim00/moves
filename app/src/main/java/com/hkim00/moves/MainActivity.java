@@ -4,7 +4,11 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
+
+import com.example.moves_login.R;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 
 public class MainActivity extends AppCompatActivity {
 
