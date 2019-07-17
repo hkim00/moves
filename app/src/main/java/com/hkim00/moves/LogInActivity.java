@@ -1,4 +1,4 @@
-package com.example.moves_login;
+package com.hkim00.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,8 +9,6 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hkim00.moves.MainActivity;
-import com.hkim00.moves.SignUpActivity;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;

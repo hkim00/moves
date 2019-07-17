@@ -1,4 +1,4 @@
-package com.example.moves_login;
+package com.hkim00.moves;
 
 import android.app.Application;
 
