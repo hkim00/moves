@@ -18,7 +18,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button btnGetSarted;
     private EditText etUsername;
     private EditText etPassword;
-
+    public ParseUser user = new ParseUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +32,6 @@ public class SignUpActivity extends AppCompatActivity {
         btnGetSarted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ParseUser user = new ParseUser();
-
                 user.setUsername(etUsername.getText().toString());
                 user.setPassword(etPassword.getText().toString());
 
@@ -41,17 +39,20 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Log.d("LogInActivity", "Sign Up Worked!");
-
-                            final Intent intent = new Intent(SignUpActivity.this, QuestionnaireActivity.class);
+                            Log.i("SignUpActivity", "Sign Up Worked!");
+                            Intent intent = new Intent(SignUpActivity.this, Intro1Activity.class);
+                            intent.putExtra("user", user);
                             startActivity(intent);
                             finish();
-
                         } else {
                             e.printStackTrace();
                         }
                     }
                 });
+//                androidx.fragment.app.FragmentManager fragmentManager = getSupportFragmentManager();
+//                androidx.fragment.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentManager.beginTransaction().replace(R.id.flContainer, new Intro1Activity()).commit();
+//                fragmentTransaction.addToBackStack(null);
             }
         });
     }
