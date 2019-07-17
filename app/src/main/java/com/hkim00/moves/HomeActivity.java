@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -16,38 +17,46 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.hkim00.moves.models.Restaurant;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
 public class HomeActivity extends AppCompatActivity {
 
+    public final static String TAG = "HomeActivity";
     public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
     private static int screenWidth;
 
-    AsyncHttpClient client;
+    public AsyncHttpClient client;
 
-    String time;
-    String numberOfPeople;
-    int distance;
-    int priceLevel;
+    private String time;
+    private String numberOfPeople;
+    private int distance;
+    private int priceLevel;
+    private List<Restaurant> restaurantResults;
 
-    TextView tvLocation, tvDistance, tvPriceLevel;
-    ImageView ivDistance, ivPrice;
-    Button btnTime, btnPeople, btnDistance, btnPrice;
+    private TextView tvLocation, tvDistance, tvPriceLevel;
+    private ImageView ivDistance, ivPrice;
+    private Button btnTime, btnPeople, btnDistance, btnPrice;
 
-    ConstraintLayout clCategories;
-    ImageView ivFood, ivActivities, ivAttractions, ivEvents;
+    private ConstraintLayout clCategories;
+    private ImageView ivFood, ivActivities, ivAttractions, ivEvents;
 
-    ConstraintLayout clPrice;
-    TextView tvRightPopupTitle, tvMiles;
-    EditText etDistance;
-    Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
+    private ConstraintLayout clPrice;
+    private TextView tvRightPopupTitle, tvMiles;
+    private EditText etDistance;
+    private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
+
+    private Button btnMove, btnRiskyMove;
 
 
     @Override
@@ -65,8 +74,6 @@ public class HomeActivity extends AppCompatActivity {
         setupDesign();
 
         setupButtons();
-
-        //getNearbyPlaces();
     }
 
     private void getViewIds(){
@@ -94,6 +101,9 @@ public class HomeActivity extends AppCompatActivity {
         btnPriceLevel2 = findViewById(R.id.btnPriceLevel2);
         btnPriceLevel3 = findViewById(R.id.btnPriceLevel3);
         btnPriceLevel4 = findViewById(R.id.btnPriceLevel4);
+
+        btnMove = findViewById(R.id.btnMove);
+        btnRiskyMove = findViewById(R.id.btnRiskyMove);
     }
 
     private void setupDesign() {
@@ -170,13 +180,19 @@ public class HomeActivity extends AppCompatActivity {
                 priceLevelSelected(4);
             }
         });
+
+
+        btnMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getNearbyRestaurants();
+            }
+        });
     }
 
     private void toggleRightPopup(String type) {
         if (!(!tvRightPopupTitle.getText().toString().toLowerCase().equals(type) && clPrice.getVisibility() == View.VISIBLE)) {
             clPrice.setVisibility((clPrice.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
-
-
         }
 
         if (type.equals("price")) {
@@ -286,9 +302,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String distanceString = etDistance.getText().toString().trim();
@@ -305,19 +319,17 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
-
-        }
+        public void afterTextChanged(Editable s) {}
     };
 
 
-    private void getNearbyPlaces() {
+    private void getNearbyRestaurants() {
         String apiUrl = API_BASE_URL + "/nearbysearch/json";
 
         String urlTest = "location=47.6289467,-122.3428731&type=restaurant&key=" + "AIzaSyDcrSpn40Zg3TjA732vsxZcvkIh5RCxW6Q";
 
         String distanceString = etDistance.getText().toString().trim();
-        distance = (distanceString == "") ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
+        distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
 
 
         RequestParams params = new RequestParams();
@@ -335,22 +347,40 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
+
+                JSONArray results;
+                try {
+                     results = response.getJSONArray("results");
+
+                    for (int i = 0; i < results.length(); i++) {
+                        Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
+                        Log.d(TAG, "got resteuant");
+
+                        restaurantResults.add(restaurant);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e(TAG, responseString);
+                throwable.printStackTrace();
             }
         });
     }

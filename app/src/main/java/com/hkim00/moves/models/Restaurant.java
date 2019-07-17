@@ -1,15 +1,14 @@
 package com.hkim00.moves.models;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.parse.ParseClassName;
-import com.parse.ParseObject;
+import com.google.gson.JsonObject;
 
-@ParseClassName("Restaurant")
-public class Restaurant extends ParseObject{
+public class Restaurant {
 
-    public String name, id, cuisine;
+    public String name, id;
     public Integer price_level;
     public Double lat, lng, rating;
 
@@ -20,16 +19,15 @@ public class Restaurant extends ParseObject{
         //extract the values from JSON
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("id");
-        restaurant.cuisine = jsonObject.getString("cuisine");
 
         restaurant.price_level = jsonObject.getInt("price_level");
 
-        restaurant.lat = jsonObject.getDouble("lat");
-        restaurant.lng = jsonObject.getDouble("lng");
-        restaurant.rating = jsonObject.getDouble("id");
+        JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
+
+        restaurant.lat = location.getDouble("lat");
+        restaurant.lng = location.getDouble("lng");
+        restaurant.rating = jsonObject.getDouble("rating");
 
         return restaurant;
     }
-
-
 }
