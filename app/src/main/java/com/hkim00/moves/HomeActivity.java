@@ -33,6 +33,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -373,6 +374,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
 
                     Intent intent = new Intent(HomeActivity.this, MovesActivity.class);
+                    intent.putExtra("moves", Parcels.wrap(restaurantResults));
                     startActivity(intent);
 
                 } catch (JSONException e) {

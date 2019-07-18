@@ -5,16 +5,20 @@ package com.hkim00.moves.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import com.google.gson.JsonObject;
 
+@Parcel
 public class Restaurant {
 
     public String name, id;
     public Integer price_level;
     public Double lat, lng, rating;
 
-    // deserialize the JSON
+    public Restaurant() {}
+
+
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
 

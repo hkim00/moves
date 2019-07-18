@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.ParseFile;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -51,39 +54,33 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivMoveImage;
-
-        private Restaurant restaurant;
-
+        private TextView tvTitle;
+        public Restaurant restaurant;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            ivMoveImage = itemView.findViewById(R.id.ivMoveImage);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
 
-            ivMoveImage.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //goToMovetDetails();
+                    goToMoveDetails();
                 }
             });
         }
 
 
         public void bind(Restaurant restaurant) {
-            //TODO get image from API
-           // ParseFile moveImage = restaurant.getParseFile("image");
-            //   Glide.with(context).load(moveImage.getUrl()).into(ivMoveImage);
-            }
+            tvTitle.setText(restaurant.name);
         }
 
         private void goToMoveDetails() {
-            //TODO create activity with move details
-            Intent intent = new Intent(context, MoveDetailsActivity.class);
+            //Intent intent = new Intent(context, MoveDetailsActivity.class);
 
-           // intent.putExtra("postId", restaurant.getObjectId()); --> not sure if line is necessary yet
-
-            context.startActivity(intent);
+//            intent.putExtra("move", Parcels.wrap(restaurant));
+//
+//            context.startActivity(intent);
         }
     }
 }
