@@ -13,6 +13,8 @@ import com.hkim00.moves.R;
 
 public class HistoryFragment extends Fragment {
 
+    public final static String TAG = "HistoryFragment";
+
 
     @Nullable
     @Override
