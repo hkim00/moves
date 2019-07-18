@@ -3,209 +3,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:background="#E1990A"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:text="Location"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="@+id/view"
-        app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@+id/view" />
-
-    <View
-        android:id="@+id/view2"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:background="#EAC66A"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
-    <ImageView
-        android:id="@+id/ivTime"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toStartOf="@+id/view2"
-        app:layout_constraintTop_toTopOf="@+id/view2"
-        app:layout_constraintVertical_bias="0.388"
-        app:srcCompat="@drawable/schedule" />
-
-    <ImageView
-        android:id="@+id/ivPeople"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="60dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivTime"
-        app:layout_constraintStart_toEndOf="@+id/ivTime"
-        app:layout_constraintTop_toTopOf="@+id/ivTime"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/group" />
-
-    <ImageView
-        android:id="@+id/ivPlace"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPeople"
-        app:layout_constraintStart_toEndOf="@+id/ivPeople"
-        app:layout_constraintTop_toTopOf="@+id/ivPeople"
-        app:srcCompat="@drawable/place" />
-
-    <ImageView
-        android:id="@+id/ivPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPlace"
-        app:layout_constraintStart_toEndOf="@+id/ivPlace"
-        app:layout_constraintTop_toTopOf="@+id/ivPlace"
-        app:srcCompat="@drawable/local_atm" />
-
-    <Button
-        android:id="@+id/btnTime"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/ivTime"
-        app:layout_constraintStart_toStartOf="@+id/ivTime"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
-
-    <Button
-        android:id="@+id/btnPeople"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/ivPeople"
-        app:layout_constraintStart_toStartOf="@+id/ivPeople"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
-
-    <Button
-        android:id="@+id/btnPlace"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/ivPlace"
-        app:layout_constraintStart_toStartOf="@+id/ivPlace"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
-
-    <Button
-        android:id="@+id/btnPrice"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/ivPrice"
-        app:layout_constraintStart_toStartOf="@+id/ivPrice"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
-
-    <ImageView
-        android:id="@+id/ivFood"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2"
-        app:srcCompat="@drawable/food_background" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="5dp"
-        android:text="Food"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/ivFood"
-        app:layout_constraintStart_toStartOf="@+id/ivFood" />
-
-    <Button
-        android:id="@+id/btnFood"
-        style="@style/Widget.AppCompat.Button.Borderless"
+    <FrameLayout
+        android:id="@+id/flContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivFood"
-        app:layout_constraintEnd_toEndOf="@+id/ivFood"
-        app:layout_constraintStart_toStartOf="@+id/ivFood"
-        app:layout_constraintTop_toTopOf="@+id/ivFood" />
-
-    <ImageView
-        android:id="@+id/ivActivities"
-        android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivFood"
-        app:srcCompat="@drawable/activities_background" />
+        app:layout_constraintTop_toTopOf="parent"></FrameLayout>
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Activities"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/ivActivities"
-        app:layout_constraintStart_toStartOf="@+id/ivActivities" />
-
-    <Button
-        android:id="@+id/btnActivities"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivActivities"
-        app:layout_constraintEnd_toEndOf="@+id/ivActivities"
-        app:layout_constraintStart_toStartOf="@+id/ivActivities"
-        app:layout_constraintTop_toTopOf="@+id/ivActivities" />
-
-    <Button
-        android:id="@+id/btnMove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginBottom="18dp"
-        android:text="Move"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:menu="@menu/menu_bottom_navigation" />
 
-    <Button
-        android:id="@+id/btnRiskyMove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="112dp"
-        android:layout_marginBottom="19dp"
-        android:text="Risky"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
