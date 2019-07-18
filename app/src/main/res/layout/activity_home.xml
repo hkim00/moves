@@ -82,17 +82,17 @@
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
     <ImageView
-        android:id="@+id/ivPlace"
+        android:id="@+id/ivDistance"
         android:layout_width="32dp"
         android:layout_height="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/ivPeople"
-        app:layout_constraintEnd_toEndOf="@+id/btnPlace"
-        app:layout_constraintStart_toStartOf="@+id/btnPlace"
+        app:layout_constraintEnd_toEndOf="@+id/btnDistance"
+        app:layout_constraintStart_toStartOf="@+id/btnDistance"
         app:layout_constraintTop_toTopOf="@+id/ivPeople"
         app:srcCompat="@drawable/place" />
 
     <Button
-        android:id="@+id/btnPlace"
+        android:id="@+id/btnDistance"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
@@ -100,14 +100,29 @@
         app:layout_constraintStart_toEndOf="@+id/btnPeople"
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
+    <TextView
+        android:id="@+id/tvDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="0"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnDistance"
+        app:layout_constraintEnd_toStartOf="@+id/btnPrice"
+        app:layout_constraintStart_toStartOf="@+id/btnDistance"
+        app:layout_constraintTop_toTopOf="@+id/btnDistance" />
+
     <ImageView
         android:id="@+id/ivPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPlace"
+        app:layout_constraintBottom_toBottomOf="@+id/ivDistance"
         app:layout_constraintEnd_toEndOf="@+id/btnPrice"
         app:layout_constraintStart_toStartOf="@+id/btnPrice"
-        app:layout_constraintTop_toTopOf="@+id/ivPlace"
+        app:layout_constraintTop_toTopOf="@+id/ivDistance"
         app:srcCompat="@drawable/local_atm" />
 
     <Button
@@ -116,8 +131,21 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@+id/btnPlace"
+        app:layout_constraintStart_toEndOf="@+id/btnDistance"
         app:layout_constraintTop_toTopOf="@+id/view2" />
+
+    <TextView
+        android:id="@+id/tvPriceLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPrice"
+        app:layout_constraintEnd_toEndOf="@+id/btnPrice"
+        app:layout_constraintStart_toStartOf="@+id/btnPrice"
+        app:layout_constraintTop_toTopOf="@+id/btnPrice" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCategories"
@@ -283,5 +311,134 @@
         android:text="Risky"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btnLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/view2"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/clCategories"
+        app:layout_constraintTop_toBottomOf="@+id/view2">
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"></View>
+
+        <TextView
+            android:id="@+id/tvRightPopupTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Price"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnPriceLevel2"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="50dp"
+            android:layout_height="0dp"
+            android:text="$$"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnPriceLevel1"
+            app:layout_constraintStart_toEndOf="@+id/btnPriceLevel1"
+            app:layout_constraintTop_toTopOf="@+id/btnPriceLevel1" />
+
+        <Button
+            android:id="@+id/btnPriceLevel4"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="65dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:text="$$$$"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnPriceLevel3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnPriceLevel3"
+            app:layout_constraintTop_toTopOf="@+id/btnPriceLevel3" />
+
+        <Button
+            android:id="@+id/btnPriceLevel3"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="55dp"
+            android:layout_height="0dp"
+            android:text="$$$"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnPriceLevel2"
+            app:layout_constraintStart_toEndOf="@+id/btnPriceLevel2"
+            app:layout_constraintTop_toTopOf="@+id/btnPriceLevel2"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/btnPriceLevel1"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="35dp"
+            android:layout_height="45dp"
+            android:layout_marginBottom="8dp"
+            android:text="$"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/view5"
+            app:layout_constraintStart_toStartOf="@+id/tvRightPopupTitle"
+            app:layout_constraintTop_toBottomOf="@+id/tvRightPopupTitle" />
+
+        <EditText
+            android:id="@+id/etDistance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:layout_marginEnd="2dp"
+            android:ems="10"
+            android:hint="Distance"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toStartOf="@+id/tvMiles"
+            app:layout_constraintStart_toStartOf="@+id/view5"
+            app:layout_constraintTop_toTopOf="@+id/btnPriceLevel1" />
+
+        <TextView
+            android:id="@+id/tvMiles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="miles"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/etDistance"
+            app:layout_constraintEnd_toEndOf="@+id/view5"
+            app:layout_constraintTop_toTopOf="@+id/etDistance" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
