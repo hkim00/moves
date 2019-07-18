@@ -44,6 +44,7 @@ public class LogInActivity extends AppCompatActivity {
         if (currentUser != null) {
             Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
             startActivity(intent);
+            finish();
         }
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
