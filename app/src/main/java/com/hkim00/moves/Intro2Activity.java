@@ -2,6 +2,7 @@ package com.hkim00.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -47,10 +48,21 @@ public class Intro2Activity extends AppCompatActivity {
         mCatButtons.addAll(categoryHelper.mCategories);
         adapter.notifyDataSetChanged();
 
+        mCategories = new ArrayList<>();
+
         btnDone.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                // loop through catButtons, put all "preferred" cuisines, add to foodPrefList array in Parse
+                for (int i = 0; i < mCatButtons.size(); i++) {
+                    CategoryButton catButton = mCatButtons.get(i);
+                    if (catButton.isPref == true) {
+                        mCategories.add(catButton.cuisine);
+                    }
+                }
+
                 ParseUser currUser = ParseUser.getCurrentUser();
+                currUser.put("foodPrefList", mCategories);
                 currUser.saveInBackground();
 
                 Intent intent = new Intent(Intro2Activity.this, HomeActivity.class);
