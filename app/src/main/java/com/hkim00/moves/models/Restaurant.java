@@ -1,3 +1,5 @@
+// May table Restaurant model
+
 package com.hkim00.moves.models;
 
 import org.json.JSONException;
@@ -17,7 +19,6 @@ public class Restaurant extends ParseObject{
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
 
-        //extract the values from JSON
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("id");
         restaurant.cuisine = jsonObject.getString("cuisine");

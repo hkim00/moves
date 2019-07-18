@@ -49,10 +49,6 @@ public class SignUpActivity extends AppCompatActivity {
                         }
                     }
                 });
-//                androidx.fragment.app.FragmentManager fragmentManager = getSupportFragmentManager();
-//                androidx.fragment.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentManager.beginTransaction().replace(R.id.flContainer, new Intro1Activity()).commit();
-//                fragmentTransaction.addToBackStack(null);
             }
         });
     }
