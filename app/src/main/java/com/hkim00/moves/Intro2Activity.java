@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.models.CatButtonsAdapter;
+import com.hkim00.moves.models.CategoryButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class Intro2Activity extends AppCompatActivity {
     private TextView tvInstructions;
     private Button btnNext;
 
-    List<ImageButton> mImageButtons;
+    List<CategoryButton> mCatButtons;
     public RecyclerView rvCategories;
     protected CatButtonsAdapter adapter;
 
@@ -37,8 +37,8 @@ public class Intro2Activity extends AppCompatActivity {
         btnNext = findViewById(R.id.next_btn);
 
         rvCategories.setLayoutManager(new GridLayoutManager(this, 2));
-        mImageButtons = new ArrayList<>();
-        adapter = new CatButtonsAdapter(Intro2Activity.this, mImageButtons);
+        mCatButtons = new ArrayList<>();
+        adapter = new CatButtonsAdapter(Intro2Activity.this, mCatButtons);
 
         btnNext.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -49,6 +49,5 @@ public class Intro2Activity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 }
