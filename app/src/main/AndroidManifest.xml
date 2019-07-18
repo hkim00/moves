@@ -16,7 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ProfileActivity"></activity>
         <activity android:name="com.hkim00.moves.HomeActivity" />
         <activity android:name="com.hkim00.moves.MainActivity" />
         <activity android:name="com.hkim00.moves.MovesActivity" />
