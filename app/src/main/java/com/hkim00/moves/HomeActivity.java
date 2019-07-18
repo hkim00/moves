@@ -1,6 +1,13 @@
 package com.hkim00.moves;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +21,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -26,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -68,12 +77,20 @@ public class HomeActivity extends AppCompatActivity {
         PlacesClient placesClient = Places.createClient(this);
 
         client = new AsyncHttpClient();
+        restaurantResults = new ArrayList<>();
 
         getViewIds();
 
         setupDesign();
 
         setupButtons();
+
+        Button btnLocation = findViewById(R.id.btnLocation);
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
     }
 
     private void getViewIds(){
@@ -298,8 +315,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-
-
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -326,15 +341,13 @@ public class HomeActivity extends AppCompatActivity {
     private void getNearbyRestaurants() {
         String apiUrl = API_BASE_URL + "/nearbysearch/json";
 
-        String urlTest = "location=47.6289467,-122.3428731&type=restaurant&key=" + "AIzaSyDcrSpn40Zg3TjA732vsxZcvkIh5RCxW6Q";
-
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
 
 
         RequestParams params = new RequestParams();
         params.put("location","47.6289467,-122.3428731");
-        params.put("radius", distance);
+        params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
 
         if (priceLevel > 0) {
@@ -354,10 +367,13 @@ public class HomeActivity extends AppCompatActivity {
 
                     for (int i = 0; i < results.length(); i++) {
                         Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
-                        Log.d(TAG, "got resteuant");
+                        Log.d(TAG, "got restaurant");
 
                         restaurantResults.add(restaurant);
                     }
+
+                    Intent intent = new Intent(HomeActivity.this, MovesActivity.class);
+                    startActivity(intent);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -100,6 +100,21 @@
         app:layout_constraintStart_toEndOf="@+id/btnPeople"
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
+    <TextView
+        android:id="@+id/tvDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="0"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnDistance"
+        app:layout_constraintEnd_toStartOf="@+id/btnPrice"
+        app:layout_constraintStart_toStartOf="@+id/btnDistance"
+        app:layout_constraintTop_toTopOf="@+id/btnDistance" />
+
     <ImageView
         android:id="@+id/ivPrice"
         android:layout_width="wrap_content"
@@ -297,6 +312,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <Button
+        android:id="@+id/btnLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/view2"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clPrice"
         android:layout_width="wrap_content"
@@ -412,21 +439,6 @@
             app:layout_constraintTop_toTopOf="@+id/etDistance" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="0"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/btnDistance"
-        app:layout_constraintEnd_toStartOf="@+id/btnPrice"
-        app:layout_constraintStart_toStartOf="@+id/btnDistance"
-        app:layout_constraintTop_toTopOf="@+id/btnDistance" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

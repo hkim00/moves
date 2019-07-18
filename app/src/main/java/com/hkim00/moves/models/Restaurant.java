@@ -28,6 +28,8 @@ public class Restaurant {
         restaurant.lng = location.getDouble("lng");
         restaurant.rating = jsonObject.getDouble("rating");
 
+        //https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=CmRaAAAAIIP6dyi0yY_wI8IZqstFxZ3kC_GeB9niLevthrTrf-Mq8m7_2hwFEt49MZXP4OkPE7ZL8KZayPl6V7UO7VzzjA9tV32CsLK0-TdDvXw_jkSDkFaR3AYly6fvIF5MPsaaEhDTb8zykYRZRxASQueBMItCGhSLuDrwBa2h_6kjptOSxwJrUo27kw&key=AIzaSyCMyauVMKpJvJ-rh4WqMXTgU9Daw7uZeiY
+
         return restaurant;
     }
 }
