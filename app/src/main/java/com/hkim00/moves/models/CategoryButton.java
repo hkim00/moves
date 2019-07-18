@@ -19,5 +19,4 @@ public class CategoryButton extends AppCompatActivity {
         tvCuisine = findViewById(R.id.cuisine_tv);
         ivCuisine = findViewById(R.id.cuisine_iv);
     }
-
 }

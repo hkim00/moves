@@ -1,3 +1,5 @@
+// Potential format for user onboarding (instructions on how to use app). This is a to-do for later weeks.
+
 package com.hkim00.moves;
 
 import android.os.Bundle;
@@ -23,12 +25,8 @@ public class QuestionnaireActivity extends AppIntro {
         // Add your slide com.hkim00.moves.fragments here.
 
         // AppIntro will automatically generate the dots indicator and buttons.
-//        addSlide(new Intro1Activity());
-//        addSlide(new Intro2Fragment());
-//        addSlide(secondFragment);
-//        addSlide(thirdFragment);
-//        addSlide(fourthFragment);
-        
+        // addSlide(new Intro1Activity());
+
         SliderPage sliderPage = new SliderPage();
         sliderPage.setTitle("info1");
         sliderPage.setDescription("Tell us about yourself!");
@@ -38,8 +36,8 @@ public class QuestionnaireActivity extends AppIntro {
 
         // OPTIONAL METHODS
         // Override bar/separator color.
-//        setBarColor(Color.parseColor("#3F51B5"));
-//        setSeparatorColor(Color.parseColor("#2196F3"));
+        // setBarColor(Color.parseColor("#3F51B5"));
+        // setSeparatorColor(Color.parseColor("#2196F3"));
 
         // Hide Skip/Done button.
         showSkipButton(false);
@@ -47,8 +45,8 @@ public class QuestionnaireActivity extends AppIntro {
 
         // Turn vibration on and set intensity.
         // NOTE: you will probably need to ask VIBRATE permission in Manifest.
-//        setVibrate(true);
-//        setVibrateIntensity(30);
+        // setVibrate(true);
+        // setVibrateIntensity(30);
     }
 
     @Override

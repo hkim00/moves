@@ -1,3 +1,5 @@
+// May table Restaurant model
+
 package com.hkim00.moves.models;
 
 import org.json.JSONArray;
@@ -16,7 +18,6 @@ public class Restaurant {
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
 
-        //extract the values from JSON
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("id");
 

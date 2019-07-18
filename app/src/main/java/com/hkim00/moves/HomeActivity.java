@@ -67,12 +67,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private Button btnMove, btnRiskyMove;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // TODO: Francesco - the reason why gitguardian was giving us notifications is that you'd hardcoded the api key in this file as a string...
         Places.initialize(getApplicationContext(), getString(R.string.api_key));
         PlacesClient placesClient = Places.createClient(this);
 
