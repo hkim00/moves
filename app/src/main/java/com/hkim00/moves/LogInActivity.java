@@ -52,6 +52,7 @@ public class LogInActivity extends AppCompatActivity {
                 Log.d("LogInActivity", "Sign Up Worked!");
                 Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }

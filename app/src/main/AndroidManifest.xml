@@ -19,7 +19,8 @@
 
         <activity android:name=".HomeActivity"></activity>
         <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
-        <activity android:name="com.hkim00.moves.Intro1Activity">        </activity>
+        <activity android:name="com.hkim00.moves.Intro1Activity"></activity>
+        <activity android:name="com.hkim00.moves.Intro2Activity"></activity>
         <activity android:name="com.hkim00.moves.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
