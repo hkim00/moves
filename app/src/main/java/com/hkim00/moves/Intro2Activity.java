@@ -2,6 +2,7 @@ package com.hkim00.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,38 +13,58 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.models.CatButtonsAdapter;
 import com.hkim00.moves.models.CategoryButton;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Intro2Activity extends AppCompatActivity {
     private TextView tvInstructions;
-    private Button btnNext;
+    private Button btnDone;
 
-    List<CategoryButton> mCatButtons;
-    public RecyclerView rvCategories;
-    protected CatButtonsAdapter adapter;
-
-    public SignUpActivity signupActivity;
+     List<CategoryButton> mCatButtons;
+     List<String> mCategories;
+     RecyclerView rvCategories;
+     CatButtonsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_intro1);
+        setContentView(R.layout.activity_intro2);
 
         tvInstructions = findViewById(R.id.instructions_tv) ;
         rvCategories = findViewById(R.id.cat_rv);
+        btnDone = findViewById(R.id.done_btn);
 
-        btnNext = findViewById(R.id.next_btn);
-
-        rvCategories.setLayoutManager(new GridLayoutManager(this, 2));
         mCatButtons = new ArrayList<>();
-        adapter = new CatButtonsAdapter(Intro2Activity.this, mCatButtons);
+        adapter = new CatButtonsAdapter(getApplicationContext(), mCatButtons);
 
-        btnNext.setOnClickListener(new View.OnClickListener(){
+        rvCategories.setAdapter(adapter);
+        rvCategories.setLayoutManager(new GridLayoutManager(this, 2));
+
+        // populates a category button with cuisines from array declared in CategoryHelper
+        CategoryHelper categoryHelper = new CategoryHelper();
+
+        mCatButtons.addAll(categoryHelper.mCategories);
+        adapter.notifyDataSetChanged();
+
+        mCategories = new ArrayList<>();
+
+        btnDone.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                // TODO: make sure HomeActivity is integrated properly
+                // loop through catButtons, put all "preferred" cuisines, add to foodPrefList array in Parse
+                for (int i = 0; i < mCatButtons.size(); i++) {
+                    CategoryButton catButton = mCatButtons.get(i);
+                    if (catButton.isPref == true) {
+                        mCategories.add(catButton.cuisine);
+                    }
+                }
+
+                ParseUser currUser = ParseUser.getCurrentUser();
+                currUser.put("foodPrefList", mCategories);
+                currUser.saveInBackground();
+
                 Intent intent = new Intent(Intro2Activity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();

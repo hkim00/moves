@@ -20,7 +20,8 @@
         <activity android:name="com.hkim00.moves.MainActivity" />
         <activity android:name="com.hkim00.moves.MovesActivity" />
         <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
-        <activity android:name="com.hkim00.moves.Intro1Activity">        </activity>
+        <activity android:name="com.hkim00.moves.Intro1Activity"></activity>
+        <activity android:name="com.hkim00.moves.Intro2Activity"></activity>
         <activity android:name="com.hkim00.moves.LogInActivity">
 
             <intent-filter>
