@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <ImageView
-        android:id="@+id/ivTime"
+        android:id="@+id/ivDistance"
         android:layout_width="32dp"
         android:layout_height="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
@@ -62,13 +62,13 @@
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
     <ImageView
-        android:id="@+id/ivPeople"
+        android:id="@+id/ivGroupNum"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivTime"
+        app:layout_constraintBottom_toBottomOf="@+id/ivDistance"
         app:layout_constraintEnd_toEndOf="@+id/btnPeople"
         app:layout_constraintStart_toStartOf="@+id/btnPeople"
-        app:layout_constraintTop_toTopOf="@+id/ivTime"
+        app:layout_constraintTop_toTopOf="@+id/ivDistance"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/group" />
 
@@ -85,10 +85,10 @@
         android:id="@+id/ivPlace"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPeople"
+        app:layout_constraintBottom_toBottomOf="@+id/ivGroupNum"
         app:layout_constraintEnd_toEndOf="@+id/btnPlace"
         app:layout_constraintStart_toStartOf="@+id/btnPlace"
-        app:layout_constraintTop_toTopOf="@+id/ivPeople"
+        app:layout_constraintTop_toTopOf="@+id/ivGroupNum"
         app:srcCompat="@drawable/place" />
 
     <Button
