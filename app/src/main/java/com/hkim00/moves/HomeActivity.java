@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
 import com.loopj.android.http.AsyncHttpClient;
@@ -55,15 +56,13 @@ public class HomeActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()) {
                     case R.id.action_history:
-                        fragment = new HomeFragment();
-                        Toast.makeText(HomeActivity.this, "history", Toast.LENGTH_SHORT).show();
+                        fragment = new HistoryFragment();
                         break;
                     case R.id.action_home:
                         fragment = new HomeFragment();
                         break;
                     case R.id.action_profile:
                         fragment = new ProfileFragment();
-                        Toast.makeText(HomeActivity.this, "profile", Toast.LENGTH_SHORT).show();
                     default:
                         break;
                 }
