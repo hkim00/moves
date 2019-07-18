@@ -3,6 +3,7 @@
     package="com.hkim00.moves">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -14,10 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name="com.hkim00.moves.HomeActivity" />
+        <activity android:name="com.hkim00.moves.MainActivity" />
+      
+
         <activity android:name=".HomeActivity"></activity>
         <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
         <activity android:name="com.hkim00.moves.Intro1Activity">        </activity>
         <activity android:name="com.hkim00.moves.LogInActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
