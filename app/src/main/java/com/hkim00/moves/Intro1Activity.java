@@ -1,5 +1,6 @@
 package com.hkim00.moves;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,14 +55,17 @@ public class Intro1Activity extends AppCompatActivity {
             public void onClick(View v) {
                 ParseUser currUser = ParseUser.getCurrentUser();
                 // TODO: abstract out "put" commands
-                currUser.saveInBackground();
+
                 // TODO: figure out how to store location for a ParseUser object
                 currUser.put("location", etLocation.getText().toString());
                 currUser.put("age", Integer.parseInt(etAge.getText().toString()));
                 // TODO: checkboxes for gender?
                 currUser.put("gender", etGender.getText().toString());
+                currUser.saveInBackground();
 
-                ;
+                Intent intent = new Intent(Intro1Activity.this, Intro2Activity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
