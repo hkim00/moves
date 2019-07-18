@@ -6,8 +6,11 @@
     <TextView
         android:id="@+id/welcome_tv"
         android:layout_width="match_parent"
-        android:layout_height="77dp"
-        android:text="Tell us about yourself!" />
+        android:layout_height="40dp"
+        android:layout_margin="10dp"
+        android:text="Tell us about yourself!"
+        android:textAlignment="center"
+        android:textSize="18dp" />
 
     <EditText
         android:id="@+id/location_et"
@@ -33,7 +36,7 @@
         android:hint="Gender" />
 
     <Button
-        android:id="@+id/next_btw"
+        android:id="@+id/next_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="next" />

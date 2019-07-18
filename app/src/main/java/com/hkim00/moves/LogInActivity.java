@@ -45,7 +45,6 @@ public class LogInActivity extends AppCompatActivity {
 
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-
             Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
             startActivity(intent);
         }

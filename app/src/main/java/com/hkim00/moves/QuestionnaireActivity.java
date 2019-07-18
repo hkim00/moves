@@ -9,11 +9,12 @@ import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
 
-import com.hkim00.moves.fragments.Intro1Fragment;
+import com.parse.ParseUser;
 
 
 public class QuestionnaireActivity extends AppIntro {
 
+    public ParseUser user = new ParseUser();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -22,17 +23,18 @@ public class QuestionnaireActivity extends AppIntro {
         // Add your slide com.hkim00.moves.fragments here.
 
         // AppIntro will automatically generate the dots indicator and buttons.
-        addSlide(new Intro1Fragment());
+//        addSlide(new Intro1Activity());
+//        addSlide(new Intro2Fragment());
 //        addSlide(secondFragment);
 //        addSlide(thirdFragment);
 //        addSlide(fourthFragment);
         
-//        SliderPage sliderPage = new SliderPage();
-//        sliderPage.setTitle("info1");
-//        sliderPage.setDescription("Tell us about yourself!");
-//        sliderPage.setImageDrawable(R.drawable.sun_questionnaire);
-//        sliderPage.setBgColor(R.color.white);
-//        addSlide(AppIntroFragment.newInstance(sliderPage));
+        SliderPage sliderPage = new SliderPage();
+        sliderPage.setTitle("info1");
+        sliderPage.setDescription("Tell us about yourself!");
+        sliderPage.setImageDrawable(R.drawable.sun_questionnaire);
+        sliderPage.setBgColor(R.color.white);
+        addSlide(AppIntroFragment.newInstance(sliderPage));
 
         // OPTIONAL METHODS
         // Override bar/separator color.
