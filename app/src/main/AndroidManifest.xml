@@ -14,11 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MovesActivity"></activity>
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".LogInActivity">
+        <activity android:name=".HomeActivity"></activity>
+        <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
+        <activity android:name="com.hkim00.moves.Intro1Activity">        </activity>
+        <activity android:name="com.hkim00.moves.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
