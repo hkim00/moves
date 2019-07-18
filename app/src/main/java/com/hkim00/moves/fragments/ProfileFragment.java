@@ -1,5 +1,6 @@
 package com.hkim00.moves.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hkim00.moves.HomeActivity;
+import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.ProfileAdapter;
 import com.hkim00.moves.models.Restaurant;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +28,7 @@ public class ProfileFragment extends Fragment {
 
     private Button btnSaved;
     private Button btnFavorites;
+    private Button btnLogout;
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
     //TODO create lists for saved and favorites moves
@@ -42,14 +47,38 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        btnLogout = view.findViewById(R.id.btnLogout);
         btnSaved =  view.findViewById(R.id.btnSaved);
         btnFavorites = view.findViewById(R.id.btnFavorites);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         rvSaved = view.findViewById(R.id.rvSaved);
 
-        //set grid view --> if bug, may be because of context retrieval method
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
         rvSaved.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        rFaveList = new ArrayList<>();
+        Faveadapter = new ProfileAdapter(getContext(), rFaveList);
+        rvFavorites.setAdapter(Faveadapter);
+
+        rSaveList = new ArrayList<>();
+        Saveadapter = new ProfileAdapter(getContext(), rSaveList);
+        rvSaved.setAdapter(Saveadapter);
+
+        setupButtons();
+    }
+
+
+    private void setupButtons() {
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ParseUser.logOut();
+
+                final Intent intent = new Intent(getContext(), LogInActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
 
         btnFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,13 +97,5 @@ public class ProfileFragment extends Fragment {
                 rvSaved.setVisibility(View.VISIBLE);
             }
         });
-
-        rFaveList = new ArrayList<>();
-        Faveadapter = new ProfileAdapter(getContext(), rFaveList);
-        rvFavorites.setAdapter(Faveadapter);
-
-        rSaveList = new ArrayList<>();
-        Saveadapter = new ProfileAdapter(getContext(), rSaveList);
-        rvSaved.setAdapter(Saveadapter);
     }
 }
