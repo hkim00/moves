@@ -56,24 +56,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-<<<<<<< HEAD
-
-=======
->>>>>>> fa906d6926bfc110d5116ed10261cc63fd3473ea
         private TextView tvTitle;
         public Restaurant restaurant;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-<<<<<<< HEAD
-
             tvTitle = itemView.findViewById(R.id.tvTitle);
 
-=======
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-
->>>>>>> fa906d6926bfc110d5116ed10261cc63fd3473ea
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -84,8 +74,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         //TODO get image from google API instead of parse/glide
 
-<<<<<<< HEAD
-
         private void goToMoveDetails() {
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -93,26 +81,12 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
             intent.putExtra("move", Parcels.wrap(restaurant));
 
-           context.startActivity(intent);
+            context.startActivity(intent);
         }
 
         public void bind(Restaurant restaurant) {
             tvTitle.setText(restaurant.name);
-=======
-        public void bind(Restaurant restaurant) {
-            tvTitle.setText(restaurant.name);
         }
-
-        private void goToMoveDetails() {
-            //Intent intent = new Intent(context, MoveDetailsActivity.class);
-
-//            intent.putExtra("move", Parcels.wrap(restaurant));
-//
-//            context.startActivity(intent);
->>>>>>> fa906d6926bfc110d5116ed10261cc63fd3473ea
-        }
-
-
     }
 }
 

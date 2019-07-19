@@ -29,6 +29,10 @@ import com.hkim00.moves.R;
 import com.hkim00.moves.models.Restaurant;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -326,6 +330,19 @@ public class HomeFragment extends Fragment {
 
 
     private void getNearbyRestaurants() {
+        if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null) {
+            ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+            userQuery.getInBackground(ParseUser.getCurrentUser().getObjectId(), new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser object, ParseException e) {
+                    ParseUser.getCurrentUser().put("foodPrefList", object.getJSONArray("foodPrefList"));
+                }
+            });
+        } else {
+            Log.d(TAG, "already saved food list");
+        }
+
+
         String apiUrl = API_BASE_URL + "/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
@@ -364,6 +381,7 @@ public class HomeFragment extends Fragment {
                     startActivity(intent);
 
                 } catch (JSONException e) {
+                    Log.e(TAG, "Error getting nearby");
                     e.printStackTrace();
                 }
             }
