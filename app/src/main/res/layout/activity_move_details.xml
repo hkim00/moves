@@ -24,19 +24,14 @@
 
     <ImageView
         android:id="@+id/ivYellowOutline"
-        android:layout_width="380dp"
-        android:layout_height="604dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="#FDD835"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvYourMove"
-        app:layout_constraintVertical_bias="0.615"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/yellow_outline" />
 
     <ImageView
@@ -52,13 +47,14 @@
         android:id="@+id/tvMoveName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="92dp"
         android:text="Move Name"
         android:textAlignment="center"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-        android:textSize="45dp"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="@+id/ivYellowOutline"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="@id/ivYellowOutline"
         app:layout_constraintTop_toTopOf="@id/ivYellowOutline" />
 
@@ -179,23 +175,11 @@
         android:id="@+id/btnChooseMove"
         android:layout_width="124dp"
         android:layout_height="51dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginBottom="96dp"
         android:background="#FDD835"
         android:text="Choose Move!"
         app:layout_constraintBottom_toBottomOf="@+id/ivYellowOutline"
         app:layout_constraintStart_toStartOf="@+id/ivYellowOutline" />
 
-    <TextView
-        android:id="@+id/tvCuisine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="164dp"
-        android:layout_marginBottom="8dp"
-        android:text="Cuisine"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/ivMoveImage"
-        app:layout_constraintStart_toStartOf="@+id/ivYellowOutline"
-        app:layout_constraintTop_toBottomOf="@+id/tvMoveName"
-        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
