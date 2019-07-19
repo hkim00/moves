@@ -13,8 +13,18 @@
         android:textAlignment="center"
         android:textSize="18dp" />
 
+
+    <Button
+        android:id="@+id/done_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Done" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cat_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="574dp">
+    </androidx.recyclerview.widget.RecyclerView>
+
+
 </LinearLayout>
