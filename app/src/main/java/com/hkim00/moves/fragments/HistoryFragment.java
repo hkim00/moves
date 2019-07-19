@@ -20,9 +20,11 @@ import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
+
     private RecyclerView rvPastMoves;
     private ProfileAdapter historyAdapter;
     private List<Restaurant> rHistoryList;
+    public final static String TAG = "HistoryFragment";
 
     @Nullable
     @Override
