@@ -3,48 +3,31 @@ package com.hkim00.moves;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hkim00.moves.fragments.HistoryFragment;
+import com.hkim00.moves.fragments.HomeFragment;
+import com.hkim00.moves.fragments.ProfileFragment;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import cz.msebera.android.httpclient.Header;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
-    private static int screenWidth;
+    private final static String TAG = "HomeActivity";
 
-    AsyncHttpClient client;
+    public static int screenWidth;
+    public static AsyncHttpClient client;
 
-    String time;
-    String numberOfPeople;
-    int radius;
-    int priceLevel;
-
-    TextView tvLocation;
-    Button btnTime;
-    Button btnPeople;
-    Button btnPlace;
-    Button btnPrice;
-
-    ConstraintLayout clCategories;
-    ImageView ivFood;
-    ImageView ivActivities;
-    ImageView ivAttractions;
-    ImageView ivEvents;
+    FragmentManager fragmentManager;
+    private BottomNavigationView bottomNavigation;
 
 
     @Override
@@ -57,97 +40,46 @@ public class HomeActivity extends AppCompatActivity {
 
         client = new AsyncHttpClient();
 
-        getViewIds();
+        fragmentManager = getSupportFragmentManager();
+        bottomNavigation = findViewById(R.id.bottom_navigation);
 
-        setupDesign();
-
-        getNearbyPlaces();
-    }
-
-    private void getViewIds(){
-        tvLocation = findViewById(R.id.tvLocation);
-        btnTime = findViewById(R.id.btnTime);
-        btnPeople = findViewById(R.id.btnPeople);
-        btnPlace = findViewById(R.id.btnPlace);
-        btnPrice = findViewById(R.id.btnPrice);
-        clCategories = findViewById(R.id.clCategories);
-        ivFood = findViewById(R.id.ivFood);
-        ivActivities = findViewById(R.id.ivActivities);
-        ivAttractions = findViewById(R.id.ivAttractions);
-        ivEvents = findViewById(R.id.ivEvents);
+        getScreenWidth();
+        setupNavBar();
     }
 
 
-    private void setupDesign() {
+    private void setupNavBar() {
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                Fragment fragment = new HomeFragment();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.action_history:
+                        fragment = new HistoryFragment();
+                        break;
+                    case R.id.action_home:
+                        fragment = new HomeFragment();
+                        break;
+                    case R.id.action_profile:
+                        fragment = new ProfileFragment();
+                    default:
+                        break;
+                }
+
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                return true;
+            }
+        });
+
+        bottomNavigation.setSelectedItemId(R.id.action_home);
+    }
+
+    private void getScreenWidth() {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
-
-        btnTime.getLayoutParams().width= screenWidth/4;
-        btnPeople.getLayoutParams().width= screenWidth/4;
-        btnPlace.getLayoutParams().width= screenWidth/4;
-        btnPrice.getLayoutParams().width= screenWidth/4;
-
-        clCategories.post(new Runnable() {
-            @Override
-            public void run() {
-                int constraintHeight = clCategories.getLayoutParams().height;
-                ivFood.getLayoutParams().height = constraintHeight/4;
-                ivActivities.getLayoutParams().height = constraintHeight/4;
-                ivAttractions.getLayoutParams().height = constraintHeight/4;
-                ivEvents.getLayoutParams().height = constraintHeight/4;
-            }
-        });
     }
 
-
-    private void getNearbyPlaces() {
-        String apiUrl = API_BASE_URL + "/nearbysearch/json";
-
-        String urlTest = "location=47.6289467,-122.3428731&type=restaurant&key=" + "AIzaSyDcrSpn40Zg3TjA732vsxZcvkIh5RCxW6Q";
-
-        RequestParams params = new RequestParams();
-        params.put("location","47.6289467,-122.3428731");
-        params.put("radius", milesToMeters(1)); //1500 meters
-        params.put("type","restaurant");
-        params.put("key", getString(R.string.api_key));
-
-        client.get(apiUrl, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                super.onSuccess(statusCode, headers, responseString);
-            }
-        });
-    }
-
-
-    private int milesToMeters(float miles) {
-        return (int) (miles/0.000621317);
-    }
 }

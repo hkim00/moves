@@ -15,7 +15,6 @@ import com.parse.ParseUser;
 
 public class LogInActivity extends AppCompatActivity {
 
-
     private EditText etUsername;
     private EditText etPassword;
     private Button btnLogIn;
@@ -38,18 +37,15 @@ public class LogInActivity extends AppCompatActivity {
                 final String password = etPassword.getText().toString();
 
                 login(username, password);
-
             }
         });
 
-
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-
             Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
             startActivity(intent);
+            finish();
         }
-
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,9 +55,7 @@ public class LogInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
-
 
     private void login (String username, String password){
         ParseUser.logInInBackground(username, password, new LogInCallback() {

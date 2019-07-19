@@ -1,8 +1,5 @@
 package com.hkim00.moves;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,8 +7,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import java.util.*;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.hkim00.moves.models.Restaurant;
+
 
 import org.parceler.Parcels;
 
@@ -22,7 +23,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private TextView tvGroupNum;
     private TextView tvDistance;
     private TextView tvPrice;
-    private TextView tvCuisine;
     private ImageView ivGroupNum;
     private ImageView ivTime;
     private RatingBar moveRating;
@@ -63,25 +63,27 @@ public class MoveDetailsActivity extends AppCompatActivity {
         moveRating = findViewById(R.id.moveRating);
         btnChooseMove = findViewById(R.id.btnChooseMove);
         ivGroupNum = findViewById(R.id.ivGroupNum);
-        tvCuisine = findViewById(R.id.tvCuisine);
+
     }
 
     private void getFoodView() {
         //unwrap the restaurant passed in
-        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra(Restaurant.class.getSimpleName()));
+        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("move"));
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", restaurant.name));
 
         //set details
         tvMoveName.setText(restaurant.name);
-        tvPrice.setText(restaurant.price_level * '$');
+        String price = "";
+        for (int i = 0; i < restaurant.price_level; i++) {
+            price += '$';
+        }
+        tvPrice.setText(price);
         //hide groupNum and Time tv & iv
         ivGroupNum.setVisibility(View.INVISIBLE);
         tvGroupNum.setVisibility(View.INVISIBLE);
         ivTime.setVisibility(View.INVISIBLE);
         tvTime.setVisibility(View.INVISIBLE);
-        //show cuisine
-        tvCuisine.setVisibility(View.VISIBLE);
-        tvCuisine.setText(restaurant.cuisine);
+
 
 
         float moveRate = restaurant.rating.floatValue();
