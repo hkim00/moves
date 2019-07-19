@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,11 +33,18 @@ public class ProfileFragment extends Fragment {
 
     public final static String TAG = "ProfileFragment";
 
+    ParseUser currUser;
+
     private Button btnSaved;
     private Button btnFavorites;
     private Button btnLogout;
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
+
+    private TextView tvName;
+    private TextView tvLocation;
+    private TextView tvGender;
+    private TextView tvAge;
 
     private ProfileAdapter favAdapter;
     private ProfileAdapter saveAdapter;
@@ -54,11 +62,23 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        currUser = ParseUser.getCurrentUser();
+
+        tvName = view.findViewById(R.id.tvName);
+        tvLocation = view.findViewById(R.id.tvLocation);
+        tvGender = view.findViewById(R.id.tvGender);
+        tvAge = view.findViewById(R.id.tvAge);
+
         btnLogout = view.findViewById(R.id.btnLogout);
         btnSaved =  view.findViewById(R.id.btnSaved);
         btnFavorites = view.findViewById(R.id.btnFavorites);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         rvSaved = view.findViewById(R.id.rvSaved);
+
+        tvName.setText(currUser.getUsername());
+        tvLocation.setText("Your location: " + currUser.getString("location"));
+        tvGender.setText("Gender: " + currUser.getString("gender"));
+        tvAge.setText("Age: " + currUser.getInt("age"));
 
         setupRecyclerViews();
 
