@@ -74,9 +74,15 @@ public class MoveDetailsActivity extends AppCompatActivity {
         //set details
         tvMoveName.setText(restaurant.name);
         String price = "";
-        for (int i = 0; i < restaurant.price_level; i++) {
-            price += '$';
+
+        if (restaurant.price_level < 0) {
+            price = "Unknown";
+        } else {
+            for (int i = 0; i < restaurant.price_level; i++) {
+                price += '$';
+            }
         }
+
         tvPrice.setText(price);
         //hide groupNum and Time tv & iv
         ivGroupNum.setVisibility(View.INVISIBLE);
@@ -85,9 +91,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
         tvTime.setVisibility(View.INVISIBLE);
 
 
-
-        float moveRate = restaurant.rating.floatValue();
-        moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
+        if (restaurant.rating < 0) {
+            moveRating.setVisibility(View.INVISIBLE);
+        } else {
+            float moveRate = restaurant.rating.floatValue();
+            moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
+        }
     }
 
     private void getActivityView() {
