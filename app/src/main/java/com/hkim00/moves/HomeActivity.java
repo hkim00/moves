@@ -4,7 +4,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public static int screenWidth;
     public static AsyncHttpClient client;
+    public static AsyncHttpClient clientTM;
 
     FragmentManager fragmentManager;
     private BottomNavigationView bottomNavigation;
@@ -39,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         PlacesClient placesClient = Places.createClient(this);
 
         client = new AsyncHttpClient();
+        clientTM = new AsyncHttpClient();
 
         fragmentManager = getSupportFragmentManager();
         bottomNavigation = findViewById(R.id.bottom_navigation);
