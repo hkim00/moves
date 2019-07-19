@@ -39,7 +39,6 @@ public class Restaurant {
         return restaurant;
     }
 
-
     public static Restaurant fromParseObject(ParseObject parseObject) {
         Restaurant restaurant = new Restaurant();
 

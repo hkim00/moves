@@ -2,27 +2,42 @@ package com.hkim00.moves.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+
 import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hkim00.moves.HomeActivity;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.ProfileAdapter;
 import com.hkim00.moves.models.Restaurant;
+
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -30,7 +45,9 @@ import java.util.List;
 
 public class ProfileFragment extends Fragment {
 
+
     public final static String TAG = "ProfileFragment";
+
 
     private Button btnSaved;
     private Button btnFavorites;
@@ -38,11 +55,19 @@ public class ProfileFragment extends Fragment {
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
 
+    //TODO create lists for saved and favorites moves
+    private ProfileAdapter Faveadapter;
+    private ProfileAdapter Saveadapter;
+    private List<Restaurant> rFaveList;
+    private List<Restaurant> rSaveList;
+
+
     private ProfileAdapter favAdapter;
     private ProfileAdapter saveAdapter;
 
     private List<Restaurant> favList;
     private List<Restaurant> saveList;
+
 
     @Nullable
     @Override
@@ -59,6 +84,20 @@ public class ProfileFragment extends Fragment {
         btnFavorites = view.findViewById(R.id.btnFavorites);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         rvSaved = view.findViewById(R.id.rvSaved);
+
+
+        rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvSaved.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        rFaveList = new ArrayList<>();
+        Faveadapter = new ProfileAdapter(getContext(), rFaveList);
+        rvFavorites.setAdapter(Faveadapter);
+
+        rSaveList = new ArrayList<>();
+        Saveadapter = new ProfileAdapter(getContext(), rSaveList);
+        rvSaved.setAdapter(Saveadapter);
+
+        setupButtons();
 
         setupRecyclerViews();
 
@@ -132,6 +171,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
+
     }
 
 

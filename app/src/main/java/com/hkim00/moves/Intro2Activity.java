@@ -22,10 +22,10 @@ public class Intro2Activity extends AppCompatActivity {
     private TextView tvInstructions;
     private Button btnDone;
 
-     List<CategoryButton> mCatButtons;
-     List<String> mCategories;
-     RecyclerView rvCategories;
-     CatButtonsAdapter adapter;
+    List<CategoryButton> mCatButtons;
+    List<String> mCategories;
+    RecyclerView rvCategories;
+    CatButtonsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
