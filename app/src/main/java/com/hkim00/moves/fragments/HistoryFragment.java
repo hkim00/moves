@@ -27,9 +27,6 @@ import java.util.List;
 
 
 public class HistoryFragment extends Fragment {
-
-
-
     private RecyclerView rvPastMoves;
     private ProfileAdapter historyAdapter;
     private List<Restaurant> historyList;
