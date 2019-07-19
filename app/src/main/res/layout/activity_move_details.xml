@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MoveDetailsActivity">
+
+    <TextView
+        android:id="@+id/tvYourMove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="116dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="116dp"
+        android:text="Your move is..."
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textSize="25dp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivYellowOutline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FDD835"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvYourMove"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/yellow_outline" />
+
+    <ImageView
+        android:id="@+id/ivDistance"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
+        app:layout_constraintTop_toTopOf="@+id/ivMoveImage"
+        app:srcCompat="@drawable/place" />
+
+    <TextView
+        android:id="@+id/tvMoveName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:text="Move Name"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="@+id/ivYellowOutline"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="@id/ivYellowOutline"
+        app:layout_constraintTop_toTopOf="@id/ivYellowOutline" />
+
+    <ImageView
+        android:id="@+id/ivMoveImage"
+        android:layout_width="198dp"
+        android:layout_height="144dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="@id/ivYellowOutline"
+        app:layout_constraintTop_toBottomOf="@id/tvMoveName"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <ImageView
+        android:id="@+id/ivPrice"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
+        app:layout_constraintTop_toBottomOf="@+id/ivDistance"
+        app:srcCompat="@drawable/local_atm" />
+
+    <ImageView
+        android:id="@+id/ivTime"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
+        app:layout_constraintTop_toBottomOf="@+id/ivPrice"
+        app:srcCompat="@drawable/schedule" />
+
+    <ImageView
+        android:id="@+id/ivGroupNum"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivMoveImage"
+        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
+        app:layout_constraintTop_toBottomOf="@+id/ivTime"
+        app:srcCompat="@drawable/group" />
+
+    <TextView
+        android:id="@+id/tvDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:text="distance"
+        app:layout_constraintBottom_toBottomOf="@id/ivDistance"
+        app:layout_constraintStart_toEndOf="@id/ivDistance"
+        app:layout_constraintTop_toTopOf="@id/ivDistance"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tvGroupNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="groupNum"
+        app:layout_constraintBottom_toBottomOf="@+id/ivGroupNum"
+        app:layout_constraintStart_toEndOf="@+id/ivGroupNum"
+        app:layout_constraintTop_toTopOf="@+id/ivGroupNum" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="time"
+        app:layout_constraintBottom_toBottomOf="@+id/ivTime"
+        app:layout_constraintStart_toEndOf="@+id/ivTime"
+        app:layout_constraintTop_toTopOf="@+id/ivTime" />
+
+    <TextView
+        android:id="@+id/tvPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="price"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPrice"
+        app:layout_constraintStart_toEndOf="@+id/ivPrice"
+        app:layout_constraintTop_toTopOf="@+id/ivPrice" />
+
+    <ImageView
+        android:id="@+id/ivFavorite"
+        android:layout_width="30dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/ivSave"
+        app:layout_constraintTop_toBottomOf="@+id/moveRating"
+        app:srcCompat="@drawable/ufi_heart" />
+
+    <ImageView
+        android:id="@+id/ivSave"
+        android:layout_width="30dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/moveRating"
+        app:layout_constraintTop_toBottomOf="@+id/moveRating"
+        app:srcCompat="@drawable/ufi_save" />
+
+    <RatingBar
+        android:id="@+id/moveRating"
+        style="@style/Widget.AppCompat.RatingBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:numStars="5"
+        android:stepSize="0.5"
+        app:layout_constraintStart_toStartOf="@+id/ivMoveImage"
+        app:layout_constraintTop_toBottomOf="@+id/ivMoveImage" />
+
+    <Button
+        android:id="@+id/btnChooseMove"
+        android:layout_width="124dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginBottom="96dp"
+        android:background="#FDD835"
+        android:text="Choose Move!"
+        app:layout_constraintBottom_toBottomOf="@+id/ivYellowOutline"
+        app:layout_constraintStart_toStartOf="@+id/ivYellowOutline" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

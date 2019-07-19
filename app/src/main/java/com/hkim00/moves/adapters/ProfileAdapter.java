@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.ParseFile;
@@ -21,6 +22,7 @@ import org.parceler.Parcels;
 import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
+
 
     private Context context;
     private List<Restaurant> restaurants;
@@ -38,7 +40,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         return new ViewHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Restaurant restaurant = restaurants.get(position);
@@ -47,6 +48,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         holder.bind(restaurant);
     }
 
+
     @Override
     public int getItemCount() {
         return restaurants.size();
@@ -54,14 +56,24 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> fa906d6926bfc110d5116ed10261cc63fd3473ea
         private TextView tvTitle;
         public Restaurant restaurant;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+<<<<<<< HEAD
+
             tvTitle = itemView.findViewById(R.id.tvTitle);
 
+=======
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+
+>>>>>>> fa906d6926bfc110d5116ed10261cc63fd3473ea
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -70,7 +82,23 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             });
         }
 
+        //TODO get image from google API instead of parse/glide
 
+<<<<<<< HEAD
+
+        private void goToMoveDetails() {
+            Intent intent = new Intent(context, MoveDetailsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //intent.putExtra("MoveId", restaurant.());
+
+            intent.putExtra("move", Parcels.wrap(restaurant));
+
+           context.startActivity(intent);
+        }
+
+        public void bind(Restaurant restaurant) {
+            tvTitle.setText(restaurant.name);
+=======
         public void bind(Restaurant restaurant) {
             tvTitle.setText(restaurant.name);
         }
@@ -81,6 +109,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 //            intent.putExtra("move", Parcels.wrap(restaurant));
 //
 //            context.startActivity(intent);
+>>>>>>> fa906d6926bfc110d5116ed10261cc63fd3473ea
         }
+
+
     }
 }
+

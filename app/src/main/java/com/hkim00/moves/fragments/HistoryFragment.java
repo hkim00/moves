@@ -25,13 +25,16 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class HistoryFragment extends Fragment {
+
 
 
     private RecyclerView rvPastMoves;
     private ProfileAdapter historyAdapter;
     private List<Restaurant> historyList;
     public final static String TAG = "HistoryFragment";
+
 
     @Nullable
     @Override
@@ -43,6 +46,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         rvPastMoves = view.findViewById(R.id.rvPastMoves);
 
