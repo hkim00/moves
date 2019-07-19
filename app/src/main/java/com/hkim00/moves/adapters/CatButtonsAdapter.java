@@ -81,7 +81,7 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
 
         public void bind(CategoryButton categoryButton) {
             // TODO: image database? Looks like Google Places uses reviewer images as official listing photo
-            tvCuisine.setText(categoryButton.cuisine);
+            tvCuisine.setText(categoryButton.type);
         }
     }
 }

@@ -23,6 +23,7 @@
         <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
         <activity android:name="com.hkim00.moves.Intro1Activity"></activity>
         <activity android:name="com.hkim00.moves.Intro2Activity"></activity>
+        <activity android:name="com.hkim00.moves.Intro3Activity"></activity>
         <activity android:name="com.hkim00.moves.LogInActivity">
 
             <intent-filter>
