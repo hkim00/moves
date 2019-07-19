@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_margin="10dp"
-        android:text="Select your favorite cuisines!"
+        android:text="Select your favorite event types!"
         android:textAlignment="center"
         android:textSize="18dp" />
 
