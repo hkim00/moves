@@ -9,10 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-
+import android.widget.TextView;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +24,6 @@ import com.hkim00.moves.HomeActivity;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
@@ -44,10 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
-
-
     public final static String TAG = "ProfileFragment";
-
+    ParseUser currUser;
 
     private Button btnSaved;
     private Button btnFavorites;
@@ -55,19 +50,22 @@ public class ProfileFragment extends Fragment {
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
 
+    private TextView tvName;
+    private TextView tvLocation;
+    private TextView tvGender;
+    private TextView tvAge;
+
     //TODO create lists for saved and favorites moves
     private ProfileAdapter Faveadapter;
     private ProfileAdapter Saveadapter;
     private List<Restaurant> rFaveList;
     private List<Restaurant> rSaveList;
 
-
     private ProfileAdapter favAdapter;
     private ProfileAdapter saveAdapter;
 
     private List<Restaurant> favList;
     private List<Restaurant> saveList;
-
 
     @Nullable
     @Override
@@ -79,13 +77,24 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        currUser = ParseUser.getCurrentUser();
+
+        tvName = view.findViewById(R.id.tvName);
+        tvLocation = view.findViewById(R.id.tvLocation);
+        tvGender = view.findViewById(R.id.tvGender);
+        tvAge = view.findViewById(R.id.tvAge);
+
         btnLogout = view.findViewById(R.id.btnLogout);
         btnSaved =  view.findViewById(R.id.btnSaved);
         btnFavorites = view.findViewById(R.id.btnFavorites);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         rvSaved = view.findViewById(R.id.rvSaved);
 
-
+        tvName.setText(currUser.getUsername());
+        tvLocation.setText("Your location: " + currUser.getString("location"));
+        tvGender.setText("Gender: " + currUser.getString("gender"));
+        tvAge.setText("Age: " + currUser.getInt("age"));
+      
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
         rvSaved.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -98,7 +107,7 @@ public class ProfileFragment extends Fragment {
         rvSaved.setAdapter(Saveadapter);
 
         setupButtons();
-
+      
         setupRecyclerViews();
 
         setupButtons();
@@ -147,7 +156,6 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-
     private void getFavoriteRestaurants() {
         ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
         restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -173,7 +181,6 @@ public class ProfileFragment extends Fragment {
         });
 
     }
-
 
     private void setupButtons() {
         btnLogout.setOnClickListener(new View.OnClickListener() {
