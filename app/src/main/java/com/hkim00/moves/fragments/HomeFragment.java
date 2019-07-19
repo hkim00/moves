@@ -375,6 +375,7 @@ public class HomeFragment extends Fragment {
 
                 } catch (JSONException e) {
                     Log.e(TAG, "Error getting nearby");
+
                     e.printStackTrace();
                 }
             }
