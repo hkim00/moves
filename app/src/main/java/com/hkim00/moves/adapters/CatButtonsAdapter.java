@@ -1,4 +1,4 @@
-package com.hkim00.moves.models;
+package com.hkim00.moves.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.CategoryButton;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;

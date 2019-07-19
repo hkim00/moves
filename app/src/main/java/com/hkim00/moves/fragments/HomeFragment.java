@@ -330,18 +330,7 @@ public class HomeFragment extends Fragment {
 
 
     private void getNearbyRestaurants() {
-        if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null) {
-            ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-            userQuery.getInBackground(ParseUser.getCurrentUser().getObjectId(), new GetCallback<ParseUser>() {
-                @Override
-                public void done(ParseUser object, ParseException e) {
-                    ParseUser.getCurrentUser().put("foodPrefList", object.getJSONArray("foodPrefList"));
-                }
-            });
-        } else {
-            Log.d(TAG, "already saved food list");
-        }
-
+        String userFoodPref = getUserFoodPreferenceString();
 
         String apiUrl = API_BASE_URL + "/nearbysearch/json";
 
@@ -353,6 +342,10 @@ public class HomeFragment extends Fragment {
         params.put("location","47.6289467,-122.3428731");
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
+
+        if (!userFoodPref.equals("")) {
+            params.put("keyword", userFoodPref);
+        }
 
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
@@ -405,6 +398,31 @@ public class HomeFragment extends Fragment {
                 throwable.printStackTrace();
             }
         });
+    }
+
+
+    private String getUserFoodPreferenceString() {
+        if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null) {
+            return "";
+        }
+
+        JSONArray foodPrefArray = ParseUser.getCurrentUser().getJSONArray("foodPrefList");
+
+        String userFoodPref = "";
+
+        for (int i = 0; i < foodPrefArray.length(); i++) {
+            try {
+                String foodPref = (String) foodPrefArray.get(i);
+                userFoodPref += foodPref;
+                userFoodPref += "+";
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
+
+        return userFoodPref;
     }
 
 
