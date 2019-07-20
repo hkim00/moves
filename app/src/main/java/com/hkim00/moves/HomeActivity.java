@@ -35,9 +35,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        Places.initialize(getApplicationContext(), getString(R.string.api_key));
-        PlacesClient placesClient = Places.createClient(this);
-
         client = new AsyncHttpClient();
 
         fragmentManager = getSupportFragmentManager();
