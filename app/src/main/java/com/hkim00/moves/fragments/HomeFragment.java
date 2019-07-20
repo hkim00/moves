@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.HomeActivity;
+import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
@@ -60,7 +61,7 @@ public class HomeFragment extends Fragment {
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
-    private Button btnTime, btnPeople, btnDistance, btnPrice;
+    private Button btnTime, btnPeople, btnDistance, btnPrice, btnLocation;
 
     private ConstraintLayout clCategories;
     private ImageView ivFood, ivActivities, ivAttractions, ivEvents;
@@ -94,6 +95,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void getViewIds(View view) {
+        btnLocation = view.findViewById(R.id.btnLocation);
+
         tvLocation = view.findViewById(R.id.tvLocation);
         btnTime = view.findViewById(R.id.btnTime);
         btnPeople = view.findViewById(R.id.btnPeople);
@@ -193,12 +196,19 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         btnMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                getNearbyRestaurants();
                 getNearbyEvents();
+            }
+        });
+
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), LocationActivity.class);
+                startActivity(intent);
             }
         });
     }
