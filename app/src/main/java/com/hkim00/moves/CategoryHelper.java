@@ -10,37 +10,11 @@ public class CategoryHelper {
 
     public static List<CategoryButton> mCategories;
 
-    public CategoryHelper() {
-        List<String> mCategoriesStrings;
-        mCategoriesStrings = Arrays.asList(
-                "Italian",
-                "Mexican",
-                "Thai",
-                "Chinese",
-                "Vegan",
-                "Indian",
-                "American",
-                "Greek",
-                "LatinAmerican",
-                "French",
-                "Japanese",
-                "Vietnamese",
-                "African",
-                "Halal",
-                "German",
-                "German",
-                "Korean",
-                "Lebanese",
-                "Ethiopian",
-                "Pakistani",
-                "Spanish",
-                "Turkish",
-                "Caribbean",
-                "Indonesian");
+    public CategoryHelper(List<String> list) {
 
         mCategories = new ArrayList<>();
-        for (int i = 0; i < mCategoriesStrings.size(); i++) {
-            CategoryButton categoryButton = new CategoryButton(mCategoriesStrings.get(i), "");
+        for (int i = 0; i < list.size(); i++) {
+            CategoryButton categoryButton = new CategoryButton(list.get(i), "");
             mCategories.add(categoryButton);
         }
     }

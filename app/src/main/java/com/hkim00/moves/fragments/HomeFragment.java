@@ -27,6 +27,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -49,12 +50,14 @@ public class HomeFragment extends Fragment {
 
     public final static String TAG = "HomeFragment";
     public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
+    public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
 
     private String time;
     private String numberOfPeople;
     private int distance;
     private int priceLevel;
     private List<Restaurant> restaurantResults;
+    private List<Event> eventResults;
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
@@ -82,6 +85,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         restaurantResults = new ArrayList<>();
+        eventResults = new ArrayList<>();
 
         getViewIds(view);
 
@@ -195,7 +199,8 @@ public class HomeFragment extends Fragment {
         btnMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getNearbyRestaurants();
+//                getNearbyRestaurants();
+                getNearbyEvents();
             }
         });
 
@@ -338,6 +343,61 @@ public class HomeFragment extends Fragment {
         public void afterTextChanged(Editable s) {}
     };
 
+    private void getNearbyEvents() {
+        String apiUrl = API_BASE_URL_TM + ".json";
+
+        RequestParams params = new RequestParams();
+        params.put("city", "seattle");
+
+        params.put("apikey", getString(R.string.api_key_tm));
+
+        HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                JSONArray events;
+                try {
+                    events = (response.getJSONObject("_embedded")).getJSONArray("events");
+
+                    for (int i = 0; i < events.length(); i++) {
+                        Event event = Event.fromJSON(events.getJSONObject(i));
+                        Log.d(TAG, "got event");
+
+                        eventResults.add(event);
+                    }
+
+                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                    startActivity(intent);
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error getting events");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.e(TAG, responseString);
+                throwable.printStackTrace();
+            }
+        });
+
+    }
+
 
     private void getNearbyRestaurants() {
         String userFoodPref = getUserFoodPreferenceString();
@@ -380,7 +440,7 @@ public class HomeFragment extends Fragment {
                     }
 
                     Intent intent = new Intent(getContext(), MovesActivity.class);
-                    intent.putExtra("moves", Parcels.wrap(restaurantResults));
+                    intent.putExtra("movesRestaurants", Parcels.wrap(restaurantResults));
                     startActivity(intent);
 
                 } catch (JSONException e) {
@@ -434,6 +494,30 @@ public class HomeFragment extends Fragment {
         userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
 
         return userFoodPref;
+    }
+
+    private String getUserEventPreferenceString() {
+        if (ParseUser.getCurrentUser().getJSONArray("eventPrefList") == null) {
+            return "";
+        }
+
+        JSONArray eventPrefArray = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+
+        String userEventPref = "";
+
+        for (int i = 0; i < eventPrefArray.length(); i++) {
+            try {
+                String eventPref = (String) eventPrefArray.get(i);
+                userEventPref += eventPref;
+                userEventPref += "+";
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        userEventPref = userEventPref.substring(0, userEventPref.length() -1);
+
+        return userEventPref;
     }
 
 

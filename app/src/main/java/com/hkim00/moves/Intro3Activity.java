@@ -18,7 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Intro2Activity extends AppCompatActivity {
+import static com.parse.Parse.getApplicationContext;
+
+public class Intro3Activity extends AppCompatActivity {
+
     private TextView tvInstructions;
     private Button btnDone;
 
@@ -29,35 +32,17 @@ public class Intro2Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_intro3);
+
         List<String> mCategoriesStrings;
         mCategoriesStrings = Arrays.asList(
-                "Italian",
-                "Mexican",
-                "Thai",
-                "Chinese",
-                "Vegan",
-                "Indian",
-                "American",
-                "Greek",
-                "LatinAmerican",
-                "French",
-                "Japanese",
-                "Vietnamese",
-                "African",
-                "Halal",
-                "German",
-                "German",
-                "Korean",
-                "Lebanese",
-                "Ethiopian",
-                "Pakistani",
-                "Spanish",
-                "Turkish",
-                "Caribbean",
-                "Indonesian");
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_intro2);
+                "Music",
+                "Sports",
+                "Dance",
+                "Broadway",
+                "Theater",
+                "Opera");
 
         tvInstructions = findViewById(R.id.instructions_tv) ;
         rvCategories = findViewById(R.id.cat_rv);
@@ -80,7 +65,7 @@ public class Intro2Activity extends AppCompatActivity {
         btnDone.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                // loop through catButtons, put all "preferred" cuisines, add to -PrefList array in Parse
+                // loop through catButtons, put all "preferred" cuisines, add to foodPrefList array in Parse
                 for (int i = 0; i < mCatButtons.size(); i++) {
                     CategoryButton catButton = mCatButtons.get(i);
                     if (catButton.isPref == true) {
@@ -89,10 +74,10 @@ public class Intro2Activity extends AppCompatActivity {
                 }
 
                 ParseUser currUser = ParseUser.getCurrentUser();
-                currUser.put("foodPrefList", mCategories);
+                currUser.put("eventPrefList", mCategories);
                 currUser.saveInBackground();
 
-                Intent intent = new Intent(Intro2Activity.this, Intro3Activity.class);
+                Intent intent = new Intent(Intro3Activity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
             }

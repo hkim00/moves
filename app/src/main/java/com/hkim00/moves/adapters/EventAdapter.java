@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.ParseFile;
 
@@ -21,15 +22,15 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
-public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
+public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
 
     private Context context;
-    private List<Restaurant> restaurants;
+    private List<Event> events;
 
-    public ProfileAdapter(Context context, List<Restaurant> restaurants) {
+    public EventAdapter(Context context, List<Event> event) {
         this.context = context;
-        this.restaurants = restaurants;
+        this.events = event;
     }
 
     @NonNull
@@ -42,22 +43,22 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Restaurant restaurant = restaurants.get(position);
-        holder.restaurant = restaurant;
+        Event event = events.get(position);
+        holder.event = event;
 
-        holder.bind(restaurant);
+        holder.bind(event);
     }
 
 
     @Override
     public int getItemCount() {
-        return restaurants.size();
+        return events.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvTitle;
-        public Restaurant restaurant;
+        public Event event;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,15 +78,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         private void goToMoveDetails() {
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //intent.putExtra("MoveId", restaurant.());
 
-            intent.putExtra("moveRestaurant", Parcels.wrap(restaurant));
+            intent.putExtra("moveEvent", Parcels.wrap(event));
 
             context.startActivity(intent);
         }
 
-        public void bind(Restaurant restaurant) {
-            tvTitle.setText(restaurant.name);
+        public void bind(Event event) {
+            tvTitle.setText(event.name);
         }
     }
 }

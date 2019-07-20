@@ -15,15 +15,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LocationActivity"></activity>
-        <activity android:name=".MoveDetailsActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".MovesActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".Intro1Activity" />
-        <activity android:name=".Intro2Activity" />
-        <activity android:name=".LogInActivity">
+        <activity android:name="com.hkim00.moves.LocationActivity"></activity>
+        <activity android:name="com.hkim00.moves.MoveDetailsActivity"></activity>
+        <activity android:name="com.hkim00.moves.ProfileActivity" />
+        <activity android:name="com.hkim00.moves.HomeActivity" />
+        <activity android:name="com.hkim00.moves.MovesActivity" />
+        <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
+        <activity android:name="com.hkim00.moves.Intro1Activity"></activity>
+        <activity android:name="com.hkim00.moves.Intro2Activity"></activity>
+        <activity android:name="com.hkim00.moves.Intro3Activity"></activity>
+        <activity android:name="com.hkim00.moves.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
