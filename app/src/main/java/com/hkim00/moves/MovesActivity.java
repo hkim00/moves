@@ -47,6 +47,6 @@ public class MovesActivity extends AppCompatActivity {
 
         rvMoves.setAdapter(adapterEvents);
         events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
-        adapterEvents.notifyDataSetChanged();
+        //adapterEvents.notifyDataSetChanged();
     }
 }

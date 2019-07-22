@@ -57,7 +57,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new HistoryFragment();
+                //TODO Save data to history
             }
         });
 
@@ -84,8 +84,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         //set details
         tvMoveName.setText(restaurant.name);
-        String price = "";
 
+        String price = "";
         if (restaurant.price_level < 0) {
             price = "Unknown";
         } else {
@@ -93,8 +93,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 price += '$';
             }
         }
-
         tvPrice.setText(price);
+
         //hide groupNum and Time tv & iv
         ivGroupNum.setVisibility(View.INVISIBLE);
         tvGroupNum.setVisibility(View.INVISIBLE);
@@ -125,8 +125,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
 
         tvMoveName.setText(restaurant.name);
-        String price = "";
 
+        String price = "";
         if (restaurant.price_level < 0) {
             price = "Unknown";
         } else {
@@ -134,7 +134,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 price += '$';
             }
         }
-
         tvPrice.setText(price);
     }
 }
