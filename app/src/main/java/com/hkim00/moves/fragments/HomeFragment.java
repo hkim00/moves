@@ -1,39 +1,32 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hkim00.moves.EventsActivity;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
-import com.hkim00.moves.MovesActivity;
+import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -41,7 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +56,8 @@ public class HomeFragment extends Fragment {
     private ImageView ivDistance, ivPrice;
     private Button btnTime, btnPeople, btnDistance, btnPrice, btnLocation;
 
+    private Button btnFood, btnEvents;
+
     private ConstraintLayout clCategories;
     private ImageView ivFood, ivActivities, ivAttractions, ivEvents;
 
@@ -79,7 +73,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -107,6 +100,9 @@ public class HomeFragment extends Fragment {
         ivPrice = view.findViewById(R.id.ivPrice);
         btnPrice = view.findViewById(R.id.btnPrice);
         tvPriceLevel = view.findViewById(R.id.tvPriceLevel);
+
+        btnFood = view.findViewById(R.id.btnFood);
+        btnEvents = view.findViewById(R.id.btnEvents);
 
         clCategories = view.findViewById(R.id.clCategories);
         ivFood = view.findViewById(R.id.ivFood);
@@ -197,10 +193,16 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        btnMove.setOnClickListener(new View.OnClickListener() {
+        btnFood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view){
+                getNearbyRestaurants();
+            }
+        });
+
+        btnEvents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                getNearbyRestaurants();
                 getNearbyEvents();
             }
         });
@@ -240,7 +242,6 @@ public class HomeFragment extends Fragment {
             etDistance.setVisibility(View.VISIBLE);
         }
     }
-
 
     private void priceLevelSelected(int priceLevel) {
         int selectedColor = getResources().getColor(R.color.selected_blue);
@@ -321,7 +322,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -366,8 +366,6 @@ public class HomeFragment extends Fragment {
         params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
 
-
-
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -375,15 +373,13 @@ public class HomeFragment extends Fragment {
                 JSONArray events;
                 try {
                     events = (response.getJSONObject("_embedded")).getJSONArray("events");
-//                    events = response.getJSONArray("events");
                     for (int i = 0; i < events.length(); i++) {
                         Event event = Event.fromJSON(events.getJSONObject(i));
                         Log.d(TAG, "got event");
-
                         eventResults.add(event);
                     }
 
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    Intent intent = new Intent(getContext(), EventsActivity.class);
                     intent.putExtra("movesEvents", Parcels.wrap(eventResults));
                     startActivity(intent);
 
@@ -414,7 +410,6 @@ public class HomeFragment extends Fragment {
 
     }
 
-
     private void getNearbyRestaurants() {
         String userFoodPref = getUserFoodPreferenceString();
 
@@ -422,7 +417,6 @@ public class HomeFragment extends Fragment {
 
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
-
 
         RequestParams params = new RequestParams();
         params.put("location","47.6289467,-122.3428731");
@@ -455,7 +449,7 @@ public class HomeFragment extends Fragment {
                         restaurantResults.add(restaurant);
                     }
 
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    Intent intent = new Intent(getContext(), FoodActivity.class);
                     intent.putExtra("movesRestaurants", Parcels.wrap(restaurantResults));
                     startActivity(intent);
 
@@ -510,30 +504,6 @@ public class HomeFragment extends Fragment {
         userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
 
         return userFoodPref;
-    }
-
-    private String getUserEventPreferenceString() {
-        if (ParseUser.getCurrentUser().getJSONArray("eventPrefList") == null) {
-            return "";
-        }
-
-        JSONArray eventPrefArray = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
-
-        String userEventPref = "";
-
-        for (int i = 0; i < eventPrefArray.length(); i++) {
-            try {
-                String eventPref = (String) eventPrefArray.get(i);
-                userEventPref += eventPref;
-                userEventPref += "+";
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        userEventPref = userEventPref.substring(0, userEventPref.length() -1);
-
-        return userEventPref;
     }
 
 
