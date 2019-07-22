@@ -344,22 +344,28 @@ public class HomeFragment extends Fragment {
     };
 
     private void getNearbyEvents() {
+        JSONArray eventPrefArray = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+
         String apiUrl = API_BASE_URL_TM + ".json";
 
         RequestParams params = new RequestParams();
+        params.put("apikey", getString(R.string.api_key_tm));
         params.put("city", "seattle");
 
-        params.put("apikey", getString(R.string.api_key_tm));
+        for (int keyword = 0; keyword < eventPrefArray.length(); keyword++) {
+            params.put("keyword", eventPrefArray[keyword]);
+        }
+
+        Log.i("params: ", params.toString());
 
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
-
                 JSONArray events;
                 try {
                     events = (response.getJSONObject("_embedded")).getJSONArray("events");
-
+//                    events = response.getJSONArray("events");
                     for (int i = 0; i < events.length(); i++) {
                         Event event = Event.fromJSON(events.getJSONObject(i));
                         Log.d(TAG, "got event");
