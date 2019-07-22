@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +45,8 @@ public class HomeFragment extends Fragment {
     public final static String TAG = "HomeFragment";
     public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
+
+   private String moveType = "";
 
     private String time;
     private String numberOfPeople;
@@ -78,6 +81,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // initialize arrays to add JSON objects (Restaurant or Event objects) to
         restaurantResults = new ArrayList<>();
         eventResults = new ArrayList<>();
 
@@ -138,6 +142,8 @@ public class HomeFragment extends Fragment {
         tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
 
+        moveType = "";
+
         clCategories.post(new Runnable() {
             @Override
             public void run() {
@@ -193,17 +199,20 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // TODO: find more user-friendly way to show state (i.e. whether user has selected food or event before clicking move)
         btnFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view){
-                getNearbyRestaurants();
+                moveType = "food";
+                Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
             }
         });
 
         btnEvents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getNearbyEvents();
+                moveType = "event";
+                Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -212,6 +221,14 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), LocationActivity.class);
                 startActivity(intent);
+            }
+        });
+
+
+        btnMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                typeMoveSelected(moveType);
             }
         });
     }
@@ -241,6 +258,20 @@ public class HomeFragment extends Fragment {
             tvMiles.setVisibility(View.VISIBLE);
             etDistance.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void typeMoveSelected(String moveType) {
+        this.moveType = moveType;
+        if (moveType == ""){
+            Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
+        }
+        else if (moveType == "food") {
+            getNearbyRestaurants();
+        }
+        else if (moveType == "event") {
+            getNearbyEvents();
+        }
+//    }
     }
 
     private void priceLevelSelected(int priceLevel) {
@@ -481,7 +512,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
     private String getUserFoodPreferenceString() {
         if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null) {
             return "";
@@ -505,7 +535,6 @@ public class HomeFragment extends Fragment {
 
         return userFoodPref;
     }
-
 
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
