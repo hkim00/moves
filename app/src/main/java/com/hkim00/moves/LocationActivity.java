@@ -65,12 +65,8 @@ public class LocationActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
-    private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
-    private long FASTEST_INTERVAL = 2000; /* 2 sec */
-
     private AutocompleteSupportFragment autocompleteFragment;
     private Button btnCurrentLocation;
-
 
 
     @Override
@@ -92,10 +88,12 @@ public class LocationActivity extends AppCompatActivity implements
         });
     }
 
+
     private void getViewIds() {
         btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
         autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
     }
+
 
     private void setupApiClients() {
         Places.initialize(getApplicationContext(), getString(R.string.api_key));
@@ -234,8 +232,8 @@ public class LocationActivity extends AppCompatActivity implements
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString("name", location.name);
-        editor.putString("lat", String.valueOf(location.lat));
-        editor.putString("lng", String.valueOf(location.lng));
+        editor.putString("lat", location.lat);
+        editor.putString("lng", location.lng);
         editor.putString("postalCode", location.postalCode);
 
         editor.commit();
@@ -245,9 +243,7 @@ public class LocationActivity extends AppCompatActivity implements
         }
 
         Intent intent = new Intent();
-
         setResult(RESULT_OK, intent);
-
         finish();
     }
 

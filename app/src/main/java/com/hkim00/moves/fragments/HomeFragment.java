@@ -113,8 +113,8 @@ public class HomeFragment extends Fragment {
         String postalCode = sharedPreferences.getString("postalCode", "");
 
         location.name = name;
-        location.lat = Double.valueOf(lat);
-        location.lng = Double.valueOf(lng);
+        location.lat = lat;
+        location.lng = lng;
         location.postalCode = postalCode;
 
         if (lat.equals("0.0") && name.equals("")) {
@@ -401,6 +401,11 @@ public class HomeFragment extends Fragment {
 
 
     private void getNearbyRestaurants() {
+        if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String userFoodPref = getUserFoodPreferenceString();
 
         String apiUrl = API_BASE_URL + "/nearbysearch/json";
@@ -410,7 +415,7 @@ public class HomeFragment extends Fragment {
 
 
         RequestParams params = new RequestParams();
-        params.put("location","47.6289467,-122.3428731");
+        params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
 

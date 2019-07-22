@@ -16,8 +16,8 @@ import java.util.List;
 public class UserLocation {
 
     public String name;
-    public double lat;
-    public double lng;
+    public String lat;
+    public String lng;
     public String postalCode;
 
     public UserLocation() {}
@@ -25,8 +25,8 @@ public class UserLocation {
     public static UserLocation fromPlace(Place place) {
         UserLocation location = new UserLocation();
 
-        location.lat = place.getLatLng().latitude;
-        location.lng = place.getLatLng().longitude;
+        location.lat = String.valueOf(place.getLatLng().latitude);
+        location.lng = String.valueOf(place.getLatLng().longitude);
 
         String streetNumber = "";
         String route = "";
@@ -54,8 +54,8 @@ public class UserLocation {
         UserLocation location = new UserLocation();
 
         location.name = "Current location";
-        location.lat = locationResult.getLastLocation().getLatitude();
-        location.lng = locationResult.getLastLocation().getLongitude();
+        location.lat = String.valueOf(locationResult.getLastLocation().getLatitude());
+        location.lng = String.valueOf(locationResult.getLastLocation().getLongitude());
 
         location.postalCode = "";
 
