@@ -20,7 +20,6 @@ import java.util.List;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.ViewHolder> {
 
-
     private Context context;
     private List<Restaurant> restaurants;
 
@@ -44,7 +43,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
         holder.bind(restaurant);
     }
-
 
     @Override
     public int getItemCount() {
@@ -74,7 +72,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         private void goToMoveDetails() {
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //intent.putExtra("MoveId", restaurant.());
 
             intent.putExtra("moveRestaurant", Parcels.wrap(restaurant));
 

@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Parcel
-public class Event {
+public class Event extends Move {
     public String name, id;
 
     public Event() {}
@@ -18,8 +18,6 @@ public class Event {
 
         event.name = jsonObject.getString("name");
         event.id = jsonObject.getString("id");
-
-//        JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
 
         return event;
     }
