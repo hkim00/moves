@@ -41,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -344,12 +345,28 @@ public class HomeFragment extends Fragment {
     };
 
     private void getNearbyEvents() {
-        String apiUrl = API_BASE_URL_TM + ".json";
-
         RequestParams params = new RequestParams();
-        params.put("city", "seattle");
+        JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+        if (jsonPrefList != null) {
+            try {
+                for (int i = 0; i < jsonPrefList.length(); i++) {
+                    String pref = jsonPrefList.get(i).toString();
+                    params.put("keyword", pref);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "error getting events");
+                e.printStackTrace();
+            }
+        }
 
+        String apiUrl = API_BASE_URL_TM + ".json";
+        // todo: add city from location model, right now it is hardcoded as seattle
+        params.put("city", "seattle");
+        // todo: not sure if date, asc makes sense as default
+        params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
+
+
 
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
