@@ -10,7 +10,7 @@ import android.widget.Button;
 
 
 
-import com.hkim00.moves.adapters.ProfileAdapter;
+import com.hkim00.moves.adapters.RestaurantAdapter;
 import com.hkim00.moves.models.Restaurant;
 
 
@@ -30,8 +30,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     //TODO create fragments instead of activities(??)
     //TODO create lists for saved and favorites moves
-    private ProfileAdapter Faveadapter;
-    private ProfileAdapter Saveadapter;
+    private RestaurantAdapter Faveadapter;
+    private RestaurantAdapter Saveadapter;
     private List<Restaurant> rFaveList;
     private List<Restaurant> rSaveList;
 
@@ -69,13 +69,14 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        //TODO: need to account for two different adapters (Events vs. Restaurant)
 
         rFaveList = new ArrayList<>();
-        Faveadapter = new ProfileAdapter(getApplicationContext(), rFaveList);
+        Faveadapter = new RestaurantAdapter(getApplicationContext(), rFaveList);
         rvFavorites.setAdapter(Faveadapter);
 
         rSaveList = new ArrayList<>();
-        Saveadapter = new ProfileAdapter(getApplicationContext(), rSaveList);
+        Saveadapter = new RestaurantAdapter(getApplicationContext(), rSaveList);
         rvSaved.setAdapter(Saveadapter);
 
     }

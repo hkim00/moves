@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.EventAdapter;
-import com.hkim00.moves.adapters.ProfileAdapter;
 import com.hkim00.moves.models.Event;
-import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
