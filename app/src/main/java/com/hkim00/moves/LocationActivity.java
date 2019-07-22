@@ -8,7 +8,10 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -41,6 +44,8 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.hkim00.moves.models.UserLocation;
 
+import org.parceler.Parcels;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,11 +67,8 @@ public class LocationActivity extends AppCompatActivity implements
 
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
-    private double lat;
-    private double lng;
 
     private AutocompleteSupportFragment autocompleteFragment;
-    private TextView tvLocation;
     private Button btnCurrentLocation;
 
 
@@ -91,7 +93,6 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     private void getViewIds() {
-        tvLocation = findViewById(R.id.tvLocation);
         btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
         autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
     }
@@ -118,12 +119,7 @@ public class LocationActivity extends AppCompatActivity implements
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
 
                 UserLocation location = UserLocation.fromPlace(place);
-
-                lat = location.lat;
-                lng = location.lng;
-
-                String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng) + "\n postal code: " + location.postalCode;
-                tvLocation.setText(msg);
+                saveLocation(location);
             }
 
             @Override
@@ -197,15 +193,10 @@ public class LocationActivity extends AppCompatActivity implements
                     super.onLocationResult(locationResult);
 
                     UserLocation location = UserLocation.fromLocationResult(locationResult);
-
-                    lat = location.lat;
-                    lng = location.lng;
-
-                    String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng);
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                    tvLocation.setText(msg);
+                    saveLocation(location);
                 }
             },
+
             Looper.myLooper());
         } else {
             requestPermissions();
@@ -236,6 +227,28 @@ public class LocationActivity extends AppCompatActivity implements
                 return;
             }
         }
+    }
+
+    private void saveLocation(UserLocation location) {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("name", location.name);
+        editor.putString("lat", String.valueOf(location.lat));
+        editor.putString("lng", String.valueOf(location.lng));
+        editor.putString("postalCode", location.postalCode);
+
+        editor.commit();
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+
+        Intent intent = new Intent();
+
+        setResult(RESULT_OK, intent);
+
+        finish();
     }
 
 }

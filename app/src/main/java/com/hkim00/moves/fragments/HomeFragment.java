@@ -1,6 +1,7 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,6 +30,7 @@ import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.UserLocation;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.parse.GetCallback;
@@ -46,11 +48,14 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+import static android.app.Activity.RESULT_OK;
+
 public class HomeFragment extends Fragment {
 
     public final static String TAG = "HomeFragment";
     public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
+    public static final int LOCATION_REQUEST_CODE = 20;
 
     private String time;
     private String numberOfPeople;
@@ -58,6 +63,7 @@ public class HomeFragment extends Fragment {
     private int priceLevel;
     private List<Restaurant> restaurantResults;
     private List<Event> eventResults;
+    private UserLocation location;
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
@@ -84,6 +90,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        location = new UserLocation();
         restaurantResults = new ArrayList<>();
         eventResults = new ArrayList<>();
 
@@ -92,6 +99,29 @@ public class HomeFragment extends Fragment {
         setupDesign();
 
         setupButtons();
+
+        checkForCurrentLocation();
+    }
+
+    private void checkForCurrentLocation() {
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
+
+        String name = sharedPreferences.getString("name", "");
+        String lat = sharedPreferences.getString("lat", "");
+        String lng = sharedPreferences.getString("lng", "");
+        String postalCode = sharedPreferences.getString("postalCode", "");
+
+        location.name = name;
+        location.lat = Double.valueOf(lat);
+        location.lng = Double.valueOf(lng);
+        location.postalCode = postalCode;
+
+        if (lat.equals("")) {
+            tvLocation.setText("Set location.");
+        }
+
+        tvLocation.setText(location.name);
     }
 
     private void getViewIds(View view) {
@@ -208,7 +238,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), LocationActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, LOCATION_REQUEST_CODE );
             }
         });
     }
@@ -244,21 +274,20 @@ public class HomeFragment extends Fragment {
     private void priceLevelSelected(int priceLevel) {
         int selectedColor = getResources().getColor(R.color.selected_blue);
 
+        btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
+        btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
+        btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
+        btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
+        btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
+        btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
+        btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
+        btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
+
         if (this.priceLevel == priceLevel) {
             this.priceLevel = 0;
 
             ivPrice.setVisibility(View.VISIBLE);
             tvPriceLevel.setVisibility(View.INVISIBLE);
-
-            btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
-            btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-            btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
-
         } else {
             this.priceLevel = priceLevel;
 
@@ -269,25 +298,11 @@ public class HomeFragment extends Fragment {
                 btnPriceLevel1.setBackgroundColor(selectedColor);
                 btnPriceLevel1.setTextColor(getResources().getColor(R.color.white));
 
-                btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
-
                 tvPriceLevel.setText("$");
 
             } else if (priceLevel == 2) {
                 btnPriceLevel2.setBackgroundColor(selectedColor);
                 btnPriceLevel2.setTextColor(getResources().getColor(R.color.white));
-
-                btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
 
                 tvPriceLevel.setText("$$");
 
@@ -295,25 +310,11 @@ public class HomeFragment extends Fragment {
                 btnPriceLevel3.setBackgroundColor(selectedColor);
                 btnPriceLevel3.setTextColor(getResources().getColor(R.color.white));
 
-                btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
-
                 tvPriceLevel.setText("$$$");
 
             } else if (priceLevel == 4) {
                 btnPriceLevel4.setBackgroundColor(selectedColor);
                 btnPriceLevel4.setTextColor(getResources().getColor(R.color.white));
-
-                btnPriceLevel1.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel1.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel2.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel2.setTextColor(getResources().getColor(R.color.black));
-                btnPriceLevel3.setBackgroundColor(getResources().getColor(R.color.white));
-                btnPriceLevel3.setTextColor(getResources().getColor(R.color.black));
 
                 tvPriceLevel.setText("$$$$");
             }
@@ -523,5 +524,14 @@ public class HomeFragment extends Fragment {
 
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
+            checkForCurrentLocation();
+        }
     }
 }
