@@ -108,8 +108,8 @@ public class HomeFragment extends Fragment {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
 
         String name = sharedPreferences.getString("name", "");
-        String lat = sharedPreferences.getString("lat", "");
-        String lng = sharedPreferences.getString("lng", "");
+        String lat = sharedPreferences.getString("lat", "0.0");
+        String lng = sharedPreferences.getString("lng", "0.0");
         String postalCode = sharedPreferences.getString("postalCode", "");
 
         location.name = name;
@@ -117,11 +117,11 @@ public class HomeFragment extends Fragment {
         location.lng = Double.valueOf(lng);
         location.postalCode = postalCode;
 
-        if (lat.equals("")) {
-            tvLocation.setText("Set location.");
+        if (lat.equals("0.0") && name.equals("")) {
+            tvLocation.setText("Choose location");
+        } else {
+            tvLocation.setText(location.name);
         }
-
-        tvLocation.setText(location.name);
     }
 
     private void getViewIds(View view) {
