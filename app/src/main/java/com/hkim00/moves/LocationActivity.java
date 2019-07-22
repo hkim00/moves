@@ -39,6 +39,7 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.hkim00.moves.models.UserLocation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -109,17 +110,19 @@ public class LocationActivity extends AppCompatActivity implements
 
     private void setupAutoCompleteSearch() {
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS_COMPONENTS));
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
 
-                lat = place.getLatLng().latitude;
-                lng = place.getLatLng().longitude;
+                UserLocation location = UserLocation.fromPlace(place);
 
-                String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng);
+                lat = location.lat;
+                lng = location.lng;
+
+                String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng) + "\n postal code: " + location.postalCode;
                 tvLocation.setText(msg);
             }
 
@@ -155,6 +158,7 @@ public class LocationActivity extends AppCompatActivity implements
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Location services suspended. Please reconnect.");
     }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -192,8 +196,10 @@ public class LocationActivity extends AppCompatActivity implements
                 public void onLocationResult(LocationResult locationResult) {
                     super.onLocationResult(locationResult);
 
-                    lat = locationResult.getLastLocation().getLatitude();
-                    lng = locationResult.getLastLocation().getLongitude();
+                    UserLocation location = UserLocation.fromLocationResult(locationResult);
+
+                    lat = location.lat;
+                    lng = location.lng;
 
                     String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng);
                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
