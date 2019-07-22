@@ -14,12 +14,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -34,6 +37,8 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,16 +55,19 @@ public class LocationActivity extends AppCompatActivity implements
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final int CONNECTION_FAILURE = 2;
 
-    PlacesClient placesClient;
-    TextView tvLocation;
-
+    private PlacesClient placesClient;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
-    private double baseLat;
-    private double baseLong;
+    private double lat;
+    private double lng;
+
+    private AutocompleteSupportFragment autocompleteFragment;
+    private TextView tvLocation;
+    private Button btnCurrentLocation;
+
 
 
     @Override
@@ -67,8 +75,27 @@ public class LocationActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
-        tvLocation = findViewById(R.id.tvLocation);
+        setupApiClients();
 
+        getViewIds();
+
+        setupAutoCompleteSearch();
+
+        btnCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getCurrentLocation();
+            }
+        });
+    }
+
+    private void getViewIds() {
+        tvLocation = findViewById(R.id.tvLocation);
+        btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
+        autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+    }
+
+    private void setupApiClients() {
         Places.initialize(getApplicationContext(), getString(R.string.api_key));
         placesClient = Places.createClient(this);
 
@@ -77,8 +104,31 @@ public class LocationActivity extends AppCompatActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
 
-        getCurrentLocation();
+
+    private void setupAutoCompleteSearch() {
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+
+                lat = place.getLatLng().latitude;
+                lng = place.getLatLng().longitude;
+
+                String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng);
+                tvLocation.setText(msg);
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.e(TAG, "An error occurred: " + status);
+                Toast.makeText(getApplicationContext(), "Error getting place.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
@@ -142,14 +192,12 @@ public class LocationActivity extends AppCompatActivity implements
                 public void onLocationResult(LocationResult locationResult) {
                     super.onLocationResult(locationResult);
 
-                    //onLocationChanged(locationResult.getLastLocation());
-                    String msg = "Location: " +
-                            Double.toString(locationResult.getLastLocation().getLatitude()) + "," +
-                            Double.toString(locationResult.getLastLocation().getLongitude());
+                    lat = locationResult.getLastLocation().getLatitude();
+                    lng = locationResult.getLastLocation().getLongitude();
+
+                    String msg = "Location: " + Double.toString(lat) + "," + Double.toString(lng);
                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                     tvLocation.setText(msg);
-                    baseLat = locationResult.getLastLocation().getLatitude();
-                    baseLong = locationResult.getLastLocation().getLongitude();
                 }
             },
             Looper.myLooper());
@@ -162,6 +210,7 @@ public class LocationActivity extends AppCompatActivity implements
     private void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[] { String.valueOf(Manifest.permission.ACCESS_COARSE_LOCATION), String.valueOf(Manifest.permission.ACCESS_FINE_LOCATION) }, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
