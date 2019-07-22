@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,19 +21,16 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hkim00.moves.EventsActivity;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
-import com.hkim00.moves.MovesActivity;
+import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -57,6 +52,8 @@ public class HomeFragment extends Fragment {
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
     public static final int LOCATION_REQUEST_CODE = 20;
 
+   private String moveType = "";
+
     private String time;
     private String numberOfPeople;
     private int distance;
@@ -68,6 +65,8 @@ public class HomeFragment extends Fragment {
     private TextView tvLocation, tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
     private Button btnTime, btnPeople, btnDistance, btnPrice, btnLocation;
+
+    private Button btnFood, btnEvents;
 
     private ConstraintLayout clCategories;
     private ImageView ivFood, ivActivities, ivAttractions, ivEvents;
@@ -85,12 +84,13 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         location = new UserLocation();
+
+        // initialize arrays to add JSON objects (Restaurant or Event objects) to
         restaurantResults = new ArrayList<>();
         eventResults = new ArrayList<>();
 
@@ -137,6 +137,9 @@ public class HomeFragment extends Fragment {
         btnPrice = view.findViewById(R.id.btnPrice);
         tvPriceLevel = view.findViewById(R.id.tvPriceLevel);
 
+        btnFood = view.findViewById(R.id.btnFood);
+        btnEvents = view.findViewById(R.id.btnEvents);
+
         clCategories = view.findViewById(R.id.clCategories);
         ivFood = view.findViewById(R.id.ivFood);
         ivActivities = view.findViewById(R.id.ivActivities);
@@ -170,6 +173,8 @@ public class HomeFragment extends Fragment {
 
         tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
+
+        moveType = "";
 
         clCategories.post(new Runnable() {
             @Override
@@ -226,11 +231,20 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        btnMove.setOnClickListener(new View.OnClickListener() {
+        // TODO: find more user-friendly way to show state (i.e. whether user has selected food or event before clicking move)
+        btnFood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view){
+                moveType = "food";
+                Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnEvents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                getNearbyRestaurants();
-                getNearbyEvents();
+                moveType = "event";
+                Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -239,6 +253,14 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), LocationActivity.class);
                 startActivityForResult(intent, LOCATION_REQUEST_CODE );
+            }
+        });
+
+
+        btnMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                typeMoveSelected(moveType);
             }
         });
     }
@@ -270,6 +292,19 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void typeMoveSelected(String moveType) {
+        this.moveType = moveType;
+        if (moveType == ""){
+            Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
+        }
+        else if (moveType == "food") {
+            getNearbyRestaurants();
+        }
+        else if (moveType == "event") {
+            getNearbyEvents();
+        }
+//    }
+    }
 
     private void priceLevelSelected(int priceLevel) {
         int selectedColor = getResources().getColor(R.color.selected_blue);
@@ -321,7 +356,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -345,30 +379,41 @@ public class HomeFragment extends Fragment {
     };
 
     private void getNearbyEvents() {
-        String apiUrl = API_BASE_URL_TM + ".json";
-
         RequestParams params = new RequestParams();
-        params.put("city", "seattle");
+        JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+        if (jsonPrefList != null) {
+            try {
+                for (int i = 0; i < jsonPrefList.length(); i++) {
+                    String pref = jsonPrefList.get(i).toString();
+                    params.put("keyword", pref);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "error getting events");
+                e.printStackTrace();
+            }
+        }
 
+        String apiUrl = API_BASE_URL_TM + ".json";
+        // todo: add city from location model, right now it is hardcoded as seattle
+        params.put("city", "seattle");
+        // todo: not sure if date, asc makes sense as default
+        params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
 
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
-
                 JSONArray events;
                 try {
                     events = (response.getJSONObject("_embedded")).getJSONArray("events");
-
                     for (int i = 0; i < events.length(); i++) {
                         Event event = Event.fromJSON(events.getJSONObject(i));
                         Log.d(TAG, "got event");
-
                         eventResults.add(event);
                     }
 
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    Intent intent = new Intent(getContext(), EventsActivity.class);
                     intent.putExtra("movesEvents", Parcels.wrap(eventResults));
                     startActivity(intent);
 
@@ -399,7 +444,6 @@ public class HomeFragment extends Fragment {
 
     }
 
-
     private void getNearbyRestaurants() {
         if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
             Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
@@ -412,7 +456,6 @@ public class HomeFragment extends Fragment {
 
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
-
 
         RequestParams params = new RequestParams();
         params.put("location",location.lat + "," + location.lng);
@@ -445,7 +488,7 @@ public class HomeFragment extends Fragment {
                         restaurantResults.add(restaurant);
                     }
 
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    Intent intent = new Intent(getContext(), FoodActivity.class);
                     intent.putExtra("movesRestaurants", Parcels.wrap(restaurantResults));
                     startActivity(intent);
 
@@ -477,7 +520,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
     private String getUserFoodPreferenceString() {
         if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null) {
             return "";
@@ -501,31 +543,6 @@ public class HomeFragment extends Fragment {
 
         return userFoodPref;
     }
-
-    private String getUserEventPreferenceString() {
-        if (ParseUser.getCurrentUser().getJSONArray("eventPrefList") == null) {
-            return "";
-        }
-
-        JSONArray eventPrefArray = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
-
-        String userEventPref = "";
-
-        for (int i = 0; i < eventPrefArray.length(); i++) {
-            try {
-                String eventPref = (String) eventPrefArray.get(i);
-                userEventPref += eventPref;
-                userEventPref += "+";
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        userEventPref = userEventPref.substring(0, userEventPref.length() -1);
-
-        return userEventPref;
-    }
-
 
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);

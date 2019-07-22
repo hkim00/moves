@@ -20,7 +20,8 @@
         <activity android:name="com.hkim00.moves.MoveDetailsActivity"></activity>
         <activity android:name="com.hkim00.moves.ProfileActivity" />
         <activity android:name="com.hkim00.moves.HomeActivity" />
-        <activity android:name="com.hkim00.moves.MovesActivity" />
+        <activity android:name="com.hkim00.moves.FoodActivity" />
+        <activity android:name="com.hkim00.moves.EventsActivity" />
         <activity android:name="com.hkim00.moves.SignUpActivity"></activity>
         <activity android:name="com.hkim00.moves.Intro1Activity"></activity>
         <activity android:name="com.hkim00.moves.Intro2Activity"></activity>
