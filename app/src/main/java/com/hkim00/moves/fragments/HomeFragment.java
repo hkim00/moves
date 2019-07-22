@@ -199,7 +199,7 @@ public class HomeFragment extends Fragment {
         btnMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                getNearbyRestaurants();
+                getNearbyRestaurants();
                 getNearbyEvents();
             }
         });

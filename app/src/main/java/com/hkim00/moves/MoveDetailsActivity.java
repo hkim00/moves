@@ -10,7 +10,10 @@ import android.widget.TextView;
 import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import com.hkim00.moves.fragments.HistoryFragment;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 
 
@@ -30,6 +33,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
 
     Restaurant restaurant;
+    Event event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +42,22 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         getViewIds();
 
-        //if category == Food, then:
+
         //TODO repeat for other categories when models are created
-        getFoodView();
+        if (restaurant != null) {
+            getFoodView();
+        }
+
+        if (event != null) {
+            getEventView();
+        }
+
 
 
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO save move to history
+                Fragment fragment = new HistoryFragment();
             }
         });
 
@@ -68,7 +79,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getFoodView() {
         //unwrap the restaurant passed in
-        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("move"));
+        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants"));
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", restaurant.name));
 
         //set details
@@ -110,7 +121,20 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void getEventView() {
-        //unwrap activity passed in
-        //set details
+        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
+        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
+
+        tvMoveName.setText(restaurant.name);
+        String price = "";
+
+        if (restaurant.price_level < 0) {
+            price = "Unknown";
+        } else {
+            for (int i = 0; i < restaurant.price_level; i++) {
+                price += '$';
+            }
+        }
+
+        tvPrice.setText(price);
     }
 }
