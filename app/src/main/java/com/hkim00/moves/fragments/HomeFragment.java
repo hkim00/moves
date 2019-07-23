@@ -477,6 +477,8 @@ public class HomeFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
 
+                restaurantResults.clear();
+
                 JSONArray results;
                 try {
                     results = response.getJSONArray("results");
