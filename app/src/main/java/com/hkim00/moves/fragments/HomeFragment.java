@@ -523,7 +523,7 @@ public class HomeFragment extends Fragment {
     }
 
     private String getUserFoodPreferenceString() {
-        if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null) {
+        if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() == 0) {
             return "";
         }
 
