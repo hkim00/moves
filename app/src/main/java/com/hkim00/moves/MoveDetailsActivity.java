@@ -37,6 +37,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private ImageView ivTime;
     private RatingBar moveRating;
     private Button btnChooseMove;
+    private Button btnFavorite;
+    private Button btnSave;
+    private String moveType;
 
     ParseUser currUser;
     Restaurant restaurant;
@@ -48,42 +51,18 @@ public class MoveDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_move_details);
 
         getViewIds();
+        ButtonsSetUp();
 
-
+        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
         //TODO repeat for other categories when models are created
         if (restaurant != null) {
             getFoodView();
         }
 
+        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
         if (event != null) {
             getEventView();
         }
-
-
-
-        btnChooseMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
-               didCompleteQuery.whereEqualTo("placeId", restaurant.id);
-               didCompleteQuery.whereEqualTo("user", currUser);
-               didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                   @Override
-                   public void done(List<ParseObject> objects, ParseException e) {
-                       if (e == null) {
-                           for (int i = 0; i < objects.size(); i++) {
-                               objects.get(i).put("didComplete", "true");
-                               objects.get(i).saveInBackground();
-                           }
-                           Log.d("Move", "Move Saved in History Successfully");
-                       } else {
-                           Log.d("Move", "Error: saving move to history");
-                       }
-                   }
-               });
-                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
-            }
-        });
 
 
     }
@@ -98,16 +77,16 @@ public class MoveDetailsActivity extends AppCompatActivity {
         moveRating = findViewById(R.id.moveRating);
         btnChooseMove = findViewById(R.id.btnChooseMove);
         ivGroupNum = findViewById(R.id.ivGroupNum);
-
+        btnFavorite = findViewById(R.id.btnFavorite);
+        btnSave = findViewById(R.id.btnSave);
         currUser = ParseUser.getCurrentUser();
 
     }
 
     private void getFoodView() {
         //unwrap the restaurant passed in
-        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants"));
-        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", restaurant.name));
 
+        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", restaurant.name));
         //set details
         tvMoveName.setText(restaurant.name);
 
@@ -147,7 +126,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void getEventView() {
-        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
 
         tvMoveName.setText(restaurant.name);
@@ -162,4 +140,62 @@ public class MoveDetailsActivity extends AppCompatActivity {
         }
         tvPrice.setText(price);
     }
+
+    private void ButtonsSetUp() {
+        btnChooseMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (restaurant != null) {
+                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
+                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    objects.get(i).put("didComplete", "true");
+                                    objects.get(i).saveInBackground();
+                                }
+                                Log.d("Move", "Move Saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+
+                if (event != null) {
+                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
+                    didCompleteQuery.whereEqualTo("placeId", event.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    objects.get(i).put("didComplete", "true");
+                                    objects.get(i).saveInBackground();
+                                }
+                                Log.d("Move", "Move Saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+
+                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
 }

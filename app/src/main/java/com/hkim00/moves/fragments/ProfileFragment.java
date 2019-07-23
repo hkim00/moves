@@ -80,8 +80,8 @@ public class ProfileFragment extends Fragment {
         tvAge = view.findViewById(R.id.tvAge);
 
         btnLogout = view.findViewById(R.id.btnLogout);
-        btnSaved =  view.findViewById(R.id.btnSaved);
-        btnFavorites = view.findViewById(R.id.btnFavorites);
+        btnSaved =  view.findViewById(R.id.btnSave);
+        btnFavorites = view.findViewById(R.id.btnFavorite);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         rvSaved = view.findViewById(R.id.rvSaved);
 

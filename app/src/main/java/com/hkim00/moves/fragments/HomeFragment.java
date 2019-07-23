@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment {
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
     public static final int LOCATION_REQUEST_CODE = 20;
 
-   private String moveType = "";
+    private String moveType = "";
 
     private String time;
     private String numberOfPeople;
@@ -558,4 +558,6 @@ public class HomeFragment extends Fragment {
             checkForCurrentLocation();
         }
     }
+
+
 }
