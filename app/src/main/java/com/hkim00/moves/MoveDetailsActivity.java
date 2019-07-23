@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,11 @@ import androidx.fragment.app.Fragment;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 
 import org.parceler.Parcels;
@@ -31,7 +38,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private RatingBar moveRating;
     private Button btnChooseMove;
 
-
+    ParseUser currUser;
     Restaurant restaurant;
     Event event;
 
@@ -57,7 +64,24 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO Save data to history
+               ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
+               didCompleteQuery.whereEqualTo("placeId", restaurant.id);
+               didCompleteQuery.whereEqualTo("user", currUser);
+               didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                   @Override
+                   public void done(List<ParseObject> objects, ParseException e) {
+                       if (e == null) {
+                           for (int i = 0; i < objects.size(); i++) {
+                               objects.get(i).put("didComplete", "true");
+                               objects.get(i).saveInBackground();
+                           }
+                           Log.d("Move", "Move Saved in History Successfully");
+                       } else {
+                           Log.d("Move", "Error: saving move to history");
+                       }
+                   }
+               });
+                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -74,6 +98,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         moveRating = findViewById(R.id.moveRating);
         btnChooseMove = findViewById(R.id.btnChooseMove);
         ivGroupNum = findViewById(R.id.ivGroupNum);
+
+        currUser = ParseUser.getCurrentUser();
 
     }
 
