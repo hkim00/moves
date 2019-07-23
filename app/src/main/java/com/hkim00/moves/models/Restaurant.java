@@ -2,23 +2,20 @@
 
 package com.hkim00.moves.models;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
 
-import com.google.gson.JsonObject;
 import com.parse.ParseObject;
 
 @Parcel
-public class Restaurant {
+public class Restaurant extends Move {
 
     public String name, id;
     public Integer price_level;
     public Double lat, lng, rating;
 
     public Restaurant() {}
-
 
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
@@ -35,7 +32,6 @@ public class Restaurant {
 
         restaurant.rating = (jsonObject.has("rating")) ? jsonObject.getDouble("rating") : -1;
 
-        //https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=CmRaAAAAIIP6dyi0yY_wI8IZqstFxZ3kC_GeB9niLevthrTrf-Mq8m7_2hwFEt49MZXP4OkPE7ZL8KZayPl6V7UO7VzzjA9tV32CsLK0-TdDvXw_jkSDkFaR3AYly6fvIF5MPsaaEhDTb8zykYRZRxASQueBMItCGhSLuDrwBa2h_6kjptOSxwJrUo27kw&key=AIzaSyCMyauVMKpJvJ-rh4WqMXTgU9Daw7uZeiY
         return restaurant;
     }
 

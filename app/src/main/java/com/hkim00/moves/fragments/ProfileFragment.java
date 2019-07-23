@@ -1,6 +1,7 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -16,18 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.hkim00.moves.HomeActivity;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.adapters.ProfileAdapter;
+import com.hkim00.moves.adapters.RestaurantAdapter;
 import com.hkim00.moves.models.Restaurant;
 
 import com.parse.FindCallback;
@@ -56,13 +51,13 @@ public class ProfileFragment extends Fragment {
     private TextView tvAge;
 
     //TODO create lists for saved and favorites moves
-    private ProfileAdapter Faveadapter;
-    private ProfileAdapter Saveadapter;
+    private RestaurantAdapter Faveadapter;
+    private RestaurantAdapter Saveadapter;
     private List<Restaurant> rFaveList;
     private List<Restaurant> rSaveList;
 
-    private ProfileAdapter favAdapter;
-    private ProfileAdapter saveAdapter;
+    private RestaurantAdapter favAdapter;
+    private RestaurantAdapter saveAdapter;
 
     private List<Restaurant> favList;
     private List<Restaurant> saveList;
@@ -99,11 +94,11 @@ public class ProfileFragment extends Fragment {
         rvSaved.setLayoutManager(new LinearLayoutManager(getContext()));
 
         rFaveList = new ArrayList<>();
-        Faveadapter = new ProfileAdapter(getContext(), rFaveList);
+        Faveadapter = new RestaurantAdapter(getContext(), rFaveList);
         rvFavorites.setAdapter(Faveadapter);
 
         rSaveList = new ArrayList<>();
-        Saveadapter = new ProfileAdapter(getContext(), rSaveList);
+        Saveadapter = new RestaurantAdapter(getContext(), rSaveList);
         rvSaved.setAdapter(Saveadapter);
 
         setupButtons();
@@ -123,11 +118,11 @@ public class ProfileFragment extends Fragment {
         rvSaved.setLayoutManager(new LinearLayoutManager(getContext()));
 
         favList = new ArrayList<>();
-        favAdapter = new ProfileAdapter(getContext(), favList);
+        favAdapter = new RestaurantAdapter(getContext(), favList);
         rvFavorites.setAdapter(favAdapter);
 
         saveList = new ArrayList<>();
-        saveAdapter = new ProfileAdapter(getContext(), saveList);
+        saveAdapter = new RestaurantAdapter(getContext(), saveList);
         rvSaved.setAdapter(saveAdapter);
     }
 
@@ -187,6 +182,11 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ParseUser.logOut();
+
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
 
                 final Intent intent = new Intent(getContext(), LogInActivity.class);
                 startActivity(intent);

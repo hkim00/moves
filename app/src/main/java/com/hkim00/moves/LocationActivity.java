@@ -1,19 +1,37 @@
 package com.hkim00.moves;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
@@ -22,94 +40,172 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.hkim00.moves.models.UserLocation;
+
+import org.parceler.Parcels;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class LocationActivity extends AppCompatActivity {
+import permissions.dispatcher.NeedsPermission;
+
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
+public class LocationActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "LocationActivity";
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    public static final int CONNECTION_FAILURE = 2;
 
-    PlacesClient placesClient;
+    private PlacesClient placesClient;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
 
-    TextView tvLocation;
+    private AutocompleteSupportFragment autocompleteFragment;
+    private Button btnCurrentLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
-        tvLocation = findViewById(R.id.tvLocation);
+        setupApiClients();
 
+        getViewIds();
+
+        setupAutoCompleteSearch();
+
+        btnCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getCurrentLocation();
+            }
+        });
+    }
+
+
+    private void getViewIds() {
+        btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
+        autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+    }
+
+
+    private void setupApiClients() {
         Places.initialize(getApplicationContext(), getString(R.string.api_key));
         placesClient = Places.createClient(this);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
 
-        // Use fields to define the data types to return.
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME);
 
-        // Use the builder to create a FindCurrentPlaceRequest.
-        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.builder(placeFields).build();
+    private void setupAutoCompleteSearch() {
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS_COMPONENTS));
 
-        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            placesClient.findCurrentPlace(request).addOnSuccessListener(findCurrentPlaceResponse -> {
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
 
-                if (findCurrentPlaceResponse.getPlaceLikelihoods().size() > 0) {
-                    PlaceLikelihood highestLikely = findCurrentPlaceResponse.getPlaceLikelihoods().get(0);
+                UserLocation location = UserLocation.fromPlace(place);
+                saveLocation(location);
+            }
 
-                    for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
-                        PlaceLikelihood currentPlace = placeLikelihood;
-                        if (currentPlace.getLikelihood() > highestLikely.getLikelihood()) {
-                            highestLikely = currentPlace;
-                        }
+            @Override
+            public void onError(Status status) {
+                Log.e(TAG, "An error occurred: " + status);
+                Toast.makeText(getApplicationContext(), "Error getting place.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
-                        tvLocation.append(String.format("Place '%s' has likelihood: %f\n",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
-                    }
 
-                    tvLocation.append(String.format("\nHighest likely is: %s with %s", highestLikely.getPlace().getName(), highestLikely.getLikelihood()));
-                }
-            }).addOnFailureListener(e -> {
-                if (e instanceof ApiException) {
-                    ApiException apiException = (ApiException) e;
-                    Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                    e.printStackTrace();
-                }
-            });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.i(TAG, "Location services connected.");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Location services suspended. Please reconnect.");
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
         } else {
-            // A local method to request required permissions;
-            // See https://developer.android.com/training/permissions/requesting
-            getLocationPermission();
+            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    public void getCurrentLocation() {
+        // Create the location request to start receiving updates
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        LocationSettingsRequest locationSettingsRequest = builder.build();
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest);
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+            Log.d(TAG, String.valueOf(locationSettingsRequest));
+            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+
+                    UserLocation location = UserLocation.fromLocationResult(locationResult);
+                    saveLocation(location);
+                }
+            },
+
+            Looper.myLooper());
+        } else {
+            requestPermissions();
         }
     }
 
 
-    private void getLocationPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Show an explanation to the user *asynchronously* -- don't block
-            // this thread waiting for the user's response! After the user
-            // sees the explanation, try again to request the permission.
-            Toast.makeText(this, "Ask for permission", Toast.LENGTH_LONG).show();
-
-
-        } else {
-            // No explanation needed; request the permission
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-            Toast.makeText(this, "requesting now!", Toast.LENGTH_LONG).show();
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-        }
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(this, new String[] { String.valueOf(Manifest.permission.ACCESS_COARSE_LOCATION), String.valueOf(Manifest.permission.ACCESS_FINE_LOCATION) }, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -119,8 +215,8 @@ public class LocationActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager .PERMISSION_GRANTED) {
                     Toast.makeText(this, "got permissions!", Toast.LENGTH_LONG).show();
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+
+                    getCurrentLocation();
                 } else {
                     Toast.makeText(this, "got denied :(", Toast.LENGTH_LONG).show();
                     // permission denied, boo! Disable the
@@ -128,10 +224,27 @@ public class LocationActivity extends AppCompatActivity {
                 }
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
+    }
+
+    private void saveLocation(UserLocation location) {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("name", location.name);
+        editor.putString("lat", location.lat);
+        editor.putString("lng", location.lng);
+        editor.putString("postalCode", location.postalCode);
+
+        editor.commit();
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
 }
