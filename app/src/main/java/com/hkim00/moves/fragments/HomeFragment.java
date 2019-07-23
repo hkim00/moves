@@ -1,9 +1,6 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -111,19 +108,9 @@ public class HomeFragment extends Fragment {
 
     private void checkForCurrentLocation() {
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
+        location = UserLocation.getCurrentLocation(getContext());
 
-        String name = sharedPreferences.getString("name", "");
-        String lat = sharedPreferences.getString("lat", "0.0");
-        String lng = sharedPreferences.getString("lng", "0.0");
-        String postalCode = sharedPreferences.getString("postalCode", "");
-
-        location.name = name;
-        location.lat = lat;
-        location.lng = lng;
-        location.postalCode = postalCode;
-
-        if (lat.equals("0.0") && name.equals("")) {
+        if (location.lat.equals("0.0") && location.name.equals("")) {
             tvLocation.setText("Choose location");
         } else {
             tvLocation.setText(location.name);
@@ -620,4 +607,6 @@ public class HomeFragment extends Fragment {
             checkForCurrentLocation();
         }
     }
+
+
 }

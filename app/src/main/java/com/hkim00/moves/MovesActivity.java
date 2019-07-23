@@ -1,24 +1,30 @@
 package com.hkim00.moves;
 
-import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Bundle;
+
 import com.hkim00.moves.adapters.EventAdapter;
+import com.hkim00.moves.adapters.ProfileAdapter;
 import com.hkim00.moves.models.Event;
+import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventsActivity extends AppCompatActivity {
+public class MovesActivity extends AppCompatActivity {
 
+
+    ProfileAdapter adapterRestaurants;
     EventAdapter adapterEvents;
+    List<Restaurant> restaurants;
     List<Event> events;
     RecyclerView rvMoves;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +33,18 @@ public class EventsActivity extends AppCompatActivity {
 
         rvMoves = findViewById(R.id.rvMoves);
 
+        restaurants = new ArrayList<>();
         events = new ArrayList<>();
 
+        adapterRestaurants = new ProfileAdapter(getApplicationContext(), restaurants);
         adapterEvents = new EventAdapter(getApplicationContext(), events);
+
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
+//        rvMoves.setAdapter(adapterRestaurants);
+//
+//        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
+//        adapterRestaurants.notifyDataSetChanged();
+
         rvMoves.setAdapter(adapterEvents);
         events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
         //adapterEvents.notifyDataSetChanged();
