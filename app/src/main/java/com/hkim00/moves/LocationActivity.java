@@ -116,8 +116,8 @@ public class LocationActivity extends AppCompatActivity implements
             public void onPlaceSelected(Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
 
-                UserLocation location = UserLocation.fromPlace(place);
-                saveLocation(location);
+                UserLocation.fromPlace(getApplicationContext(), place);
+                goBack();
             }
 
             @Override
@@ -190,8 +190,8 @@ public class LocationActivity extends AppCompatActivity implements
                 public void onLocationResult(LocationResult locationResult) {
                     super.onLocationResult(locationResult);
 
-                    UserLocation location = UserLocation.fromLocationResult(locationResult);
-                    saveLocation(location);
+                    UserLocation.fromLocationResult(getApplicationContext(), locationResult);
+                    goBack();
                 }
             },
 
@@ -214,30 +214,18 @@ public class LocationActivity extends AppCompatActivity implements
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager .PERMISSION_GRANTED) {
-                    Toast.makeText(this, "got permissions!", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "Permissions granted");
 
                     getCurrentLocation();
                 } else {
-                    Toast.makeText(this, "got denied :(", Toast.LENGTH_LONG).show();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    Log.i(TAG, "Permissions denied");
                 }
                 return;
             }
         }
     }
 
-    private void saveLocation(UserLocation location) {
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("location", 0); //0 for private mode
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putString("name", location.name);
-        editor.putString("lat", location.lat);
-        editor.putString("lng", location.lng);
-        editor.putString("postalCode", location.postalCode);
-
-        editor.commit();
-
+    private void goBack() {
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }

@@ -106,6 +106,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         ivTime.setVisibility(View.INVISIBLE);
         tvTime.setVisibility(View.INVISIBLE);
 
+        tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
 
         if (restaurant.rating < 0) {
             moveRating.setVisibility(View.INVISIBLE);

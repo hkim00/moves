@@ -1,8 +1,6 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,7 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.location.LocationResult;
 import com.hkim00.moves.EventsActivity;
+import com.hkim00.moves.GoogleClient;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
@@ -48,11 +48,13 @@ import static android.app.Activity.RESULT_OK;
 public class HomeFragment extends Fragment {
 
     public final static String TAG = "HomeFragment";
-    public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
+    public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api";
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
     public static final int LOCATION_REQUEST_CODE = 20;
 
     private String moveType = "";
+
+    private GoogleClient googleClient;
 
     private String time;
     private String numberOfPeople;
@@ -89,6 +91,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         location = new UserLocation();
+        googleClient = new GoogleClient();
 
         // initialize arrays to add JSON objects (Restaurant or Event objects) to
         restaurantResults = new ArrayList<>();
@@ -105,19 +108,9 @@ public class HomeFragment extends Fragment {
 
     private void checkForCurrentLocation() {
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
+        location = UserLocation.getCurrentLocation(getContext());
 
-        String name = sharedPreferences.getString("name", "");
-        String lat = sharedPreferences.getString("lat", "0.0");
-        String lng = sharedPreferences.getString("lng", "0.0");
-        String postalCode = sharedPreferences.getString("postalCode", "");
-
-        location.name = name;
-        location.lat = lat;
-        location.lng = lng;
-        location.postalCode = postalCode;
-
-        if (lat.equals("0.0") && name.equals("")) {
+        if (location.lat.equals("0.0") && location.name.equals("")) {
             tvLocation.setText("Choose location");
         } else {
             tvLocation.setText(location.name);
@@ -301,7 +294,7 @@ public class HomeFragment extends Fragment {
             getNearbyRestaurants();
         }
         else if (moveType == "event") {
-            getNearbyEvents();
+            checkForPostalCode();
         }
 //    }
     }
@@ -378,6 +371,63 @@ public class HomeFragment extends Fragment {
         public void afterTextChanged(Editable s) {}
     };
 
+    private void checkForPostalCode() {
+        if (location.postalCode.equals("")) {
+
+            if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+                Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
+                return;
+
+            } else {
+                String apiUrl = API_BASE_URL + "/geocode/json";
+
+                RequestParams params = new RequestParams();
+                params.put("latlng",location.lat + "," + location.lng);
+                params.put("key", getString(R.string.api_key));
+
+                HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+
+                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), location, response);
+                        location.postalCode = newLocation.postalCode;
+
+                        if (!newLocation.equals("")) {
+                            getNearbyEvents();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+
+                        Log.e(TAG, errorResponse.toString());
+                        throwable.printStackTrace();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+
+                        Log.e(TAG, errorResponse.toString());
+                        throwable.printStackTrace();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+
+                        Log.e(TAG, responseString);
+                        throwable.printStackTrace();
+                    }
+                });
+            }
+        } else {
+            getNearbyEvents();
+        }
+    }
+
     private void getNearbyEvents() {
         RequestParams params = new RequestParams();
         JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
@@ -395,7 +445,7 @@ public class HomeFragment extends Fragment {
 
         String apiUrl = API_BASE_URL_TM + ".json";
         // todo: add city from location model, right now it is hardcoded as seattle
-        params.put("city", "seattle");
+        params.put("postalCode", location.postalCode);
         // todo: not sure if date, asc makes sense as default
         params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
@@ -441,7 +491,6 @@ public class HomeFragment extends Fragment {
                 throwable.printStackTrace();
             }
         });
-
     }
 
     private void getNearbyRestaurants() {
@@ -452,7 +501,7 @@ public class HomeFragment extends Fragment {
 
         String userFoodPref = getUserFoodPreferenceString();
 
-        String apiUrl = API_BASE_URL + "/nearbysearch/json";
+        String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
