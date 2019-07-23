@@ -40,6 +40,8 @@ public class Intro1Activity extends AppCompatActivity {
     }
 
 
+
+
     private void setupButtons() {
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
