@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.CatButtonsAdapter;
+import com.hkim00.moves.helpers.CategoryHelper;
+import com.hkim00.moves.helpers.Helper;
 import com.hkim00.moves.models.CategoryButton;
 import com.parse.ParseUser;
 
@@ -29,32 +31,8 @@ public class Intro2Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        List<String> mCategoriesStrings;
-        mCategoriesStrings = Arrays.asList(
-                "Italian",
-                "Mexican",
-                "Thai",
-                "Chinese",
-                "Vegan",
-                "Indian",
-                "American",
-                "Greek",
-                "LatinAmerican",
-                "French",
-                "Japanese",
-                "Vietnamese",
-                "African",
-                "Halal",
-                "German",
-                "German",
-                "Korean",
-                "Lebanese",
-                "Ethiopian",
-                "Pakistani",
-                "Spanish",
-                "Turkish",
-                "Caribbean",
-                "Indonesian");
+
+        Helper helper = new Helper();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro2);
@@ -70,7 +48,7 @@ public class Intro2Activity extends AppCompatActivity {
         rvCategories.setLayoutManager(new GridLayoutManager(this, 2));
 
         // populates a category button with cuisines from array declared in CategoryHelper
-        CategoryHelper categoryHelper = new CategoryHelper(mCategoriesStrings);
+        CategoryHelper categoryHelper = new CategoryHelper(helper.foodCategoriesList);
 
         mCatButtons.addAll(categoryHelper.mCategories);
         adapter.notifyDataSetChanged();

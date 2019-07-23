@@ -26,6 +26,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.helpers.Helper;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -254,6 +255,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 typeMoveSelected(moveType);
+            }
+        });
+
+        btnRiskyMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getRiskyMove();
             }
         });
     }
@@ -595,9 +603,42 @@ public class HomeFragment extends Fragment {
         return userFoodPref;
     }
 
+
+    private void getRiskyMove() {
+        if (moveType.equals("")) {
+            return;
+        }
+        Helper helper = new Helper();
+        List<String> nonPreferredList = new ArrayList<>();
+
+        if (moveType.equals("food")) {
+            if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") != null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        } else {
+            if (ParseUser.getCurrentUser().getJSONArray("eventPrefList") != null || ParseUser.getCurrentUser().getJSONArray("eventPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("eventPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        }
+
+        if ((moveType.equals("food"))) {
+            getNearbyRestaurants();
+        } else {
+            getNearbyEvents();
+        }
+
+    }
+
+
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
