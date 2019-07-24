@@ -54,32 +54,38 @@ public class LocationActivity extends AppCompatActivity {
 
         // Call findCurrentPlace and handle the response (first check that the user has granted permission).
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            placesClient.findCurrentPlace(request).addOnSuccessListener(findCurrentPlaceResponse -> {
+            placesClient.findCurrentPlace(request).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
+                @Override
+                public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
 
-                if (findCurrentPlaceResponse.getPlaceLikelihoods().size() > 0) {
-                    PlaceLikelihood highestLikely = findCurrentPlaceResponse.getPlaceLikelihoods().get(0);
+                    if (findCurrentPlaceResponse.getPlaceLikelihoods().size() > 0) {
+                        PlaceLikelihood highestLikely = findCurrentPlaceResponse.getPlaceLikelihoods().get(0);
 
-                    for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
-                        PlaceLikelihood currentPlace = placeLikelihood;
-                        if (currentPlace.getLikelihood() > highestLikely.getLikelihood()) {
-                            highestLikely = currentPlace;
+                        for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
+                            PlaceLikelihood currentPlace = placeLikelihood;
+                            if (currentPlace.getLikelihood() > highestLikely.getLikelihood()) {
+                                highestLikely = currentPlace;
+                            }
+
+                            Log.i(TAG, String.format("Place '%s' has likelihood: %f",
+                                    placeLikelihood.getPlace().getName(),
+                                    placeLikelihood.getLikelihood()));
+                            tvLocation.append(String.format("Place '%s' has likelihood: %f\n",
+                                    placeLikelihood.getPlace().getName(),
+                                    placeLikelihood.getLikelihood()));
                         }
 
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
-                        tvLocation.append(String.format("Place '%s' has likelihood: %f\n",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
+                        tvLocation.append(String.format("\nHighest likely is: %s with %s", highestLikely.getPlace().getName(), highestLikely.getLikelihood()));
                     }
-
-                    tvLocation.append(String.format("\nHighest likely is: %s with %s", highestLikely.getPlace().getName(), highestLikely.getLikelihood()));
                 }
-            }).addOnFailureListener(e -> {
-                if (e instanceof ApiException) {
-                    ApiException apiException = (ApiException) e;
-                    Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                    e.printStackTrace();
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if (e instanceof ApiException) {
+                        ApiException apiException = (ApiException) e;
+                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
+                        e.printStackTrace();
+                    }
                 }
             });
         } else {

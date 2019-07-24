@@ -8,10 +8,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Parcel
-public class Event extends Move {
-    public String name, id;
+public class Event implements Move {
+    public String name, id, text;
 
     public Event() {}
+
+    @Override
+    public int getMoveType() {
+        return Move.EVENT;
+    }
 
     public static Event fromJSON(JSONObject jsonObject) throws JSONException {
         Event event = new Event();

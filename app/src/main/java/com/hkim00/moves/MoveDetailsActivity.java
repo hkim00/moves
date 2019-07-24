@@ -52,8 +52,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
             getEventView();
         }
 
-
-
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
