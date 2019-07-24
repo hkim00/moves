@@ -7,6 +7,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 
@@ -14,15 +15,22 @@ import com.facebook.yoga.YogaEdge;
 public class MoveItemSpec {
 
     @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c) {
+    static Component onCreateLayout(ComponentContext c,
+                                    @Prop int color,
+                                    @Prop String title,
+                                    @Prop String subtitle) {
 
         return Column.create(c)
                 .paddingDip(YogaEdge.ALL, 15)
-                .backgroundColor(Color.WHITE)
+                .backgroundColor(color)
                 .child(
                         Text.create(c)
-                                .text("test")
+                                .text(title)
                                 .textSizeDip(20))
+                .child(
+                        Text.create(c)
+                                .text(subtitle)
+                                .textSizeSp(20))
                 .build();
     }
 

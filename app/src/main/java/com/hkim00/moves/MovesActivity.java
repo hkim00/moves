@@ -18,35 +18,24 @@ import java.util.List;
 public class MovesActivity extends AppCompatActivity {
 
 
-    MoveAdapter adapterRestaurants;
-    MoveAdapter adapterEvents;
-    List<Move> restaurants, events;
-
+    MoveAdapter adapter;
+    List<Move> moves;
     RecyclerView rvMoves;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moves);
 
         rvMoves = findViewById(R.id.rvMoves);
 
-        restaurants = new ArrayList<>();
-        events = new ArrayList<>();
+        moves = new ArrayList<>();
 
-        adapterRestaurants = new MoveAdapter(getApplicationContext(), restaurants);
-        adapterEvents = new MoveAdapter(getApplicationContext(), events);
+        adapter = new MoveAdapter(getApplicationContext(), moves);
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
-//       rvMoves.setAdapter(adapterRestaurants);
-//
-        //restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
-//        adapterRestaurants.notifyDataSetChanged();
+        rvMoves.setAdapter(adapter);
 
-        rvMoves.setAdapter(adapterEvents);
-        //events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
-
-        //adapterEvents.notifyDataSetChanged();
-
+        moves.addAll(Parcels.unwrap(getIntent().getParcelableExtra("moves")));
+        adapter.notifyDataSetChanged();
     }
 }
