@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.UserLocation;
+import com.lyft.deeplink.RideTypeEnum;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -24,6 +26,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import com.lyft.lyftbutton.LyftButton;
+import com.lyft.lyftbutton.RideParams;
+import com.lyft.networking.ApiConfig;
 
 import org.parceler.Parcels;
 
@@ -63,6 +68,23 @@ public class MoveDetailsActivity extends AppCompatActivity {
         if (event != null) {
             getEventView();
         }
+
+        ApiConfig apiConfig = new ApiConfig.Builder()
+                .setClientId("...")
+                .setClientToken("...")
+                .build();
+
+        LyftButton lyftButton = findViewById(R.id.lyft_button);
+        lyftButton.setApiConfig(apiConfig);
+        UserLocation currLocation = UserLocation.getCurrentLocation(this);
+
+        RideParams.Builder rideParamsBuilder = new RideParams.Builder()
+                .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
+                //TODO: add correct dropoff location
+                .setDropoffLocation(37.759234, -122.4135125);
+
+        lyftButton.setRideParams(rideParamsBuilder.build());
+        lyftButton.load();
 
     }
 
@@ -117,7 +139,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void getEventView() {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
         tvMoveName.setText(event.name);
-        //TODO set other details or hide unnecessary details 
+        //TODO set other details or hide unnecessary details
 
 
     }

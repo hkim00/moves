@@ -27,6 +27,11 @@ ext {
     googlePlayVersion = "15.0.0"
 }
 
+configurations {
+    cleanedAnnotations
+    compile.exclude group: 'org.jetbrains' , module:'annotations'
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.parse.bolts:bolts-android:1.4.0'
@@ -62,4 +67,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.github.hotchemi:permissionsdispatcher:3.1.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.1.0'
+
+    //Lyft
+    implementation 'com.lyft:lyft-android-sdk:2.0.0'
 }
