@@ -57,6 +57,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         getViewIds();
         ButtonsSetUp();
+        lyftButton();
 
         restaurant = Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
         //TODO repeat for other categories when models are created
@@ -69,22 +70,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             getEventView();
         }
 
-        ApiConfig apiConfig = new ApiConfig.Builder()
-                .setClientId("...")
-                .setClientToken("...")
-                .build();
 
-        LyftButton lyftButton = findViewById(R.id.lyft_button);
-        lyftButton.setApiConfig(apiConfig);
-        UserLocation currLocation = UserLocation.getCurrentLocation(this);
-
-        RideParams.Builder rideParamsBuilder = new RideParams.Builder()
-                .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
-                //TODO: add correct dropoff location
-                .setDropoffLocation(37.759234, -122.4135125);
-
-        lyftButton.setRideParams(rideParamsBuilder.build());
-        lyftButton.load();
 
     }
 
@@ -201,6 +187,28 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 //TODO add moves to saved
             }
         });
+    }
+
+    private void lyftButton() {
+        ApiConfig apiConfig = new ApiConfig.Builder()
+                .setClientId(getString(R.string.client_id_lyft))
+                //waiting for Lyft to approve developer signup request
+                .setClientToken("...")
+                .build();
+
+        // Add feature to call Lyft to event/restaurant
+        LyftButton lyftButton = findViewById(R.id.lyft_button);
+        lyftButton.setApiConfig(apiConfig);
+        UserLocation currLocation = UserLocation.getCurrentLocation(this);
+
+        RideParams.Builder rideParamsBuilder = new RideParams.Builder()
+                .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
+                //TODO: add correct dropoff location
+                .setDropoffLocation(37.759234, -122.4135125);
+        rideParamsBuilder.setRideTypeEnum(RideTypeEnum.STANDARD);
+
+        lyftButton.setRideParams(rideParamsBuilder.build());
+        lyftButton.load();
     }
 
 }
