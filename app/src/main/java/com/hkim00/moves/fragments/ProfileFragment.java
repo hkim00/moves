@@ -1,6 +1,7 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -81,8 +82,8 @@ public class ProfileFragment extends Fragment {
         tvAge = view.findViewById(R.id.tvAge);
 
         btnLogout = view.findViewById(R.id.btnLogout);
-        btnSaved =  view.findViewById(R.id.btnSaved);
-        btnFavorites = view.findViewById(R.id.btnFavorites);
+        btnSaved =  view.findViewById(R.id.btnSave);
+        btnFavorites = view.findViewById(R.id.btnFavorite);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         rvSaved = view.findViewById(R.id.rvSaved);
 
@@ -183,6 +184,11 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ParseUser.logOut();
+
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
 
                 final Intent intent = new Intent(getContext(), LogInActivity.class);
                 startActivity(intent);

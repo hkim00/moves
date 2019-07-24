@@ -2,6 +2,8 @@
 
 package com.hkim00.moves.models;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -53,5 +55,19 @@ public class Restaurant implements Move {
         restaurant.rating = (Double) parseObject.getNumber("rating");
 
         return restaurant;
+    }
+
+    public String distanceFromLocation(Context context) {
+        UserLocation location = UserLocation.getCurrentLocation(context);
+
+        double theta = Double.valueOf(location.lng) - lng;
+        double dist = Math.sin(Math.toRadians(Double.valueOf(location.lat))) * Math.sin(Math.toRadians(lat)) + Math.cos(Math.toRadians(Double.valueOf(location.lat))) * Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(theta));
+        dist = Math.acos(dist);
+        dist = Math.toDegrees(dist);
+        dist = dist * 60 * 1.1515;
+
+        dist = Math.round(dist * 10) / 10.0;
+
+        return String.valueOf(dist);
     }
 }

@@ -40,8 +40,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_profile);
 
-        btnSaved = findViewById(R.id.btnSaved);
-        btnFavorites = findViewById(R.id.btnFavorites);
+        btnSaved = findViewById(R.id.btnSave);
+        btnFavorites = findViewById(R.id.btnFavorite);
         rvFavorites = findViewById(R.id.rvFavorites);
         rvSaved = findViewById(R.id.rvSaved);
 
