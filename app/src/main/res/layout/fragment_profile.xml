@@ -81,14 +81,14 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         app:layout_constraintBottom_toBottomOf="@id/view"
-        app:layout_constraintEnd_toEndOf="@+id/btnFavorites"
-        app:layout_constraintStart_toStartOf="@+id/btnFavorites"
+        app:layout_constraintEnd_toEndOf="@+id/btnFavorite"
+        app:layout_constraintStart_toStartOf="@+id/btnFavorite"
         app:layout_constraintTop_toTopOf="@+id/view"
         app:layout_constraintVertical_bias="0.388"
         app:srcCompat="@drawable/ufi_heart" />
 
     <Button
-        android:id="@+id/btnFavorites"
+        android:id="@+id/btnFavorite"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
@@ -103,20 +103,20 @@
         android:layout_height="32dp"
         android:background="#000E0E0E"
         app:layout_constraintBottom_toBottomOf="@id/view"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaved"
-        app:layout_constraintStart_toStartOf="@+id/btnSaved"
+        app:layout_constraintEnd_toEndOf="@+id/btnSave"
+        app:layout_constraintStart_toStartOf="@+id/btnSave"
         app:layout_constraintTop_toTopOf="@+id/view"
         app:layout_constraintVertical_bias="0.388"
         app:srcCompat="@drawable/ufi_save" />
 
     <Button
-        android:id="@+id/btnSaved"
+        android:id="@+id/btnSave"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="128dp"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@id/btnFavorites"
+        app:layout_constraintStart_toEndOf="@id/btnFavorite"
 
         app:layout_constraintTop_toTopOf="@+id/view" />
 

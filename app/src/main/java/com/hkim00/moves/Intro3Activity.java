@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.CatButtonsAdapter;
+import com.hkim00.moves.helpers.CategoryHelper;
+import com.hkim00.moves.helpers.Helper;
 import com.hkim00.moves.models.CategoryButton;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.parse.Parse.getApplicationContext;
 
 public class Intro3Activity extends AppCompatActivity {
 
@@ -35,14 +35,7 @@ public class Intro3Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro3);
 
-        List<String> mCategoriesStrings;
-        mCategoriesStrings = Arrays.asList(
-                "Music",
-                "Sports",
-                "Dance",
-                "Broadway",
-                "Theater",
-                "Opera");
+        Helper helper = new Helper();
 
         tvInstructions = findViewById(R.id.instructions_tv) ;
         rvCategories = findViewById(R.id.cat_rv);
@@ -55,7 +48,7 @@ public class Intro3Activity extends AppCompatActivity {
         rvCategories.setLayoutManager(new GridLayoutManager(this, 2));
 
         // populates a category button with cuisines from array declared in CategoryHelper
-        CategoryHelper categoryHelper = new CategoryHelper(mCategoriesStrings);
+        CategoryHelper categoryHelper = new CategoryHelper(helper.eventCategoriesList);
 
         mCatButtons.addAll(categoryHelper.mCategories);
         adapter.notifyDataSetChanged();

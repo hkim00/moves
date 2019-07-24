@@ -30,7 +30,8 @@ import java.util.List;
 
 
 public class HistoryFragment extends Fragment {
-    private RecyclerView rvPastRestaurantMoves;
+
+     private RecyclerView rvPastRestaurantMoves;
     private RecyclerView rvPastEventMoves;
     private RestaurantAdapter restHistoryAdapter;
     private EventAdapter eventHistoryAdapter;
@@ -39,6 +40,8 @@ public class HistoryFragment extends Fragment {
 
     private Button btnFood;
     private Button btnEvents;
+    public final static String TAG = "HistoryFragment";
+
     public final static String TAG = "HistoryFragment";
 
     @Nullable
@@ -62,6 +65,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
+
         rvPastRestaurantMoves.setLayoutManager(new LinearLayoutManager(getContext()));
         RestHistoryList = new ArrayList<>();
         restHistoryAdapter = new RestaurantAdapter(getContext(),  RestHistoryList);
@@ -71,6 +75,7 @@ public class HistoryFragment extends Fragment {
         EventHistoryList = new ArrayList<>();
         eventHistoryAdapter = new EventAdapter(getContext(), EventHistoryList);
         rvPastEventMoves.setAdapter(eventHistoryAdapter);
+
 
     }
 

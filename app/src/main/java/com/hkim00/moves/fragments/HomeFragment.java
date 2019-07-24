@@ -1,8 +1,6 @@
 package com.hkim00.moves.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,11 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.location.LocationResult;
 import com.hkim00.moves.EventsActivity;
+import com.hkim00.moves.GoogleClient;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.helpers.Helper;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -48,11 +49,13 @@ import static android.app.Activity.RESULT_OK;
 public class HomeFragment extends Fragment {
 
     public final static String TAG = "HomeFragment";
-    public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
+    public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api";
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
     public static final int LOCATION_REQUEST_CODE = 20;
 
-   private String moveType = "";
+    private String moveType = "";
+
+    private GoogleClient googleClient;
 
     private String time;
     private String numberOfPeople;
@@ -89,6 +92,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         location = new UserLocation();
+        googleClient = new GoogleClient();
 
         // initialize arrays to add JSON objects (Restaurant or Event objects) to
         restaurantResults = new ArrayList<>();
@@ -105,19 +109,9 @@ public class HomeFragment extends Fragment {
 
     private void checkForCurrentLocation() {
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
+        location = UserLocation.getCurrentLocation(getContext());
 
-        String name = sharedPreferences.getString("name", "");
-        String lat = sharedPreferences.getString("lat", "0.0");
-        String lng = sharedPreferences.getString("lng", "0.0");
-        String postalCode = sharedPreferences.getString("postalCode", "");
-
-        location.name = name;
-        location.lat = lat;
-        location.lng = lng;
-        location.postalCode = postalCode;
-
-        if (lat.equals("0.0") && name.equals("")) {
+        if (location.lat.equals("0.0") && location.name.equals("")) {
             tvLocation.setText("Choose location");
         } else {
             tvLocation.setText(location.name);
@@ -260,7 +254,14 @@ public class HomeFragment extends Fragment {
         btnMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                typeMoveSelected(moveType);
+                typeMoveSelected();
+            }
+        });
+
+        btnRiskyMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getRiskyMove();
             }
         });
     }
@@ -292,18 +293,23 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void typeMoveSelected(String moveType) {
-        this.moveType = moveType;
+    private void typeMoveSelected() {
+        if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (moveType == ""){
             Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
+            return;
         }
-        else if (moveType == "food") {
-            getNearbyRestaurants();
+
+        if (moveType == "food") {
+            getNearbyRestaurants(new ArrayList<>());
         }
         else if (moveType == "event") {
-            getNearbyEvents();
+            checkForPostalCode();
         }
-//    }
     }
 
     private void priceLevelSelected(int priceLevel) {
@@ -378,24 +384,89 @@ public class HomeFragment extends Fragment {
         public void afterTextChanged(Editable s) {}
     };
 
-    private void getNearbyEvents() {
+    private void checkForPostalCode() {
+        if (location.postalCode.equals("")) {
+
+            if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+                Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
+                return;
+
+            } else {
+                String apiUrl = API_BASE_URL + "/geocode/json";
+
+                RequestParams params = new RequestParams();
+                params.put("latlng",location.lat + "," + location.lng);
+                params.put("key", getString(R.string.api_key));
+
+                HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+
+                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), location, response);
+                        location.postalCode = newLocation.postalCode;
+
+                        if (!newLocation.equals("")) {
+                            getNearbyEvents(new ArrayList<>());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+
+                        Log.e(TAG, errorResponse.toString());
+                        throwable.printStackTrace();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+
+                        Log.e(TAG, errorResponse.toString());
+                        throwable.printStackTrace();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+
+                        Log.e(TAG, responseString);
+                        throwable.printStackTrace();
+                    }
+                });
+            }
+        } else {
+            getNearbyEvents(new ArrayList<>());
+        }
+    }
+
+    private void getNearbyEvents(List<String> nonPreferredList) {
+        String apiUrl = API_BASE_URL_TM + ".json";
+
         RequestParams params = new RequestParams();
-        JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
-        if (jsonPrefList != null) {
-            try {
-                for (int i = 0; i < jsonPrefList.length(); i++) {
-                    String pref = jsonPrefList.get(i).toString();
-                    params.put("keyword", pref);
+
+        if (nonPreferredList.size() == 0) {
+            JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+            if (jsonPrefList != null) {
+                try {
+                    for (int i = 0; i < jsonPrefList.length(); i++) {
+                        String pref = jsonPrefList.get(i).toString();
+                        params.put("keyword", pref);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "error getting events");
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                Log.e(TAG, "error getting events");
-                e.printStackTrace();
+            }
+        } else {
+            //this is for risky move
+            for (int i = 0; i < nonPreferredList.size(); i++) {
+                params.put("keyword", nonPreferredList.get(i));
             }
         }
 
-        String apiUrl = API_BASE_URL_TM + ".json";
-        // todo: add city from location model, right now it is hardcoded as seattle
-        params.put("city", "seattle");
+        params.put("postalCode", location.postalCode);
         // todo: not sure if date, asc makes sense as default
         params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
@@ -404,22 +475,31 @@ public class HomeFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
-                JSONArray events;
-                try {
-                    events = (response.getJSONObject("_embedded")).getJSONArray("events");
-                    for (int i = 0; i < events.length(); i++) {
-                        Event event = Event.fromJSON(events.getJSONObject(i));
-                        Log.d(TAG, "got event");
-                        eventResults.add(event);
-                    }
 
+                eventResults.clear();
+
+                JSONArray events;
+                if (response.has("_embedded")) {
+                    try {
+                        events = (response.getJSONObject("_embedded")).getJSONArray("events");
+                        for (int i = 0; i < events.length(); i++) {
+                            Event event = Event.fromJSON(events.getJSONObject(i));
+                            Log.d(TAG, "got event");
+                            eventResults.add(event);
+                        }
+
+                        Intent intent = new Intent(getContext(), EventsActivity.class);
+                        intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                        startActivity(intent);
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error getting events");
+                        e.printStackTrace();
+                    }
+                } else {
                     Intent intent = new Intent(getContext(), EventsActivity.class);
                     intent.putExtra("movesEvents", Parcels.wrap(eventResults));
                     startActivity(intent);
-
-                } catch (JSONException e) {
-                    Log.e(TAG, "Error getting events");
-                    e.printStackTrace();
                 }
             }
 
@@ -441,26 +521,21 @@ public class HomeFragment extends Fragment {
                 throwable.printStackTrace();
             }
         });
-
     }
 
-    private void getNearbyRestaurants() {
-        if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
-            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        String userFoodPref = getUserFoodPreferenceString();
-
-        String apiUrl = API_BASE_URL + "/nearbysearch/json";
+    private void getNearbyRestaurants(List<String> nonPreferredList) {
+        String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
+
 
         RequestParams params = new RequestParams();
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
+
+        String userFoodPref = getUserFoodPreferenceString(nonPreferredList);
 
         if (!userFoodPref.equals("")) {
             params.put("keyword", userFoodPref);
@@ -522,23 +597,23 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private String getUserFoodPreferenceString() {
+    private String getUserFoodPreferenceString(List<String> nonPreferredList) {
         if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() == 0) {
             return "";
         }
 
-        JSONArray foodPrefArray = ParseUser.getCurrentUser().getJSONArray("foodPrefList");
+        List<String> preferredList = new ArrayList<>();
+
+        if (nonPreferredList.size() == 0) {
+             preferredList = Helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+        } else {
+            preferredList = nonPreferredList;
+        }
 
         String userFoodPref = "";
-
-        for (int i = 0; i < foodPrefArray.length(); i++) {
-            try {
-                String foodPref = (String) foodPrefArray.get(i);
-                userFoodPref += foodPref;
-                userFoodPref += "+";
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        for (int i = 0; i < preferredList.size(); i++) {
+            userFoodPref += preferredList.get(i);
+            userFoodPref += "+";
         }
 
         userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
@@ -546,9 +621,42 @@ public class HomeFragment extends Fragment {
         return userFoodPref;
     }
 
+
+    private void getRiskyMove() {
+        if (moveType.equals("")) {
+            return;
+        }
+        Helper helper = new Helper();
+        List<String> nonPreferredList = new ArrayList<>();
+
+        if (moveType.equals("food")) {
+            if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") != null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        } else {
+            if (ParseUser.getCurrentUser().getJSONArray("eventPrefList") != null || ParseUser.getCurrentUser().getJSONArray("eventPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("eventPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        }
+
+        if ((moveType.equals("food"))) {
+            getNearbyRestaurants(nonPreferredList);
+        } else {
+            getNearbyEvents(nonPreferredList);
+        }
+
+    }
+
+
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -558,4 +666,6 @@ public class HomeFragment extends Fragment {
             checkForCurrentLocation();
         }
     }
+
+
 }

@@ -41,7 +41,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private Button btnFavorite;
     private Button btnSave;
 
-
     ParseUser currUser;
 
     Restaurant restaurant;
@@ -61,11 +60,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
             getFoodView();
         }
 
-        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("moveEvent"));
+
+        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
+
         if (event != null) {
             getEventView();
         }
-
 
     }
 
@@ -108,6 +108,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         ivTime.setVisibility(View.INVISIBLE);
         tvTime.setVisibility(View.INVISIBLE);
 
+        tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
 
         if (restaurant.rating < 0) {
             moveRating.setVisibility(View.INVISIBLE);
@@ -193,6 +194,64 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO save moves to saved
+            }
+        });
+    }
+
+
+    private void ButtonsSetUp() {
+        btnChooseMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (restaurant != null) {
+                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
+                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    objects.get(i).put("didComplete", "true");
+                                    objects.get(i).saveInBackground();
+                                }
+                                Log.d("Move", "Move Saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+
+                if (event != null) {
+                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
+                    didCompleteQuery.whereEqualTo("placeId", event.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    objects.get(i).put("didComplete", "true");
+                                    objects.get(i).saveInBackground();
+                                }
+                                Log.d("Move", "Move Saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+
+                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
     }

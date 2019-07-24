@@ -1,4 +1,4 @@
-package com.hkim00.moves;
+package com.hkim00.moves.helpers;
 
 import com.hkim00.moves.models.CategoryButton;
 
