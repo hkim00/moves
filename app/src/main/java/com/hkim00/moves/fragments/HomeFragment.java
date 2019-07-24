@@ -26,6 +26,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.helpers.Helper;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -253,7 +254,14 @@ public class HomeFragment extends Fragment {
         btnMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                typeMoveSelected(moveType);
+                typeMoveSelected();
+            }
+        });
+
+        btnRiskyMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getRiskyMove();
             }
         });
     }
@@ -285,18 +293,23 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void typeMoveSelected(String moveType) {
-        this.moveType = moveType;
+    private void typeMoveSelected() {
+        if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (moveType == ""){
             Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
+            return;
         }
-        else if (moveType == "food") {
-            getNearbyRestaurants();
+
+        if (moveType == "food") {
+            getNearbyRestaurants(new ArrayList<>());
         }
         else if (moveType == "event") {
             checkForPostalCode();
         }
-//    }
     }
 
     private void priceLevelSelected(int priceLevel) {
@@ -394,7 +407,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents();
+                            getNearbyEvents(new ArrayList<>());
                         }
                     }
 
@@ -424,27 +437,35 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents();
+            getNearbyEvents(new ArrayList<>());
         }
     }
 
-    private void getNearbyEvents() {
+    private void getNearbyEvents(List<String> nonPreferredList) {
+        String apiUrl = API_BASE_URL_TM + ".json";
+
         RequestParams params = new RequestParams();
-        JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
-        if (jsonPrefList != null) {
-            try {
-                for (int i = 0; i < jsonPrefList.length(); i++) {
-                    String pref = jsonPrefList.get(i).toString();
-                    params.put("keyword", pref);
+
+        if (nonPreferredList.size() == 0) {
+            JSONArray jsonPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+            if (jsonPrefList != null) {
+                try {
+                    for (int i = 0; i < jsonPrefList.length(); i++) {
+                        String pref = jsonPrefList.get(i).toString();
+                        params.put("keyword", pref);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "error getting events");
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                Log.e(TAG, "error getting events");
-                e.printStackTrace();
+            }
+        } else {
+            //this is for risky move
+            for (int i = 0; i < nonPreferredList.size(); i++) {
+                params.put("keyword", nonPreferredList.get(i));
             }
         }
 
-        String apiUrl = API_BASE_URL_TM + ".json";
-        // todo: add city from location model, right now it is hardcoded as seattle
         params.put("postalCode", location.postalCode);
         // todo: not sure if date, asc makes sense as default
         params.put("sort", "date,asc");
@@ -493,23 +514,19 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getNearbyRestaurants() {
-        if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
-            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        String userFoodPref = getUserFoodPreferenceString();
-
+    private void getNearbyRestaurants(List<String> nonPreferredList) {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
 
+
         RequestParams params = new RequestParams();
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
+
+        String userFoodPref = getUserFoodPreferenceString(nonPreferredList);
 
         if (!userFoodPref.equals("")) {
             params.put("keyword", userFoodPref);
@@ -571,23 +588,23 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private String getUserFoodPreferenceString() {
+    private String getUserFoodPreferenceString(List<String> nonPreferredList) {
         if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() == 0) {
             return "";
         }
 
-        JSONArray foodPrefArray = ParseUser.getCurrentUser().getJSONArray("foodPrefList");
+        List<String> preferredList = new ArrayList<>();
+
+        if (nonPreferredList.size() == 0) {
+             preferredList = Helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+        } else {
+            preferredList = nonPreferredList;
+        }
 
         String userFoodPref = "";
-
-        for (int i = 0; i < foodPrefArray.length(); i++) {
-            try {
-                String foodPref = (String) foodPrefArray.get(i);
-                userFoodPref += foodPref;
-                userFoodPref += "+";
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        for (int i = 0; i < preferredList.size(); i++) {
+            userFoodPref += preferredList.get(i);
+            userFoodPref += "+";
         }
 
         userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
@@ -595,9 +612,42 @@ public class HomeFragment extends Fragment {
         return userFoodPref;
     }
 
+
+    private void getRiskyMove() {
+        if (moveType.equals("")) {
+            return;
+        }
+        Helper helper = new Helper();
+        List<String> nonPreferredList = new ArrayList<>();
+
+        if (moveType.equals("food")) {
+            if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") != null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        } else {
+            if (ParseUser.getCurrentUser().getJSONArray("eventPrefList") != null || ParseUser.getCurrentUser().getJSONArray("eventPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("eventPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        }
+
+        if ((moveType.equals("food"))) {
+            getNearbyRestaurants(nonPreferredList);
+        } else {
+            getNearbyEvents(nonPreferredList);
+        }
+
+    }
+
+
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
