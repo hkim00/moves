@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.R;
-import com.hkim00.moves.adapters.RestaurantAdapter;
+import com.hkim00.moves.adapters.MoveAdapter;
+//import com.hkim00.moves.adapters.RestaurantAdapter;
+import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -28,8 +30,8 @@ import java.util.List;
 
 public class HistoryFragment extends Fragment {
     private RecyclerView rvPastMoves;
-    private RestaurantAdapter historyAdapter;
-    private List<Restaurant> historyList;
+    private MoveAdapter historyAdapter;
+    private List<Move> historyList;
     public final static String TAG = "HistoryFragment";
 
     @Nullable
@@ -53,7 +55,7 @@ public class HistoryFragment extends Fragment {
     private void setupRecyclerView() {
         rvPastMoves.setLayoutManager(new LinearLayoutManager(getContext()));
         historyList = new ArrayList<>();
-        historyAdapter = new RestaurantAdapter(getContext(), historyList);
+        historyAdapter = new MoveAdapter(getContext(), historyList);
         rvPastMoves.setAdapter(historyAdapter);
     }
 

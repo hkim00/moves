@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hkim00.moves.adapters.EventAdapter;
+//import com.hkim00.moves.adapters.EventAdapter;
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Event;
+import com.hkim00.moves.models.Move;
 
 import org.parceler.Parcels;
 
@@ -16,8 +18,8 @@ import java.util.List;
 
 public class EventsActivity extends AppCompatActivity {
 
-    EventAdapter adapterEvents;
-    List<Event> events;
+    MoveAdapter adapterEvents;
+    List<Move> events;
     RecyclerView rvMoves;
 
     @Override
@@ -29,7 +31,7 @@ public class EventsActivity extends AppCompatActivity {
 
         events = new ArrayList<>();
 
-        adapterEvents = new EventAdapter(getApplicationContext(), events);
+        adapterEvents = new MoveAdapter(getApplicationContext(), events);
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
         rvMoves.setAdapter(adapterEvents);
         events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));

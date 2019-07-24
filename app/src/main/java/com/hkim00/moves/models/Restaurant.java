@@ -11,13 +11,18 @@ import org.parceler.Parcel;
 import com.parse.ParseObject;
 
 @Parcel
-public class Restaurant extends Move {
+public class Restaurant implements Move {
 
-    public String name, id;
+    public String name, id, text;
     public Integer price_level;
     public Double lat, lng, rating;
 
     public Restaurant() {}
+
+    @Override
+    public int getMoveType() {
+        return Move.RESTAURANT;
+    }
 
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
