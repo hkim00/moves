@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 
 import com.hkim00.moves.adapters.MoveAdapter;
-//import com.hkim00.moves.adapters.RestaurantAdapter;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
@@ -34,7 +32,8 @@ public class FoodActivity extends AppCompatActivity {
         adapterRestaurants = new MoveAdapter(getApplicationContext(), restaurants);
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
         rvMoves.setAdapter(adapterRestaurants);
-        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
+
+        restaurants.addAll(Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
         adapterRestaurants.notifyDataSetChanged();
     }
 }
