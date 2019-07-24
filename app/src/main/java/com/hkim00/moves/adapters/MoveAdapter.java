@@ -81,21 +81,22 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    goToMoveDetails();
+                    goToMoveDetails(move.getMoveType());
                 }
             });
         }
 
         public abstract void bindType(Move move);
 
-
-
-        private void goToMoveDetails() {
+        private void goToMoveDetails(int moveType) {
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            intent.putExtra("move", Parcels.wrap(move));
-
+            if (moveType == 1) {
+                intent.putExtra("moveRestaurant", Parcels.wrap(move));
+            }
+            if (moveType == 2) {
+                intent.putExtra("moveEvent", Parcels.wrap(move));
+            }
             context.startActivity(intent);
         }
     }
@@ -117,7 +118,6 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     public class eventViewHolder extends ViewHolder {
         private final TextView tvTitle;
-        public Event event;
 
         public eventViewHolder(View itemView) {
             super(itemView);

@@ -6,9 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.hkim00.moves.adapters.EventAdapter;
 import com.hkim00.moves.adapters.MoveAdapter;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 
 import org.parceler.Parcels;
@@ -34,7 +32,8 @@ public class EventsActivity extends AppCompatActivity {
         adapterEvents = new MoveAdapter(getApplicationContext(), events);
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
         rvMoves.setAdapter(adapterEvents);
-        events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
-        //adapterEvents.notifyDataSetChanged();
+
+        events.addAll(Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
+        adapterEvents.notifyDataSetChanged();
     }
 }
