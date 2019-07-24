@@ -52,54 +52,54 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
-    <ImageView
-        android:id="@+id/ivTime"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/btnTime"
-        app:layout_constraintStart_toStartOf="@+id/btnTime"
-        app:layout_constraintTop_toTopOf="@+id/view2"
-        app:layout_constraintVertical_bias="0.388"
-        app:srcCompat="@drawable/schedule" />
+    <!--<ImageView-->
+        <!--android:id="@+id/ivTime"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/view2"-->
+        <!--app:layout_constraintEnd_toEndOf="@+id/btnTime"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/btnTime"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/view2"-->
+        <!--app:layout_constraintVertical_bias="0.388"-->
+        <!--app:srcCompat="@drawable/schedule" />-->
 
-    <Button
-        android:id="@+id/btnTime"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toStartOf="@+id/view2"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
+    <!--<Button-->
+        <!--android:id="@+id/btnTime"-->
+        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/view2"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/view2"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/view2" />-->
 
-    <ImageView
-        android:id="@+id/ivPeople"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivTime"
-        app:layout_constraintEnd_toEndOf="@+id/btnPeople"
-        app:layout_constraintStart_toStartOf="@+id/btnPeople"
-        app:layout_constraintTop_toTopOf="@+id/ivTime"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/group" />
+    <!--<ImageView-->
+        <!--android:id="@+id/ivPeople"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/ivTime"-->
+        <!--app:layout_constraintEnd_toEndOf="@+id/btnPeople"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/btnPeople"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/ivTime"-->
+        <!--app:layout_constraintVertical_bias="0.0"-->
+        <!--app:srcCompat="@drawable/group" />-->
 
-    <Button
-        android:id="@+id/btnPeople"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@+id/btnTime"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
+    <!--<Button-->
+        <!--android:id="@+id/btnPeople"-->
+        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/view2"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/btnTime"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/view2" />-->
 
     <ImageView
         android:id="@+id/ivDistance"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPeople"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
         app:layout_constraintEnd_toEndOf="@+id/btnDistance"
         app:layout_constraintStart_toStartOf="@+id/btnDistance"
-        app:layout_constraintTop_toTopOf="@+id/ivPeople"
+        app:layout_constraintTop_toTopOf="@+id/view2"
         app:srcCompat="@drawable/place" />
 
     <Button
@@ -107,8 +107,9 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@+id/btnPeople"
+        app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
     <TextView

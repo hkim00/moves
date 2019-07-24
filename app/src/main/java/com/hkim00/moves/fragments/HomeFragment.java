@@ -130,8 +130,8 @@ public class HomeFragment extends Fragment {
         btnLocation = view.findViewById(R.id.btnLocation);
 
         tvLocation = view.findViewById(R.id.tvLocation);
-        btnTime = view.findViewById(R.id.btnTime);
-        btnPeople = view.findViewById(R.id.btnPeople);
+//        btnTime = view.findViewById(R.id.btnTime);
+//        btnPeople = view.findViewById(R.id.btnPeople);
         ivDistance = view.findViewById(R.id.ivDistance);
         tvDistance = view.findViewById(R.id.tvDistance);
         btnDistance = view.findViewById(R.id.btnDistance);
@@ -162,10 +162,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupDesign() {
-        btnTime.getLayoutParams().width= HomeActivity.screenWidth/4;
-        btnPeople.getLayoutParams().width= HomeActivity.screenWidth/4;
-        btnDistance.getLayoutParams().width= HomeActivity.screenWidth/4;
-        btnPrice.getLayoutParams().width= HomeActivity.screenWidth/4;
+//        btnTime.getLayoutParams().width= HomeActivity.screenWidth/4;
+//        btnPeople.getLayoutParams().width= HomeActivity.screenWidth/4;
+        btnDistance.getLayoutParams().width= HomeActivity.screenWidth/2;
+        btnPrice.getLayoutParams().width= HomeActivity.screenWidth/2;
 
         clPrice.setVisibility(View.INVISIBLE);
 
