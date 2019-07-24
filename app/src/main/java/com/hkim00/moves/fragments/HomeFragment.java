@@ -40,7 +40,9 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -305,7 +307,7 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType == "food") {
-            getNearbyRestaurants(new ArrayList<>());
+            getNearbyRestaurants(new ArrayList<String>());
         }
         else if (moveType == "event") {
             checkForPostalCode();
@@ -407,7 +409,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents(new ArrayList<>());
+                            getNearbyEvents(new ArrayList<String>());
                         }
                     }
 
@@ -437,7 +439,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents(new ArrayList<>());
+            getNearbyEvents(new ArrayList<String>());
         }
     }
 
@@ -665,6 +667,23 @@ public class HomeFragment extends Fragment {
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             checkForCurrentLocation();
         }
+    }
+
+    public void UpdateMoveList() {
+
+        Map<String, Integer> PrefDict = new HashMap<String, Integer>();
+        ArrayList<Map<String, Integer>> al = new ArrayList();
+
+        PrefDict.put ("key1", 1);
+        PrefDict.put ("key2", 2);
+        PrefDict.put ("key3", 3);
+        PrefDict.put ("key4", 4);
+
+        al.add(PrefDict);
+
+        ParseUser currUser = ParseUser.getCurrentUser();
+        currUser.put("tester", al);
+        currUser.saveInBackground();
     }
 
 

@@ -41,11 +41,11 @@ public class MovesActivity extends AppCompatActivity {
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
 //       rvMoves.setAdapter(adapterRestaurants);
 //
-        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
+        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant")));
 //        adapterRestaurants.notifyDataSetChanged();
 
         rvMoves.setAdapter(adapterEvents);
-        events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
+        events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("moveEvent")));
 
         //adapterEvents.notifyDataSetChanged();
 

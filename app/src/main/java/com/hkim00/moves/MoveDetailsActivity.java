@@ -123,7 +123,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
 
-
     private void ButtonsSetUp() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,11 +134,17 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
+
                             if (e == null) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didComplete", "true");
-                                    objects.get(i).saveInBackground();
-                                }
+                                currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
+                                currUser.saveInBackground();
+
+                                ParseObject currRestaurant = new ParseObject("Restaurant");
+                                currRestaurant.put("name", restaurant.name);
+                                currRestaurant.put("user", currUser);
+                                currRestaurant.put("didComplete", true);
+                                currRestaurant.saveInBackground();
+
                                 Log.d("Move", "Move Saved in History Successfully");
                             } else {
                                 Log.d("Move", "Error: saving move to history");
@@ -148,22 +153,29 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     });
                 }
 
-                if (event != null) {
+                else if (event != null) {
                     ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
                     didCompleteQuery.whereEqualTo("placeId", event.id);
                     didCompleteQuery.whereEqualTo("user", currUser);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didComplete", "true");
-                                    objects.get(i).saveInBackground();
+
+                                if (e == null) {
+                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
+                                    currUser.saveInBackground();
+
+                                    ParseObject currEvent = new ParseObject("Event");
+                                    currEvent.put("name", event.name);
+                                    currEvent.put("user", currUser);
+                                    currEvent.put("didComplete", true);
+                                    currEvent.saveInBackground();
+
+                                    Log.d("Move", "Move Saved in History Successfully");
+                                } else {
+                                    Log.d("Move", "Error: saving move to history");
                                 }
-                                Log.d("Move", "Move Saved in History Successfully");
-                            } else {
-                                Log.d("Move", "Error: saving move to history");
-                            }
+
                         }
                     });
                 }
@@ -171,6 +183,15 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
 
         btnSave.setOnClickListener(new View.OnClickListener() {
