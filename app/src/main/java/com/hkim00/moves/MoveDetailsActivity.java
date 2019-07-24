@@ -53,7 +53,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getViewIds();
         ButtonsSetUp();
 
-
         restaurant = Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
         //TODO repeat for other categories when models are created
         if (restaurant != null) {

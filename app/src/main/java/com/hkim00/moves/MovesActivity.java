@@ -38,15 +38,15 @@ public class MovesActivity extends AppCompatActivity {
 
         adapterRestaurants = new MoveAdapter(getApplicationContext(), restaurants);
         adapterEvents = new MoveAdapter(getApplicationContext(), events);
-
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
-//        rvMoves.setAdapter(adapterRestaurants);
+//       rvMoves.setAdapter(adapterRestaurants);
 //
-//        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
+        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
 //        adapterRestaurants.notifyDataSetChanged();
 
         rvMoves.setAdapter(adapterEvents);
-        events.addAll(Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
+        events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
+
         //adapterEvents.notifyDataSetChanged();
 
     }
