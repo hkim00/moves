@@ -144,8 +144,8 @@ public class HomeFragment extends Fragment {
 
         clCategories = view.findViewById(R.id.clCategories);
         ivFood = view.findViewById(R.id.ivFood);
-        ivActivities = view.findViewById(R.id.ivActivities);
-        ivAttractions = view.findViewById(R.id.ivAttractions);
+//        ivActivities = view.findViewById(R.id.ivActivities);
+//        ivAttractions = view.findViewById(R.id.ivAttractions);
         ivEvents = view.findViewById(R.id.ivEvents);
 
         clPrice = view.findViewById(R.id.clPrice);
@@ -183,8 +183,8 @@ public class HomeFragment extends Fragment {
             public void run() {
                 int constraintHeight = clCategories.getLayoutParams().height;
                 ivFood.getLayoutParams().height = constraintHeight/4;
-                ivActivities.getLayoutParams().height = constraintHeight/4;
-                ivAttractions.getLayoutParams().height = constraintHeight/4;
+//                ivActivities.getLayoutParams().height = constraintHeight/4;
+//                ivAttractions.getLayoutParams().height = constraintHeight/4;
                 ivEvents.getLayoutParams().height = constraintHeight/4;
             }
         });
@@ -475,7 +475,6 @@ public class HomeFragment extends Fragment {
         }
 
         params.put("postalCode", location.postalCode);
-        // todo: not sure if date, asc makes sense as default
         params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
 
