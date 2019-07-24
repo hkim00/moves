@@ -36,9 +36,10 @@ dependencies {
     implementation 'com.google.android.libraries.places:places:2.0.0'
     implementation 'com.github.AppIntro:AppIntro:v5.1.0'
 
-    // Android Async Http for sending async network requests
+    //AsyncHttp for sending async network requests
     implementation 'com.loopj.android:android-async-http:1.4.9'
 
+    //Parse
     implementation 'com.parse.bolts:bolts-android:1.4.0'
     implementation 'com.github.parse-community.Parse-SDK-Android:parse:1.20.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
@@ -46,19 +47,18 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-
+    //Parcel
     implementation 'org.parceler:parceler-api:1.1.12'
     annotationProcessor 'org.parceler:parceler:1.1.12'
 
+    //Glide
     implementation 'com.github.bumptech.glide:glide:4.8.0'
-    // Glide v4 uses this new annotation processor -- see https://bumptech.github.io/glide/doc/generatedapi.html
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
+    //Google places / maps
     implementation 'com.google.android.gms:play-services-places:16.0.0'
-
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.android.support:design:27.1.1"
-
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.github.hotchemi:permissionsdispatcher:3.1.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.1.0'

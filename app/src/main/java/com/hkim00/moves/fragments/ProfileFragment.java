@@ -162,21 +162,21 @@ public class ProfileFragment extends Fragment {
         restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    if (e == null) {
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+
                         Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
 
                         favList.add(restaurant);
                         favAdapter.notifyItemInserted(saveList.size() - 1);
-                    } else {
+                    }
+                } else {
                         Log.e(TAG, "Error finding saved restaurants.");
                         e.printStackTrace();
                         Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
-                    }
                 }
             }
         });
-
     }
 
     private void setupButtons() {

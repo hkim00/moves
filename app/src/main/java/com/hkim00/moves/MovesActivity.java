@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 
 import com.hkim00.moves.adapters.MoveAdapter;
-import com.hkim00.moves.adapters.ProfileAdapter;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
@@ -28,6 +26,7 @@ public class MovesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moves);
 
@@ -41,11 +40,18 @@ public class MovesActivity extends AppCompatActivity {
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
 //       rvMoves.setAdapter(adapterRestaurants);
 //
-        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant")));
+
+        restaurants.addAll((List<Move>) Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant")));
 //        adapterRestaurants.notifyDataSetChanged();
 
         rvMoves.setAdapter(adapterEvents);
-        events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("moveEvent")));
+        events.addAll((List<Move>) Parcels.unwrap(getIntent().getParcelableExtra("moveEvent")));
+
+        //restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
+//        adapterRestaurants.notifyDataSetChanged();
+
+        rvMoves.setAdapter(adapterEvents);
+        //events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
 
         //adapterEvents.notifyDataSetChanged();
 
