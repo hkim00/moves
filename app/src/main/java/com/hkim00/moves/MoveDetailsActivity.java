@@ -53,13 +53,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getViewIds();
         ButtonsSetUp();
 
-        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
+        restaurant = Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
         //TODO repeat for other categories when models are created
         if (restaurant != null) {
             getFoodView();
         }
 
-        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
+        event = Parcels.unwrap(getIntent().getParcelableExtra("moveEvent"));
         if (event != null) {
             getEventView();
         }
@@ -121,30 +121,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void getActivityView() {
-        //unwrap activity passed in
-        //set details
-    }
-
-    private void getAttractionView() {
-        //unwrap activity passed in
-        //set details
-    }
-
     private void getEventView() {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
 
-        tvMoveName.setText(restaurant.name);
+        tvMoveName.setText(event.name);
 
-        String price = "";
-        if (restaurant.price_level < 0) {
-            price = "Unknown";
-        } else {
-            for (int i = 0; i < restaurant.price_level; i++) {
-                price += '$';
-            }
-        }
-        tvPrice.setText(price);
     }
 
     private void ButtonsSetUp() {
