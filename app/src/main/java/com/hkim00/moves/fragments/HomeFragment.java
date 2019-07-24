@@ -475,22 +475,31 @@ public class HomeFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
-                JSONArray events;
-                try {
-                    events = (response.getJSONObject("_embedded")).getJSONArray("events");
-                    for (int i = 0; i < events.length(); i++) {
-                        Event event = Event.fromJSON(events.getJSONObject(i));
-                        Log.d(TAG, "got event");
-                        eventResults.add(event);
-                    }
 
+                eventResults.clear();
+
+                JSONArray events;
+                if (response.has("_embedded")) {
+                    try {
+                        events = (response.getJSONObject("_embedded")).getJSONArray("events");
+                        for (int i = 0; i < events.length(); i++) {
+                            Event event = Event.fromJSON(events.getJSONObject(i));
+                            Log.d(TAG, "got event");
+                            eventResults.add(event);
+                        }
+
+                        Intent intent = new Intent(getContext(), EventsActivity.class);
+                        intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                        startActivity(intent);
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error getting events");
+                        e.printStackTrace();
+                    }
+                } else {
                     Intent intent = new Intent(getContext(), EventsActivity.class);
                     intent.putExtra("movesEvents", Parcels.wrap(eventResults));
                     startActivity(intent);
-
-                } catch (JSONException e) {
-                    Log.e(TAG, "Error getting events");
-                    e.printStackTrace();
                 }
             }
 
