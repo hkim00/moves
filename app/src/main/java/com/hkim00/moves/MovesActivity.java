@@ -6,9 +6,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-import com.hkim00.moves.adapters.EventAdapter;
+//import com.hkim00.moves.adapters.EventAdapter;
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.ProfileAdapter;
 import com.hkim00.moves.models.Event;
+import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
@@ -19,10 +21,12 @@ import java.util.List;
 public class MovesActivity extends AppCompatActivity {
 
 
-    ProfileAdapter adapterRestaurants;
-    EventAdapter adapterEvents;
-    List<Restaurant> restaurants;
-    List<Event> events;
+    MoveAdapter moveAdapter;
+   // ProfileAdapter adapterRestaurants;
+    //EventAdapter adapterEvents;
+    List<Move> moves;
+    //List<Restaurant> restaurants;
+    //List<Event> events;
     RecyclerView rvMoves;
 
 
@@ -33,20 +37,20 @@ public class MovesActivity extends AppCompatActivity {
 
         rvMoves = findViewById(R.id.rvMoves);
 
-        restaurants = new ArrayList<>();
-        events = new ArrayList<>();
+       // restaurants = new ArrayList<>();
+       // events = new ArrayList<>();
 
-        adapterRestaurants = new ProfileAdapter(getApplicationContext(), restaurants);
-        adapterEvents = new EventAdapter(getApplicationContext(), events);
+        moveAdapter = new MoveAdapter(getApplicationContext(), moves);
+        //moveAdapter = new EventAdapter(getApplicationContext(), events);
 
         rvMoves.setLayoutManager(new LinearLayoutManager(this));
-//        rvMoves.setAdapter(adapterRestaurants);
-//
-//        restaurants.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
-//        adapterRestaurants.notifyDataSetChanged();
+        rvMoves.setAdapter(moveAdapter);
 
-        rvMoves.setAdapter(adapterEvents);
-        events.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
-        //adapterEvents.notifyDataSetChanged();
+        moves.addAll((List<Restaurant>) Parcels.unwrap(getIntent().getParcelableExtra("movesRestaurants")));
+        moveAdapter.notifyDataSetChanged();
+
+       //rvMoves.setAdapter(moveAdapter);
+        moves.addAll((List<Event>) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents")));
+        moveAdapter.notifyDataSetChanged();
     }
 }

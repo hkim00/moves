@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.R;
-import com.hkim00.moves.adapters.EventAdapter;
-import com.hkim00.moves.adapters.RestaurantAdapter;
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Event;
+import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -31,18 +31,12 @@ import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
-     private RecyclerView rvPastRestaurantMoves;
-    private RecyclerView rvPastEventMoves;
-    private RestaurantAdapter restHistoryAdapter;
-    private EventAdapter eventHistoryAdapter;
-    private List<Restaurant> RestHistoryList;
-    private List<Event> EventHistoryList;
-
-    private Button btnFood;
-    private Button btnEvents;
-    public final static String TAG = "HistoryFragment";
+    private RecyclerView rvPastMoves;
+    private MoveAdapter HistoryAdapter;
+    private List<Move> HistoryList;
 
     public final static String TAG = "HistoryFragment";
+
 
     @Nullable
     @Override
@@ -57,7 +51,6 @@ public class HistoryFragment extends Fragment {
 
         setUpIds(view);
         setupRecyclerView();
-        setUpButtons();
 
         getHistory();
 
@@ -66,15 +59,10 @@ public class HistoryFragment extends Fragment {
 
     private void setupRecyclerView() {
 
-        rvPastRestaurantMoves.setLayoutManager(new LinearLayoutManager(getContext()));
-        RestHistoryList = new ArrayList<>();
-        restHistoryAdapter = new RestaurantAdapter(getContext(),  RestHistoryList);
-        rvPastRestaurantMoves.setAdapter(restHistoryAdapter);
-
-        rvPastEventMoves.setLayoutManager(new LinearLayoutManager(getContext()));
-        EventHistoryList = new ArrayList<>();
-        eventHistoryAdapter = new EventAdapter(getContext(), EventHistoryList);
-        rvPastEventMoves.setAdapter(eventHistoryAdapter);
+        rvPastMoves.setLayoutManager(new LinearLayoutManager(getContext()));
+        HistoryList = new ArrayList<>();
+        HistoryAdapter = new MoveAdapter(getContext(),  HistoryList);
+        rvPastMoves.setAdapter(HistoryAdapter);
 
 
     }
@@ -92,8 +80,8 @@ public class HistoryFragment extends Fragment {
                 for (int i = 0; i < objects.size(); i++) {
                     if (e == null) {
                         Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-                        RestHistoryList.add(restaurant);
-                        restHistoryAdapter.notifyItemInserted( RestHistoryList.size() - 1);
+                        HistoryList.add(restaurant);
+                        HistoryAdapter.notifyItemInserted( HistoryList.size() - 1);
                     } else {
                         Log.e(TAG, "Error finding saved restaurants.");
                         e.printStackTrace();
@@ -115,8 +103,8 @@ public class HistoryFragment extends Fragment {
                 for (int i = 0; i < objects.size(); i++) {
                     if (e == null) {
                         Event event = Event.fromParseObject(objects.get(i));
-                        EventHistoryList.add(event);
-                        eventHistoryAdapter.notifyItemInserted(EventHistoryList.size() - 1);
+                        HistoryList.add(event);
+                        HistoryAdapter.notifyItemInserted(HistoryList.size() - 1);
                     } else {
                         Log.e(TAG, "Error finding saved restaurants.");
                         e.printStackTrace();
@@ -129,28 +117,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setUpIds(View view) {
-        btnFood = view.findViewById(R.id.btnFood);
-        btnEvents = view.findViewById(R.id.btnEvents);
-        rvPastRestaurantMoves = view.findViewById(R.id.rvPastRestaurantMoves);
-        rvPastEventMoves = view.findViewById(R.id.rvPastEventMoves);
-
+        rvPastMoves = view.findViewById(R.id.rvPastMoves);
     }
 
-    private void setUpButtons() {
-        btnFood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rvPastEventMoves.setVisibility(View.INVISIBLE);
-                rvPastRestaurantMoves.setVisibility(View.VISIBLE);
-            }
-        });
-
-        btnEvents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rvPastRestaurantMoves.setVisibility(View.INVISIBLE);
-                rvPastEventMoves.setVisibility(View.VISIBLE);
-            }
-        });
-    }
 }

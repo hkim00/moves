@@ -42,7 +42,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private Button btnSave;
 
     ParseUser currUser;
-
     Restaurant restaurant;
     Event event;
 
@@ -54,15 +53,14 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getViewIds();
         ButtonsSetUp();
 
-        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
+        restaurant = (Restaurant) Parcels.unwrap(getIntent().getParcelableExtra("move"));
         //TODO repeat for other categories when models are created
         if (restaurant != null) {
             getFoodView();
-        }
+    }
 
 
-        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
-
+        event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("move"));
         if (event != null) {
             getEventView();
         }
@@ -87,7 +85,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getFoodView() {
         //unwrap the restaurant passed in
-
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", restaurant.name));
         //set details
         tvMoveName.setText(restaurant.name);
@@ -131,72 +128,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void getEventView() {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
         tvMoveName.setText(event.name);
-        //TODO set other details
+        //TODO set other details or hide unnecessary details 
 
     }
 
-    private void ButtonsSetUp() {
-        btnChooseMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (restaurant != null) {
-                    final ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
-                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
-                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-
-                                if (e == null) {
-                                    currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
-                                    currUser.saveInBackground();
-                                    ParseObject currRestaurant = new ParseObject("Restaurant");
-                                    currRestaurant.put("name", restaurant.name);
-                                    currRestaurant.put("user", currUser);
-                                    currRestaurant.put("didComplete", true);
-                                    currRestaurant.saveInBackground();
-                                    Log.d("Move", "Move Saved in History Successfully");
-                                } else {
-                                    Log.d("Move", "Error: saving move to history");
-                                }
-                            }
-                    });
-                }
-
-                if (event != null) {
-                    final ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
-                    didCompleteQuery.whereEqualTo("placeId", event.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
-                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
-                                currUser.saveInBackground();
-                                ParseObject currEvent = new ParseObject("Event");
-                                currEvent.put("name", event.name);
-                                currEvent.put("user", currUser);
-                                currEvent.put("didComplete", true);
-                                currEvent.saveInBackground();
-                                Log.d("Move", "Move Saved in History Successfully");
-                            } else {
-                                Log.d("Move", "Error: saving move to history");
-                            }
-                        }
-                    });
-                }
-                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO save moves to saved
-            }
-        });
-    }
 
 
     private void ButtonsSetUp() {
@@ -251,7 +186,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //TODO add moves to saved
             }
         });
     }
