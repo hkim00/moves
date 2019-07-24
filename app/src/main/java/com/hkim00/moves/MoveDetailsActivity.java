@@ -18,6 +18,7 @@ import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -39,9 +40,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private Button btnChooseMove;
     private Button btnFavorite;
     private Button btnSave;
-    private String moveType;
 
     ParseUser currUser;
+
     Restaurant restaurant;
     Event event;
 
@@ -59,17 +60,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
             getFoodView();
         }
 
+
         event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("movesEvents"));
+
         if (event != null) {
             getEventView();
         }
 
-        btnChooseMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Fragment fragment = new HistoryFragment();
-            }
-        });
     }
 
     private void getViewIds() {
@@ -133,19 +130,74 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getEventView() {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
+        tvMoveName.setText(event.name);
+        //TODO set other details
 
-        tvMoveName.setText(restaurant.name);
-
-        String price = "";
-        if (restaurant.price_level < 0) {
-            price = "Unknown";
-        } else {
-            for (int i = 0; i < restaurant.price_level; i++) {
-                price += '$';
-            }
-        }
-        tvPrice.setText(price);
     }
+
+    private void ButtonsSetUp() {
+        btnChooseMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (restaurant != null) {
+                    final ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
+                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+
+                                if (e == null) {
+                                    currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
+                                    currUser.saveInBackground();
+                                    ParseObject currRestaurant = new ParseObject("Restaurant");
+                                    currRestaurant.put("name", restaurant.name);
+                                    currRestaurant.put("user", currUser);
+                                    currRestaurant.put("didComplete", true);
+                                    currRestaurant.saveInBackground();
+                                    Log.d("Move", "Move Saved in History Successfully");
+                                } else {
+                                    Log.d("Move", "Error: saving move to history");
+                                }
+                            }
+                    });
+                }
+
+                if (event != null) {
+                    final ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
+                    didCompleteQuery.whereEqualTo("placeId", event.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
+                                currUser.saveInBackground();
+                                ParseObject currEvent = new ParseObject("Event");
+                                currEvent.put("name", event.name);
+                                currEvent.put("user", currUser);
+                                currEvent.put("didComplete", true);
+                                currEvent.saveInBackground();
+                                Log.d("Move", "Move Saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO save moves to saved
+            }
+        });
+    }
+
 
     private void ButtonsSetUp() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {

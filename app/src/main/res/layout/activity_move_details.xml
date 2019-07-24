@@ -66,7 +66,8 @@
         android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="@id/ivYellowOutline"
         app:layout_constraintTop_toBottomOf="@id/tvMoveName"
-        tools:srcCompat="@drawable/letsmove" />
+        tools:src="@drawable/letsmove" />
+
 
     <ImageView
         android:id="@+id/ivPrice"
@@ -149,7 +150,7 @@
         app:layout_constraintTop_toTopOf="@id/btnFavorite"
         app:srcCompat="@drawable/ufi_heart" />
 
-    <Button
+<Button
         android:id="@+id/btnFavorite"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="30dp"
@@ -175,6 +176,16 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@+id/moveRating"
         app:layout_constraintTop_toBottomOf="@+id/moveRating" />
+
+    <Button
+        android:id="@+id/btnSave"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="30dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/moveRating"
+        app:layout_constraintTop_toBottomOf="@+id/moveRating" />
+
 
     <RatingBar
         android:id="@+id/moveRating"
