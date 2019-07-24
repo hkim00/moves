@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.R;
+import com.hkim00.moves.adapters.EventAdapter;
 import com.hkim00.moves.adapters.RestaurantAdapter;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -27,9 +30,15 @@ import java.util.List;
 
 
 public class HistoryFragment extends Fragment {
-    private RecyclerView rvPastMoves;
-    private RestaurantAdapter historyAdapter;
-    private List<Restaurant> historyList;
+    private RecyclerView rvPastRestaurantMoves;
+    private RecyclerView rvPastEventMoves;
+    private RestaurantAdapter restHistoryAdapter;
+    private EventAdapter eventHistoryAdapter;
+    private List<Restaurant> RestHistoryList;
+    private List<Event> EventHistoryList;
+
+    private Button btnFood;
+    private Button btnEvents;
     public final static String TAG = "HistoryFragment";
 
     @Nullable
@@ -43,18 +52,26 @@ public class HistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvPastMoves = view.findViewById(R.id.rvPastMoves);
-
+        setUpIds(view);
         setupRecyclerView();
+        setUpButtons();
 
         getHistory();
+
+
     }
 
     private void setupRecyclerView() {
-        rvPastMoves.setLayoutManager(new LinearLayoutManager(getContext()));
-        historyList = new ArrayList<>();
-        historyAdapter = new RestaurantAdapter(getContext(), historyList);
-        rvPastMoves.setAdapter(historyAdapter);
+        rvPastRestaurantMoves.setLayoutManager(new LinearLayoutManager(getContext()));
+        RestHistoryList = new ArrayList<>();
+        restHistoryAdapter = new RestaurantAdapter(getContext(),  RestHistoryList);
+        rvPastRestaurantMoves.setAdapter(restHistoryAdapter);
+
+        rvPastEventMoves.setLayoutManager(new LinearLayoutManager(getContext()));
+        EventHistoryList = new ArrayList<>();
+        eventHistoryAdapter = new EventAdapter(getContext(), EventHistoryList);
+        rvPastEventMoves.setAdapter(eventHistoryAdapter);
+
     }
 
 
@@ -70,14 +87,64 @@ public class HistoryFragment extends Fragment {
                 for (int i = 0; i < objects.size(); i++) {
                     if (e == null) {
                         Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-                        historyList.add(restaurant);
-                        historyAdapter.notifyItemInserted(historyList.size() - 1);
+                        RestHistoryList.add(restaurant);
+                        restHistoryAdapter.notifyItemInserted( RestHistoryList.size() - 1);
                     } else {
                         Log.e(TAG, "Error finding saved restaurants.");
                         e.printStackTrace();
                         Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+
+
+        ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Event");
+        eventQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+        eventQuery.whereEqualTo("didComplete", true);
+        eventQuery.orderByDescending("createdAt");
+
+        eventQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                for (int i = 0; i < objects.size(); i++) {
+                    if (e == null) {
+                        Event event = Event.fromParseObject(objects.get(i));
+                        EventHistoryList.add(event);
+                        eventHistoryAdapter.notifyItemInserted(EventHistoryList.size() - 1);
+                    } else {
+                        Log.e(TAG, "Error finding saved restaurants.");
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void setUpIds(View view) {
+        btnFood = view.findViewById(R.id.btnFood);
+        btnEvents = view.findViewById(R.id.btnEvents);
+        rvPastRestaurantMoves = view.findViewById(R.id.rvPastRestaurantMoves);
+        rvPastEventMoves = view.findViewById(R.id.rvPastEventMoves);
+
+    }
+
+    private void setUpButtons() {
+        btnFood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rvPastEventMoves.setVisibility(View.INVISIBLE);
+                rvPastRestaurantMoves.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rvPastRestaurantMoves.setVisibility(View.INVISIBLE);
+                rvPastEventMoves.setVisibility(View.VISIBLE);
             }
         });
     }
