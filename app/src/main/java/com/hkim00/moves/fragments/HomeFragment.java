@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.location.LocationResult;
 import com.hkim00.moves.EventsActivity;
 import com.hkim00.moves.GoogleClient;
 import com.hkim00.moves.HomeActivity;
@@ -27,17 +26,12 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.helpers.Helper;
+import com.hkim00.moves.util.MoveCategories;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -48,7 +42,6 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -612,7 +605,7 @@ public class HomeFragment extends Fragment {
         List<String> preferredList = new ArrayList<>();
 
         if (nonPreferredList.size() == 0) {
-             preferredList = Helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+             preferredList = MoveCategories.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
         } else {
             preferredList = nonPreferredList;
         }
@@ -633,7 +626,7 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("")) {
             return;
         }
-        Helper helper = new Helper();
+        MoveCategories helper = new MoveCategories();
         List<String> nonPreferredList = new ArrayList<>();
 
         if (moveType.equals("food")) {
