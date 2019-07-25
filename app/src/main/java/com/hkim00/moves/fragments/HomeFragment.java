@@ -305,7 +305,7 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType.equals("food")) {
-            getNearbyRestaurants(new ArrayList<String>());
+            getNearbyRestaurants(new ArrayList<>());
         }
         else if (moveType.equals("event")) {
             checkForPostalCode();
