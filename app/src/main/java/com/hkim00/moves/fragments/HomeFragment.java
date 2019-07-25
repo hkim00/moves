@@ -19,12 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.location.LocationResult;
-import com.hkim00.moves.EventsActivity;
 import com.hkim00.moves.GoogleClient;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
-import com.hkim00.moves.FoodActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.helpers.Helper;
@@ -33,11 +30,6 @@ import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -307,15 +299,15 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        if (moveType == ""){
+        if (moveType.equals("")){
             Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (moveType == "food") {
+        if (moveType.equals("food")) {
             getNearbyRestaurants(new ArrayList<String>());
         }
-        else if (moveType == "event") {
+        else if (moveType.equals("event")) {
             checkForPostalCode();
         }
     }

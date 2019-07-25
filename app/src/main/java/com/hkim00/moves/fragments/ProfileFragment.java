@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.Text;
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
@@ -33,6 +35,7 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
 import com.hkim00.moves.specs.MoveItem;
+import com.hkim00.moves.specs.MoveSection;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -73,6 +76,8 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final ComponentContext context = new ComponentContext(getContext());
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -85,12 +90,8 @@ public class ProfileFragment extends Fragment {
         fillUserInfo();
 
         setupButtons();
-      
+
         setupRecyclerViews();
-
-        setupButtons();
-
-        rvSaved.setVisibility(View.INVISIBLE);
 
         getFavoriteRestaurants();
 
@@ -132,6 +133,8 @@ public class ProfileFragment extends Fragment {
         saveList = new ArrayList<>();
         saveAdapter = new MoveAdapter(getContext(), saveList);
         rvSaved.setAdapter(saveAdapter);
+
+        rvSaved.setVisibility(View.INVISIBLE);
     }
 
 
