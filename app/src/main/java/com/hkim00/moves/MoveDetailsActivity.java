@@ -42,6 +42,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private TextView tvPrice;
     private ImageView ivGroupNum;
     private ImageView ivTime;
+    private ImageView ivSave;
+    private ImageView ivFavorite;
     private RatingBar moveRating;
     private Button btnChooseMove;
     private Button btnFavorite;
@@ -58,7 +60,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         getViewIds();
         ButtonsSetUp();
-        lyftButton();
+        //lyftButton();
 
         Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
 
@@ -85,8 +87,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnChooseMove = findViewById(R.id.btnChooseMove);
         ivGroupNum = findViewById(R.id.ivGroupNum);
         btnFavorite = findViewById(R.id.btnFavorite);
+        ivFavorite = findViewById(R.id.ivFavorite);
         btnSave = findViewById(R.id.btnSave);
         currUser = ParseUser.getCurrentUser();
+        ivSave = findViewById(R.id.ivSave);
 
     }
 
@@ -126,7 +130,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
         tvMoveName.setText(event.name);
         //TODO set other details or hide unnecessary details
-
 
     }
 
@@ -193,23 +196,53 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
 
 
+
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ivSave.setImageResource(R.drawable.ufi_save_active);
+                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
+                didSaveQuery.whereEqualTo("name", restaurant.name);
+                didSaveQuery.whereEqualTo("user", currUser);
+                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
 
+                        for (int i =0; i < objects.size(); i++) {
+                            objects.get(i).put("didSave", true);
+                            objects.get(i).saveInBackground();
+                        }
+                        Log.d("MoveDetailsActivity", "saved move");
+                    }
+
+                });
             }
         });
 
-
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
+        btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO add moves to saved
+                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
+                didSaveQuery.whereEqualTo("name", restaurant.name);
+                didSaveQuery.whereEqualTo("user", currUser);
+                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+
+                        for (int i =0; i < objects.size(); i++) {
+                            objects.get(i).put("didFavorite", true);
+                            objects.get(i).saveInBackground();
+                        }
+                        Log.d("MoveDetailsActivity", "favorited move");
+                    }
+
+                });
             }
         });
     }
 
+    /*
     private void lyftButton() {
         ApiConfig apiConfig = new ApiConfig.Builder()
                 .setClientId(getString(R.string.client_id_lyft))
@@ -231,5 +264,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton.setRideParams(rideParamsBuilder.build());
         lyftButton.load();
     }
+    */
 
 }
