@@ -1,5 +1,6 @@
 package com.hkim00.moves;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +10,11 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import com.hkim00.moves.util.DateTimeFormatters;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,6 +23,8 @@ import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.lyft.deeplink.RideTypeEnum;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -30,9 +37,21 @@ import com.lyft.lyftbutton.LyftButton;
 import com.lyft.lyftbutton.RideParams;
 import com.lyft.networking.ApiConfig;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import cz.msebera.android.httpclient.Header;
+
+import static com.hkim00.moves.util.DateTimeFormatters.formatTime;
+import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
+import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
+
 public class MoveDetailsActivity extends AppCompatActivity {
+
+    public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
+
 
     private TextView tvMoveName;
     private TextView tvTime;
@@ -41,6 +60,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private TextView tvPrice;
     private ImageView ivGroupNum;
     private ImageView ivTime;
+    private ImageView ivPrice;
     private RatingBar moveRating;
     private Button btnChooseMove;
     private Button btnFavorite;
@@ -69,9 +89,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         if (event != null) {
             getEventView();
         }
-
-
-
     }
 
     private void getViewIds() {
@@ -81,6 +98,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         tvGroupNum = findViewById(R.id.tvGroupNum);
         tvDistance = findViewById(R.id.tvDistance);
         tvPrice = findViewById(R.id.tvPrice);
+        ivPrice = findViewById(R.id.ivPrice);
         moveRating = findViewById(R.id.moveRating);
         btnChooseMove = findViewById(R.id.btnChooseMove);
         ivGroupNum = findViewById(R.id.ivGroupNum);
@@ -125,12 +143,14 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void getEventView() {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
         tvMoveName.setText(event.name);
-        //TODO set other details or hide unnecessary details
+        String id = event.id;
 
+        //hide groupNum and Time tv & iv
+        ivGroupNum.setVisibility(View.INVISIBLE);
+        tvGroupNum.setVisibility(View.INVISIBLE);
 
+        getEventDetails(id);
     }
-
-
 
     private void ButtonsSetUp() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +195,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
                         }
                     });
                 }
-
                 Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
             }
         });
@@ -185,6 +204,41 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO add moves to saved
+            }
+        });
+    }
+
+     private void getEventDetails(String id) {
+        String TAG = "MoveDetailsActivity";
+        String apiUrl = API_BASE_URL_TM + "/" + id + ".json";
+        RequestParams params = new RequestParams();
+        params.put("apikey", getString(R.string.api_key_tm));
+        HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                 String startTime = getStartTime(response);
+                 String priceRange = getPriceRange(response);
+                 tvTime.setText(startTime);
+                 tvPrice.setText(priceRange);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.e(TAG, responseString);
+                throwable.printStackTrace();
             }
         });
     }
@@ -203,12 +257,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         RideParams.Builder rideParamsBuilder = new RideParams.Builder()
                 .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
-                //TODO: add correct dropoff location
+                //TODO: add correct dropoff location once Lyft approves developer request
                 .setDropoffLocation(37.759234, -122.4135125);
         rideParamsBuilder.setRideTypeEnum(RideTypeEnum.STANDARD);
 
         lyftButton.setRideParams(rideParamsBuilder.build());
         lyftButton.load();
     }
-
 }

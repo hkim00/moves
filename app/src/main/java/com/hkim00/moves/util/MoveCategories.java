@@ -1,4 +1,4 @@
-package com.hkim00.moves.helpers;
+package com.hkim00.moves.util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -6,15 +6,14 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
-public class Helper {
+public class MoveCategories {
 
     public static List<String> foodCategoriesList;
     public static List<String> eventCategoriesList;
 
-    public Helper() {
+    public MoveCategories() {
         foodCategoriesList = Arrays.asList(
                 "Italian",
                 "Mexican",
