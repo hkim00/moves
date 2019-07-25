@@ -2,6 +2,7 @@ package com.hkim00.moves.fragments;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.util.AttributeSet;
@@ -11,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,6 +45,7 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProfileFragment extends Fragment {
     public final static String TAG = "ProfileFragment";
@@ -57,12 +61,8 @@ public class ProfileFragment extends Fragment {
     private TextView tvLocation;
     private TextView tvGender;
     private TextView tvAge;
-
-    //TODO create lists for saved and favorites moves
-    private MoveAdapter Faveadapter;
-    private MoveAdapter Saveadapter;
-    private List<Move> rFaveList;
-    private List<Move> rSaveList;
+    private ImageView ivSaved;
+    private ImageView ivFavorites;
 
     private MoveAdapter favAdapter;
     private MoveAdapter saveAdapter;
@@ -90,7 +90,9 @@ public class ProfileFragment extends Fragment {
 
         setupButtons();
 
-        rvSaved.setVisibility(View.INVISIBLE);
+        rvSaved.setVisibility(View.VISIBLE);
+        ivSaved.setImageResource(R.drawable.ufi_save_active);
+        rvFavorites.setVisibility(View.INVISIBLE);
 
         getFavoriteRestaurants();
 
@@ -102,6 +104,8 @@ public class ProfileFragment extends Fragment {
         tvLocation = view.findViewById(R.id.tvLocation);
         tvGender = view.findViewById(R.id.tvGender);
         tvAge = view.findViewById(R.id.tvAge);
+        ivSaved = view.findViewById(R.id.ivSaved);
+        ivFavorites = view.findViewById(R.id.ivFavorites);
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnSaved =  view.findViewById(R.id.btnSave);
@@ -142,8 +146,22 @@ public class ProfileFragment extends Fragment {
         restaurantQuery.orderByDescending("createdAt");
 
         restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+                //TODO delete duplicates
+                /*
+                List<ParseObject> noDuplicates = new ArrayList<ParseObject>();
+                noDuplicates.add(objects.get(0));
+                for (ParseObject object: objects) {
+                    for (ParseObject uniqueObj: noDuplicates) {
+                        if (object.getString("name") == uniqueObj.getString("name")) {
+                            break;
+                        }
+                        noDuplicates.add(object);
+                    }
+                }
+                */
                 for (int i = 0; i < objects.size(); i++) {
                     if (e == null) {
                         Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
@@ -159,6 +177,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
 
     private void getFavoriteRestaurants() {
@@ -208,6 +227,9 @@ public class ProfileFragment extends Fragment {
         btnFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //set details
+                ivFavorites.setImageResource(R.drawable.ufi_heart_active);
+                ivSaved.setImageResource(R.drawable.ufi_save);
                 //show favorites recycler view
                 rvSaved.setVisibility(View.INVISIBLE);
                 rvFavorites.setVisibility(View.VISIBLE);
@@ -217,6 +239,9 @@ public class ProfileFragment extends Fragment {
         btnSaved.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //set details
+                ivSaved.setImageResource(R.drawable.ufi_save_active);
+                ivFavorites.setImageResource(R.drawable.ufi_heart);
                 //show saved recycler view
                 rvFavorites.setVisibility(View.INVISIBLE);
                 rvSaved.setVisibility(View.VISIBLE);
