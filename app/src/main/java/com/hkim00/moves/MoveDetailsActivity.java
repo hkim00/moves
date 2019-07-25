@@ -1,6 +1,5 @@
 package com.hkim00.moves;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,24 +9,18 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import com.hkim00.moves.util.DateTimeFormatters;
-
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
-import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
+
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.lyft.deeplink.RideTypeEnum;
+
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -36,22 +29,20 @@ import com.parse.ParseUser;
 import com.lyft.lyftbutton.LyftButton;
 import com.lyft.lyftbutton.RideParams;
 import com.lyft.networking.ApiConfig;
+import com.lyft.deeplink.RideTypeEnum;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
 import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
-import static com.hkim00.moves.util.DateTimeFormatters.formatTime;
+//import util methods: JSONObject response formatters
 import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
 
 public class MoveDetailsActivity extends AppCompatActivity {
-
-    public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
-
 
     private TextView tvMoveName;
     private TextView tvTime;
@@ -80,7 +71,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton();
 
         restaurant = Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
-        //TODO repeat for other categories when models are created
         if (restaurant != null) {
             getFoodView();
         }
@@ -105,51 +95,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnFavorite = findViewById(R.id.btnFavorite);
         btnSave = findViewById(R.id.btnSave);
         currUser = ParseUser.getCurrentUser();
-
-    }
-
-    private void getFoodView() {
-        //unwrap the restaurant passed in
-        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", restaurant.name));
-        //set details
-        tvMoveName.setText(restaurant.name);
-
-        String price = "";
-        if (restaurant.price_level < 0) {
-            price = "Unknown";
-        } else {
-            for (int i = 0; i < restaurant.price_level; i++) {
-                price += '$';
-            }
-        }
-        tvPrice.setText(price);
-
-        //hide groupNum and Time tv & iv
-        ivGroupNum.setVisibility(View.INVISIBLE);
-        tvGroupNum.setVisibility(View.INVISIBLE);
-        ivTime.setVisibility(View.INVISIBLE);
-        tvTime.setVisibility(View.INVISIBLE);
-
-        tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
-
-        if (restaurant.rating < 0) {
-            moveRating.setVisibility(View.INVISIBLE);
-        } else {
-            float moveRate = restaurant.rating.floatValue();
-            moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
-        }
-    }
-
-    private void getEventView() {
-        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
-        tvMoveName.setText(event.name);
-        String id = event.id;
-
-        //hide groupNum and Time tv & iv
-        ivGroupNum.setVisibility(View.INVISIBLE);
-        tvGroupNum.setVisibility(View.INVISIBLE);
-
-        getEventDetails(id);
     }
 
     private void ButtonsSetUp() {
@@ -208,11 +153,55 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void getFoodView() {
+        tvMoveName.setText(restaurant.name);
+
+        String price = "";
+        if (restaurant.price_level < 0) {
+            price = "Unknown";
+        } else {
+            for (int i = 0; i < restaurant.price_level; i++) {
+                price += '$';
+            }
+        }
+        tvPrice.setText(price);
+
+        //hide groupNum and Time tv & iv
+        ivGroupNum.setVisibility(View.INVISIBLE);
+        tvGroupNum.setVisibility(View.INVISIBLE);
+        ivTime.setVisibility(View.INVISIBLE);
+        tvTime.setVisibility(View.INVISIBLE);
+
+        tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
+
+        if (restaurant.rating < 0) {
+            moveRating.setVisibility(View.INVISIBLE);
+        } else {
+            float moveRate = restaurant.rating.floatValue();
+            moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
+        }
+    }
+
+    private void getEventView() {
+        tvMoveName.setText(event.name);
+        String id = event.id;
+
+        //hide groupNum and Time tv & iv
+        ivGroupNum.setVisibility(View.INVISIBLE);
+        tvGroupNum.setVisibility(View.INVISIBLE);
+
+        // make call to Ticketmaster's event detail API
+        getEventDetails(id);
+    }
+
      private void getEventDetails(String id) {
+        String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
         String TAG = "MoveDetailsActivity";
-        String apiUrl = API_BASE_URL_TM + "/" + id + ".json";
+        String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
+
         RequestParams params = new RequestParams();
         params.put("apikey", getString(R.string.api_key_tm));
+
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -244,13 +233,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void lyftButton() {
+        // add feature to call Lyft to event/restaurant
         ApiConfig apiConfig = new ApiConfig.Builder()
                 .setClientId(getString(R.string.client_id_lyft))
                 //waiting for Lyft to approve developer signup request
                 .setClientToken("...")
                 .build();
 
-        // Add feature to call Lyft to event/restaurant
         LyftButton lyftButton = findViewById(R.id.lyft_button);
         lyftButton.setApiConfig(apiConfig);
         UserLocation currLocation = UserLocation.getCurrentLocation(this);
