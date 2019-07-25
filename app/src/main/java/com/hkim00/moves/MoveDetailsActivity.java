@@ -102,7 +102,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         ivSave = findViewById(R.id.ivSave);
     }
 
-  private void getFoodView() {
+    private void getFoodView() {
          tvMoveName.setText(restaurant.name);
 
           String price = "";
@@ -131,7 +131,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
           }
     }
 
-  private void getEventView() {
+    private void getEventView() {
         tvMoveName.setText(event.name);
         String id = event.id;
 
@@ -143,7 +143,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getEventDetails(id);
     }
 
-     private void getEventDetails(String id) {
+    private void getEventDetails(String id) {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
         String TAG = "MoveDetailsActivity";
         String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
