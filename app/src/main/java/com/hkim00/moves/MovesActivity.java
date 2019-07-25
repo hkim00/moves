@@ -2,13 +2,24 @@ package com.hkim00.moves;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.widget.LinearLayoutInfo;
+import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.Text;
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.specs.MoveItem;
+import com.hkim00.moves.specs.MoveSection;
 
 import org.parceler.Parcels;
 
@@ -27,15 +38,20 @@ public class MovesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moves);
 
-        rvMoves = findViewById(R.id.rvMoves);
-
         moves = new ArrayList<>();
-
-        adapter = new MoveAdapter(getApplicationContext(), moves);
-        rvMoves.setLayoutManager(new LinearLayoutManager(this));
-        rvMoves.setAdapter(adapter);
-
         moves.addAll(Parcels.unwrap(getIntent().getParcelableExtra("moves")));
-        adapter.notifyDataSetChanged();
+
+        final ComponentContext context = new ComponentContext(this);
+
+        final Component component =
+                RecyclerCollectionComponent.create(context)
+                        .disablePTR(true)
+                        .section(
+                                MoveSection.create(new SectionContext(context))
+                                        .moves(moves)
+                                        .build())
+                        .build();
+
+        setContentView(LithoView.create(context, component));
     }
 }

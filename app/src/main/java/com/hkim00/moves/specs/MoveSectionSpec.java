@@ -2,11 +2,20 @@ package com.hkim00.moves.specs;
 
 import android.graphics.Color;
 
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
+import com.facebook.litho.sections.common.DataDiffSection;
+import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RenderInfo;
+import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.Restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,27 +24,23 @@ import java.util.List;
 public class MoveSectionSpec {
 
     @OnCreateChildren
-    static Children onCreateChildren(final SectionContext c) {
-        Children.Builder builder = Children.create();
-
-        for (int i = 0; i < 32; i++) {
-            builder.child(
-                    SingleComponentSection.create(c)
-                            .key(String.valueOf(i))
-                            .component(MoveItem.create(c)
-                                    .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-                                    .title(i + ". Hello, world!")
-                                    .subtitle("Litho tutorial")
-                                    .build()));
-        }
-        return builder.build();
+    static Children onCreateChildren(SectionContext c,
+                                     @Prop List<Move> moves) {
+        return Children.create()
+                .child(
+                        DataDiffSection.<Move>create(c)
+                                .data(moves)
+                                .renderEventHandler(MoveSection.onRender(c)))
+                .build();
     }
 
-    private static List<Integer> generateData(int count) {
-        final List<Integer> data = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            data.add(i);
-        }
-        return data;
+    @OnEvent(RenderEvent.class)
+    static RenderInfo onRender(final SectionContext c, @FromEvent Move model) {
+        return ComponentRenderInfo.create()
+                .component(
+                        MoveItem.create(c)
+                                .title(((Restaurant) model).name)
+                                .build())
+                .build();
     }
 }

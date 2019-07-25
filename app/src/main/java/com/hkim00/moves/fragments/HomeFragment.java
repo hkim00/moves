@@ -506,8 +506,8 @@ public class HomeFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    Intent intent = new Intent(getContext(), EventsActivity.class);
-                    intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    intent.putExtra("moves", Parcels.wrap(eventResults));
                     startActivity(intent);
                 }
             }

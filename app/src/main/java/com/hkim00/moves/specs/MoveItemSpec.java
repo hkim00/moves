@@ -16,21 +16,15 @@ public class MoveItemSpec {
 
     @OnCreateLayout
     static Component onCreateLayout(ComponentContext c,
-                                    @Prop int color,
-                                    @Prop String title,
-                                    @Prop String subtitle) {
+                                    @Prop String title) {
 
         return Column.create(c)
                 .paddingDip(YogaEdge.ALL, 15)
-                .backgroundColor(color)
+                .backgroundColor(Color.WHITE)
                 .child(
                         Text.create(c)
                                 .text(title)
-                                .textSizeDip(20))
-                .child(
-                        Text.create(c)
-                                .text(subtitle)
-                                .textSizeSp(20))
+                                .textSizeDip(15))
                 .build();
     }
 
