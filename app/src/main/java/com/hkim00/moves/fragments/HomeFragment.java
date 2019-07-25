@@ -24,6 +24,7 @@ import com.hkim00.moves.GoogleClient;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
+import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.util.MoveCategories;
 import com.hkim00.moves.models.Event;
@@ -39,6 +40,7 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -304,7 +306,7 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType == "food") {
-            getNearbyRestaurants(new ArrayList<>());
+            getNearbyRestaurants(new ArrayList<String>());
         }
         else if (moveType == "event") {
             checkForPostalCode();
@@ -406,7 +408,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents(new ArrayList<>());
+                            getNearbyEvents(new ArrayList<String>());
                         }
                     }
 
@@ -436,7 +438,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents(new ArrayList<>());
+            getNearbyEvents(new ArrayList<String>());
         }
     }
 
@@ -486,8 +488,8 @@ public class HomeFragment extends Fragment {
                             eventResults.add(event);
                         }
 
-                        Intent intent = new Intent(getContext(), EventsActivity.class);
-                        intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                        Intent intent = new Intent(getContext(), MovesActivity.class);
+                        intent.putExtra("moves", Parcels.wrap(eventResults));
                         startActivity(intent);
 
                     } catch (JSONException e) {
@@ -495,8 +497,8 @@ public class HomeFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    Intent intent = new Intent(getContext(), EventsActivity.class);
-                    intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    intent.putExtra("moves", Parcels.wrap(eventResults));
                     startActivity(intent);
                 }
             }
@@ -563,8 +565,8 @@ public class HomeFragment extends Fragment {
                         restaurantResults.add(restaurant);
                     }
 
-                    Intent intent = new Intent(getContext(), FoodActivity.class);
-                    intent.putExtra("movesRestaurants", Parcels.wrap(restaurantResults));
+                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    intent.putExtra("moves", Parcels.wrap(restaurantResults));
                     startActivity(intent);
 
                 } catch (JSONException e) {
@@ -663,6 +665,23 @@ public class HomeFragment extends Fragment {
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             checkForCurrentLocation();
         }
+    }
+
+    public void UpdateMoveList() {
+
+        Map<String, Integer> PrefDict = new HashMap<String, Integer>();
+        ArrayList<Map<String, Integer>> al = new ArrayList();
+
+        PrefDict.put ("key1", 1);
+        PrefDict.put ("key2", 2);
+        PrefDict.put ("key3", 3);
+        PrefDict.put ("key4", 4);
+
+        al.add(PrefDict);
+
+        ParseUser currUser = ParseUser.getCurrentUser();
+        currUser.put("tester", al);
+        currUser.saveInBackground();
     }
 
 

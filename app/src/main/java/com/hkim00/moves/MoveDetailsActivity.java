@@ -14,6 +14,7 @@ import java.util.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hkim00.moves.models.Event;
+import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
@@ -52,6 +53,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private ImageView ivGroupNum;
     private ImageView ivTime;
     private ImageView ivPrice;
+    private ImageView ivSave;
+    private ImageView ivFavorite;
     private RatingBar moveRating;
     private Button btnChooseMove;
     private Button btnFavorite;
@@ -70,13 +73,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
         ButtonsSetUp();
         lyftButton();
 
-        restaurant = Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
-        if (restaurant != null) {
+        Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
+
+        if (move.getMoveType() == Move.RESTAURANT) {
+            restaurant = (Restaurant) move;
             getFoodView();
-        }
-      
-        event = Parcels.unwrap(getIntent().getParcelableExtra("moveEvent"));
-        if (event != null) {
+        } else {
+            event = (Event) move;
             getEventView();
         }
     }
@@ -93,96 +96,42 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnChooseMove = findViewById(R.id.btnChooseMove);
         ivGroupNum = findViewById(R.id.ivGroupNum);
         btnFavorite = findViewById(R.id.btnFavorite);
+        ivFavorite = findViewById(R.id.ivFavorite);
         btnSave = findViewById(R.id.btnSave);
         currUser = ParseUser.getCurrentUser();
+        ivSave = findViewById(R.id.ivSave);
     }
 
-    private void ButtonsSetUp() {
-        btnChooseMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (restaurant != null) {
-                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
-                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
-                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didComplete", "true");
-                                    objects.get(i).saveInBackground();
-                                }
-                                Log.d("Move", "Move Saved in History Successfully");
-                            } else {
-                                Log.d("Move", "Error: saving move to history");
-                            }
-                        }
-                    });
-                }
+  private void getFoodView() {
+         tvMoveName.setText(restaurant.name);
 
-                if (event != null) {
-                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
-                    didCompleteQuery.whereEqualTo("placeId", event.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
-                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didComplete", "true");
-                                    objects.get(i).saveInBackground();
-                                }
-                                Log.d("Move", "Move Saved in History Successfully");
-                            } else {
-                                Log.d("Move", "Error: saving move to history");
-                            }
-                        }
-                    });
-                }
-                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
-            }
-        });
+          String price = "";
+          if (restaurant.price_level < 0) {
+              price = "Unknown";
+          } else {
+              for (int i = 0; i < restaurant.price_level; i++) {
+                  price += '$';
+              }
+          }
+          tvPrice.setText(price);
 
+          //hide groupNum and Time tv & iv
+          ivGroupNum.setVisibility(View.INVISIBLE);
+          tvGroupNum.setVisibility(View.INVISIBLE);
+          ivTime.setVisibility(View.INVISIBLE);
+          tvTime.setVisibility(View.INVISIBLE);
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO add moves to saved
-            }
-        });
+          tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
+
+          if (restaurant.rating < 0) {
+              moveRating.setVisibility(View.INVISIBLE);
+          } else {
+              float moveRate = restaurant.rating.floatValue();
+              moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
+          }
     }
 
-    private void getFoodView() {
-        tvMoveName.setText(restaurant.name);
-
-        String price = "";
-        if (restaurant.price_level < 0) {
-            price = "Unknown";
-        } else {
-            for (int i = 0; i < restaurant.price_level; i++) {
-                price += '$';
-            }
-        }
-        tvPrice.setText(price);
-
-        //hide groupNum and Time tv & iv
-        ivGroupNum.setVisibility(View.INVISIBLE);
-        tvGroupNum.setVisibility(View.INVISIBLE);
-        ivTime.setVisibility(View.INVISIBLE);
-        tvTime.setVisibility(View.INVISIBLE);
-
-        tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
-
-        if (restaurant.rating < 0) {
-            moveRating.setVisibility(View.INVISIBLE);
-        } else {
-            float moveRate = restaurant.rating.floatValue();
-            moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
-        }
-    }
-
-    private void getEventView() {
+  private void getEventView() {
         tvMoveName.setText(event.name);
         String id = event.id;
 
@@ -228,6 +177,113 @@ public class MoveDetailsActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.e(TAG, responseString);
                 throwable.printStackTrace();
+            }
+        });
+    }
+
+    private void ButtonsSetUp() {
+        btnChooseMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (restaurant != null) {
+                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
+                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+
+                            if (e == null) {
+                                currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
+                                currUser.saveInBackground();
+
+                                ParseObject currRestaurant = new ParseObject("Restaurant");
+                                currRestaurant.put("name", restaurant.name);
+                                currRestaurant.put("user", currUser);
+                                currRestaurant.put("didComplete", true);
+                                currRestaurant.saveInBackground();
+
+                                Log.d("Move", "Move Saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+
+                else if (event != null) {
+                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
+                    didCompleteQuery.whereEqualTo("placeId", event.id);
+                    didCompleteQuery.whereEqualTo("user", currUser);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+
+                                if (e == null) {
+                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
+                                    currUser.saveInBackground();
+
+                                    ParseObject currEvent = new ParseObject("Event");
+                                    currEvent.put("name", event.name);
+                                    currEvent.put("user", currUser);
+                                    currEvent.put("didComplete", true);
+                                    currEvent.saveInBackground();
+
+                                    Log.d("Move", "Move Saved in History Successfully");
+                                } else {
+                                    Log.d("Move", "Error: saving move to history");
+                                }
+
+                        }
+                    });
+                }
+                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivSave.setImageResource(R.drawable.ufi_save_active);
+                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
+                didSaveQuery.whereEqualTo("name", restaurant.name);
+                didSaveQuery.whereEqualTo("user", currUser);
+                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+
+                        for (int i =0; i < objects.size(); i++) {
+                            objects.get(i).put("didSave", true);
+                            objects.get(i).saveInBackground();
+                        }
+                        Log.d("MoveDetailsActivity", "saved move");
+                    }
+
+                });
+            }
+        });
+
+        btnFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
+                didSaveQuery.whereEqualTo("name", restaurant.name);
+                didSaveQuery.whereEqualTo("user", currUser);
+                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+
+                        for (int i =0; i < objects.size(); i++) {
+                            objects.get(i).put("didFavorite", true);
+                            objects.get(i).saveInBackground();
+                        }
+                        Log.d("MoveDetailsActivity", "favorited move");
+                    }
+
+                });
             }
         });
     }

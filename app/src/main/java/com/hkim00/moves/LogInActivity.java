@@ -2,6 +2,7 @@ package com.hkim00.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,18 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.litho.Column;
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.Section;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.VerticalGravity;
+import com.facebook.soloader.SoLoader;
+import com.hkim00.moves.specs.MoveItem;
+import com.hkim00.moves.specs.MoveSection;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -25,11 +38,28 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        checkForCurrentUser();
+
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogIn = findViewById(R.id.btnlogIn);
         btnSignUp = findViewById(R.id.btnSignUp);
 
+        setupButtons();
+    }
+
+
+    private void checkForCurrentUser() {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+
+    private void setupButtons() {
         btnLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -40,12 +70,6 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +81,7 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void login (String username, String password){
         ParseUser.logInInBackground(username, password, new LogInCallback() {

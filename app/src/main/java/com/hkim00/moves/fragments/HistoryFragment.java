@@ -37,6 +37,9 @@ public class HistoryFragment extends Fragment {
 
     public final static String TAG = "HistoryFragment";
 
+    Restaurant restaurant;
+    Event event;
+
 
     @Nullable
     @Override
@@ -69,52 +72,55 @@ public class HistoryFragment extends Fragment {
 
 
     private void getHistory() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
-        restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        restaurantQuery.whereEqualTo("didComplete", true);
-        restaurantQuery.orderByDescending("createdAt");
 
-        restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    if (e == null) {
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-                        HistoryList.add(restaurant);
-                        HistoryAdapter.notifyItemInserted( HistoryList.size() - 1);
-                    } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
+            ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
+            restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+            restaurantQuery.whereEqualTo("didComplete", true);
+            restaurantQuery.orderByDescending("createdAt");
+
+            restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (e == null) {
+                            Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
+                            HistoryList.add(restaurant);
+                            Log.d(TAG, "saved restaurant to History list" );
+                            HistoryAdapter.notifyItemInserted( HistoryList.size() - 1);
+                        } else {
+                            Log.e(TAG, "Error finding saved restaurants.");
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
-            }
-        });
+            });
 
-
-        ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Event");
-        eventQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        eventQuery.whereEqualTo("didComplete", true);
-        eventQuery.orderByDescending("createdAt");
-
-        eventQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    if (e == null) {
-                        Event event = Event.fromParseObject(objects.get(i));
-                        HistoryList.add(event);
-                        HistoryAdapter.notifyItemInserted(HistoryList.size() - 1);
-                    } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
+            ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Event");
+            eventQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+            eventQuery.whereEqualTo("didComplete", true);
+            eventQuery.orderByDescending("createdAt");
+            eventQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (e == null) {
+                            Event event = Event.fromParseObject(objects.get(i));
+                            HistoryList.add(event);
+                            Log.d(TAG, "saved event to History list" );
+                            HistoryAdapter.notifyItemInserted(HistoryList.size() - 1);
+                        } else {
+                            Log.e(TAG, "Error finding saved events.");
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
-    }
+
+
 
     private void setUpIds(View view) {
         rvPastMoves = view.findViewById(R.id.rvPastMoves);
