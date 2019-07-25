@@ -52,54 +52,54 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
-    <ImageView
-        android:id="@+id/ivTime"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/btnTime"
-        app:layout_constraintStart_toStartOf="@+id/btnTime"
-        app:layout_constraintTop_toTopOf="@+id/view2"
-        app:layout_constraintVertical_bias="0.388"
-        app:srcCompat="@drawable/schedule" />
+    <!--<ImageView-->
+        <!--android:id="@+id/ivTime"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/view2"-->
+        <!--app:layout_constraintEnd_toEndOf="@+id/btnTime"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/btnTime"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/view2"-->
+        <!--app:layout_constraintVertical_bias="0.388"-->
+        <!--app:srcCompat="@drawable/schedule" />-->
 
-    <Button
-        android:id="@+id/btnTime"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toStartOf="@+id/view2"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
+    <!--<Button-->
+        <!--android:id="@+id/btnTime"-->
+        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/view2"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/view2"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/view2" />-->
 
-    <ImageView
-        android:id="@+id/ivPeople"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivTime"
-        app:layout_constraintEnd_toEndOf="@+id/btnPeople"
-        app:layout_constraintStart_toStartOf="@+id/btnPeople"
-        app:layout_constraintTop_toTopOf="@+id/ivTime"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/group" />
+    <!--<ImageView-->
+        <!--android:id="@+id/ivPeople"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/ivTime"-->
+        <!--app:layout_constraintEnd_toEndOf="@+id/btnPeople"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/btnPeople"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/ivTime"-->
+        <!--app:layout_constraintVertical_bias="0.0"-->
+        <!--app:srcCompat="@drawable/group" />-->
 
-    <Button
-        android:id="@+id/btnPeople"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@+id/btnTime"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
+    <!--<Button-->
+        <!--android:id="@+id/btnPeople"-->
+        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/view2"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/btnTime"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/view2" />-->
 
     <ImageView
         android:id="@+id/ivDistance"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPeople"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
         app:layout_constraintEnd_toEndOf="@+id/btnDistance"
         app:layout_constraintStart_toStartOf="@+id/btnDistance"
-        app:layout_constraintTop_toTopOf="@+id/ivPeople"
+        app:layout_constraintTop_toTopOf="@+id/view2"
         app:srcCompat="@drawable/place" />
 
     <Button
@@ -107,8 +107,9 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@+id/btnPeople"
+        app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
     <TextView
@@ -201,72 +202,72 @@
             app:layout_constraintTop_toTopOf="@+id/ivFood"
             app:layout_constraintVertical_bias="1.0" />
 
-        <ImageView
-            android:id="@+id/ivActivities"
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivFood"
-            app:srcCompat="@drawable/activities_background" />
+        <!--<ImageView-->
+            <!--android:id="@+id/ivActivities"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="120dp"-->
+            <!--android:scaleType="centerCrop"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/ivFood"-->
+            <!--app:srcCompat="@drawable/activities_background" />-->
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Activities"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ivActivities"
-            app:layout_constraintStart_toStartOf="@+id/ivActivities" />
+        <!--<TextView-->
+            <!--android:id="@+id/textView3"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:text="Activities"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="30sp"-->
+            <!--android:textStyle="bold"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/ivActivities"-->
+            <!--app:layout_constraintStart_toStartOf="@+id/ivActivities" />-->
 
-        <Button
-            android:id="@+id/btnActivities"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/ivActivities"
-            app:layout_constraintEnd_toEndOf="@+id/ivActivities"
-            app:layout_constraintStart_toStartOf="@+id/ivActivities"
-            app:layout_constraintTop_toTopOf="@+id/ivActivities" />
+        <!--<Button-->
+            <!--android:id="@+id/btnActivities"-->
+            <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="0dp"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/ivActivities"-->
+            <!--app:layout_constraintEnd_toEndOf="@+id/ivActivities"-->
+            <!--app:layout_constraintStart_toStartOf="@+id/ivActivities"-->
+            <!--app:layout_constraintTop_toTopOf="@+id/ivActivities" />-->
 
-        <ImageView
-            android:id="@+id/ivAttractions"
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivActivities"
-            app:srcCompat="@drawable/attractions_background" />
+        <!--<ImageView-->
+            <!--android:id="@+id/ivAttractions"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="120dp"-->
+            <!--android:scaleType="centerCrop"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.0"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/ivActivities"-->
+            <!--app:srcCompat="@drawable/attractions_background" />-->
 
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Attractions"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"
-            app:layout_constraintStart_toStartOf="@+id/ivAttractions" />
+        <!--<TextView-->
+            <!--android:id="@+id/textView5"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:text="Attractions"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="30sp"-->
+            <!--android:textStyle="bold"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"-->
+            <!--app:layout_constraintStart_toStartOf="@+id/ivAttractions" />-->
 
-        <Button
-            android:id="@+id/btnAttractions"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"
-            app:layout_constraintEnd_toEndOf="@+id/ivAttractions"
-            app:layout_constraintStart_toStartOf="@+id/ivAttractions"
-            app:layout_constraintTop_toTopOf="@+id/ivAttractions" />
+        <!--<Button-->
+            <!--android:id="@+id/btnAttractions"-->
+            <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="0dp"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"-->
+            <!--app:layout_constraintEnd_toEndOf="@+id/ivAttractions"-->
+            <!--app:layout_constraintStart_toStartOf="@+id/ivAttractions"-->
+            <!--app:layout_constraintTop_toTopOf="@+id/ivAttractions" />-->
 
         <ImageView
             android:id="@+id/ivEvents"
@@ -275,7 +276,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnAttractions"
+            app:layout_constraintTop_toBottomOf="@+id/btnFood"
             app:srcCompat="@drawable/events_background" />
 
         <TextView
