@@ -30,6 +30,11 @@ ext {
     googlePlayVersion = "15.0.0"
 }
 
+configurations {
+    cleanedAnnotations
+    compile.exclude group: 'org.jetbrains' , module:'annotations'
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.parse.bolts:bolts-android:1.4.0'
@@ -86,4 +91,7 @@ dependencies {
     compileOnly 'com.facebook.litho:litho-sections-annotations:0.29.0'
 
     annotationProcessor 'com.facebook.litho:litho-sections-processor:0.29.0'
+
+    //Lyft
+    implementation 'com.lyft:lyft-android-sdk:2.0.0'
 }

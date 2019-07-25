@@ -18,6 +18,8 @@ import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.UserLocation;
+import com.lyft.deeplink.RideTypeEnum;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -25,6 +27,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import com.lyft.lyftbutton.LyftButton;
+import com.lyft.lyftbutton.RideParams;
+import com.lyft.networking.ApiConfig;
 
 import org.parceler.Parcels;
 
@@ -53,6 +58,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         getViewIds();
         ButtonsSetUp();
+        lyftButton();
 
         Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
 
@@ -63,6 +69,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
             event = (Event) move;
             getEventView();
         }
+
+
 
     }
 
@@ -117,11 +125,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void getEventView() {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", event.name));
         tvMoveName.setText(event.name);
-        //TODO set other details or hide unnecessary details 
+        //TODO set other details or hide unnecessary details
 
 
     }
-
 
 
     private void ButtonsSetUp() {
@@ -135,11 +142,17 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
+
                             if (e == null) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didComplete", "true");
-                                    objects.get(i).saveInBackground();
-                                }
+                                currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
+                                currUser.saveInBackground();
+
+                                ParseObject currRestaurant = new ParseObject("Restaurant");
+                                currRestaurant.put("name", restaurant.name);
+                                currRestaurant.put("user", currUser);
+                                currRestaurant.put("didComplete", true);
+                                currRestaurant.saveInBackground();
+
                                 Log.d("Move", "Move Saved in History Successfully");
                             } else {
                                 Log.d("Move", "Error: saving move to history");
@@ -148,22 +161,29 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     });
                 }
 
-                if (event != null) {
+                else if (event != null) {
                     ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
                     didCompleteQuery.whereEqualTo("placeId", event.id);
                     didCompleteQuery.whereEqualTo("user", currUser);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didComplete", "true");
-                                    objects.get(i).saveInBackground();
+
+                                if (e == null) {
+                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
+                                    currUser.saveInBackground();
+
+                                    ParseObject currEvent = new ParseObject("Event");
+                                    currEvent.put("name", event.name);
+                                    currEvent.put("user", currUser);
+                                    currEvent.put("didComplete", true);
+                                    currEvent.saveInBackground();
+
+                                    Log.d("Move", "Move Saved in History Successfully");
+                                } else {
+                                    Log.d("Move", "Error: saving move to history");
                                 }
-                                Log.d("Move", "Move Saved in History Successfully");
-                            } else {
-                                Log.d("Move", "Error: saving move to history");
-                            }
+
                         }
                     });
                 }
@@ -176,9 +196,40 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+            }
+        });
+
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 //TODO add moves to saved
             }
         });
+    }
+
+    private void lyftButton() {
+        ApiConfig apiConfig = new ApiConfig.Builder()
+                .setClientId(getString(R.string.client_id_lyft))
+                //waiting for Lyft to approve developer signup request
+                .setClientToken("...")
+                .build();
+
+        // Add feature to call Lyft to event/restaurant
+        LyftButton lyftButton = findViewById(R.id.lyft_button);
+        lyftButton.setApiConfig(apiConfig);
+        UserLocation currLocation = UserLocation.getCurrentLocation(this);
+
+        RideParams.Builder rideParamsBuilder = new RideParams.Builder()
+                .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
+                //TODO: add correct dropoff location
+                .setDropoffLocation(37.759234, -122.4135125);
+        rideParamsBuilder.setRideTypeEnum(RideTypeEnum.STANDARD);
+
+        lyftButton.setRideParams(rideParamsBuilder.build());
+        lyftButton.load();
     }
 
 }

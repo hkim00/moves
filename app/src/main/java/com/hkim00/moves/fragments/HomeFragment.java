@@ -46,7 +46,6 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,8 +130,8 @@ public class HomeFragment extends Fragment {
         btnLocation = view.findViewById(R.id.btnLocation);
 
         tvLocation = view.findViewById(R.id.tvLocation);
-        btnTime = view.findViewById(R.id.btnTime);
-        btnPeople = view.findViewById(R.id.btnPeople);
+//        btnTime = view.findViewById(R.id.btnTime);
+//        btnPeople = view.findViewById(R.id.btnPeople);
         ivDistance = view.findViewById(R.id.ivDistance);
         tvDistance = view.findViewById(R.id.tvDistance);
         btnDistance = view.findViewById(R.id.btnDistance);
@@ -145,8 +144,8 @@ public class HomeFragment extends Fragment {
 
         clCategories = view.findViewById(R.id.clCategories);
         ivFood = view.findViewById(R.id.ivFood);
-        ivActivities = view.findViewById(R.id.ivActivities);
-        ivAttractions = view.findViewById(R.id.ivAttractions);
+//        ivActivities = view.findViewById(R.id.ivActivities);
+//        ivAttractions = view.findViewById(R.id.ivAttractions);
         ivEvents = view.findViewById(R.id.ivEvents);
 
         clPrice = view.findViewById(R.id.clPrice);
@@ -163,10 +162,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupDesign() {
-        btnTime.getLayoutParams().width= HomeActivity.screenWidth/4;
-        btnPeople.getLayoutParams().width= HomeActivity.screenWidth/4;
-        btnDistance.getLayoutParams().width= HomeActivity.screenWidth/4;
-        btnPrice.getLayoutParams().width= HomeActivity.screenWidth/4;
+//        btnTime.getLayoutParams().width= HomeActivity.screenWidth/4;
+//        btnPeople.getLayoutParams().width= HomeActivity.screenWidth/4;
+        btnDistance.getLayoutParams().width= HomeActivity.screenWidth/2;
+        btnPrice.getLayoutParams().width= HomeActivity.screenWidth/2;
 
         clPrice.setVisibility(View.INVISIBLE);
 
@@ -184,8 +183,8 @@ public class HomeFragment extends Fragment {
             public void run() {
                 int constraintHeight = clCategories.getLayoutParams().height;
                 ivFood.getLayoutParams().height = constraintHeight/4;
-                ivActivities.getLayoutParams().height = constraintHeight/4;
-                ivAttractions.getLayoutParams().height = constraintHeight/4;
+//                ivActivities.getLayoutParams().height = constraintHeight/4;
+//                ivAttractions.getLayoutParams().height = constraintHeight/4;
                 ivEvents.getLayoutParams().height = constraintHeight/4;
             }
         });
@@ -314,7 +313,7 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType == "food") {
-            getNearbyRestaurants(new ArrayList<>());
+            getNearbyRestaurants(new ArrayList<String>());
         }
         else if (moveType == "event") {
             checkForPostalCode();
@@ -416,7 +415,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents(new ArrayList<>());
+                            getNearbyEvents(new ArrayList<String>());
                         }
                     }
 
@@ -446,7 +445,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents(new ArrayList<>());
+            getNearbyEvents(new ArrayList<String>());
         }
     }
 
@@ -476,7 +475,6 @@ public class HomeFragment extends Fragment {
         }
 
         params.put("postalCode", location.postalCode);
-        // todo: not sure if date, asc makes sense as default
         params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
 
@@ -674,6 +672,23 @@ public class HomeFragment extends Fragment {
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             checkForCurrentLocation();
         }
+    }
+
+    public void UpdateMoveList() {
+
+        Map<String, Integer> PrefDict = new HashMap<String, Integer>();
+        ArrayList<Map<String, Integer>> al = new ArrayList();
+
+        PrefDict.put ("key1", 1);
+        PrefDict.put ("key2", 2);
+        PrefDict.put ("key3", 3);
+        PrefDict.put ("key4", 4);
+
+        al.add(PrefDict);
+
+        ParseUser currUser = ParseUser.getCurrentUser();
+        currUser.put("tester", al);
+        currUser.saveInBackground();
     }
 
 
