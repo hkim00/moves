@@ -11,13 +11,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.CatButtonsAdapter;
-import com.hkim00.moves.helpers.CategoryHelper;
-import com.hkim00.moves.helpers.Helper;
+import com.hkim00.moves.util.CategoryHelper;
+import com.hkim00.moves.util.MoveCategories;
 import com.hkim00.moves.models.CategoryButton;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Intro2Activity extends AppCompatActivity {
@@ -32,7 +31,7 @@ public class Intro2Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Helper helper = new Helper();
+        MoveCategories helper = new MoveCategories();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro2);

@@ -24,7 +24,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.helpers.Helper;
+import com.hkim00.moves.util.MoveCategories;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -40,7 +40,6 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -604,7 +603,7 @@ public class HomeFragment extends Fragment {
         List<String> preferredList = new ArrayList<>();
 
         if (nonPreferredList.size() == 0) {
-             preferredList = Helper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+             preferredList = MoveCategories.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
         } else {
             preferredList = nonPreferredList;
         }
@@ -625,7 +624,7 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("")) {
             return;
         }
-        Helper helper = new Helper();
+        MoveCategories helper = new MoveCategories();
         List<String> nonPreferredList = new ArrayList<>();
 
         if (moveType.equals("food")) {

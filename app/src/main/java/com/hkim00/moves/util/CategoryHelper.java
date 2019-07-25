@@ -1,9 +1,8 @@
-package com.hkim00.moves.helpers;
+package com.hkim00.moves.util;
 
 import com.hkim00.moves.models.CategoryButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CategoryHelper {
