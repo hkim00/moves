@@ -313,15 +313,15 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        if (moveType == ""){
+        if (moveType.equals("")){
             Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (moveType == "food") {
-            getNearbyRestaurants(new ArrayList<String>());
+        if (moveType.equals("food")) {
+            getNearbyRestaurants(new ArrayList<>());
         }
-        else if (moveType == "event") {
+        else if (moveType.equals("event")) {
             checkForPostalCode();
         }
     }

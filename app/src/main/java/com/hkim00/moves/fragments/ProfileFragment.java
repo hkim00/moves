@@ -27,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.Text;
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
@@ -36,6 +38,7 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
 import com.hkim00.moves.specs.MoveItem;
+import com.hkim00.moves.specs.MoveSection;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -73,6 +76,8 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final ComponentContext context = new ComponentContext(getContext());
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -85,14 +90,8 @@ public class ProfileFragment extends Fragment {
         fillUserInfo();
 
         setupButtons();
-      
+
         setupRecyclerViews();
-
-        setupButtons();
-
-        rvSaved.setVisibility(View.VISIBLE);
-        ivSaved.setImageResource(R.drawable.ufi_save_active);
-        rvFavorites.setVisibility(View.INVISIBLE);
 
         getFavoriteRestaurants();
 
@@ -136,6 +135,8 @@ public class ProfileFragment extends Fragment {
         saveList = new ArrayList<>();
         saveAdapter = new MoveAdapter(getContext(), saveList);
         rvSaved.setAdapter(saveAdapter);
+
+        rvSaved.setVisibility(View.INVISIBLE);
     }
 
 
@@ -149,6 +150,13 @@ public class ProfileFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    saveList.addAll(Restaurant.arrayFromParseObjects(objects));
+                    saveAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e(TAG, "Error finding saved restaurants.");
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
                 //TODO delete duplicates
                 /*
                 List<ParseObject> noDuplicates = new ArrayList<ParseObject>();
@@ -162,17 +170,6 @@ public class ProfileFragment extends Fragment {
                     }
                 }
                 */
-                for (int i = 0; i < objects.size(); i++) {
-                    if (e == null) {
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-
-                        saveList.add(restaurant);
-                        saveAdapter.notifyItemInserted(saveList.size() - 1);
-                    } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
-                    }
                 }
             }
         });
@@ -190,17 +187,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    for (int i = 0; i < objects.size(); i++) {
-
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-
-                        favList.add(restaurant);
-                        favAdapter.notifyItemInserted(saveList.size() - 1);
-                    }
+                    favList.addAll(Restaurant.arrayFromParseObjects(objects));
+                    favAdapter.notifyDataSetChanged();
                 } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
+                        Log.e(TAG, "Error finding favorite restaurants.");
                         e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Error getting favorite restaurants", Toast.LENGTH_SHORT).show();
                 }
             }
         });
