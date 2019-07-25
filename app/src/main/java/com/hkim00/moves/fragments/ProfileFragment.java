@@ -147,17 +147,13 @@ public class ProfileFragment extends Fragment {
         restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    if (e == null) {
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-
-                        saveList.add(restaurant);
-                        saveAdapter.notifyItemInserted(saveList.size() - 1);
-                    } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
-                    }
+                if (e == null) {
+                    favList.addAll(Restaurant.arrayFromParseObjects(objects));
+                    favAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e(TAG, "Error finding saved restaurants.");
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -174,17 +170,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    for (int i = 0; i < objects.size(); i++) {
-
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-
-                        favList.add(restaurant);
-                        favAdapter.notifyItemInserted(saveList.size() - 1);
-                    }
+                    favList.addAll(Restaurant.arrayFromParseObjects(objects));
+                    favAdapter.notifyDataSetChanged();
                 } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
+                        Log.e(TAG, "Error finding favorite restaurants.");
                         e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Error getting favorite restaurants", Toast.LENGTH_SHORT).show();
                 }
             }
         });
