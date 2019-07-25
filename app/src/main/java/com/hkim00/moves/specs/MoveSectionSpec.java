@@ -39,7 +39,7 @@ public class MoveSectionSpec {
         return ComponentRenderInfo.create()
                 .component(
                         MoveItem.create(c)
-                                .title(((Restaurant) model).name)
+                                .move(model)
                                 .build())
                 .build();
     }

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.models.Event;
+import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -53,14 +54,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getViewIds();
         ButtonsSetUp();
 
-        restaurant = Parcels.unwrap(getIntent().getParcelableExtra("moveRestaurant"));
-        //TODO repeat for other categories when models are created
-        if (restaurant != null) {
+        Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
+
+        if (move.getMoveType() == Move.RESTAURANT) {
+            restaurant = (Restaurant) move;
             getFoodView();
-        }
-      
-        event = Parcels.unwrap(getIntent().getParcelableExtra("moveEvent"));
-        if (event != null) {
+        } else {
+            event = (Event) move;
             getEventView();
         }
 
