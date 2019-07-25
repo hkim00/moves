@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.util.AttributeSet;
 import android.util.Log;
 
 import android.view.LayoutInflater;
@@ -20,6 +21,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
+import com.facebook.litho.widget.Text;
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
@@ -27,6 +32,7 @@ import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
+import com.hkim00.moves.specs.MoveItem;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -74,34 +80,9 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        currUser = ParseUser.getCurrentUser();
+        getViewIds(view);
 
-        tvName = view.findViewById(R.id.tvName);
-        tvLocation = view.findViewById(R.id.tvLocation);
-        tvGender = view.findViewById(R.id.tvGender);
-        tvAge = view.findViewById(R.id.tvAge);
-
-        btnLogout = view.findViewById(R.id.btnLogout);
-        btnSaved =  view.findViewById(R.id.btnSave);
-        btnFavorites = view.findViewById(R.id.btnFavorite);
-        rvFavorites = view.findViewById(R.id.rvFavorites);
-        rvSaved = view.findViewById(R.id.rvSaved);
-
-        tvName.setText(currUser.getUsername());
-        tvLocation.setText("Your location: " + currUser.getString("location"));
-        tvGender.setText("Gender: " + currUser.getString("gender"));
-        tvAge.setText("Age: " + currUser.getInt("age"));
-      
-        rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvSaved.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        rFaveList = new ArrayList<>();
-        Faveadapter = new MoveAdapter(getContext(), rFaveList);
-        rvFavorites.setAdapter(Faveadapter);
-
-        rSaveList = new ArrayList<>();
-        Saveadapter = new MoveAdapter(getContext(), rSaveList);
-        rvSaved.setAdapter(Saveadapter);
+        fillUserInfo();
 
         setupButtons();
       
@@ -112,8 +93,33 @@ public class ProfileFragment extends Fragment {
         rvSaved.setVisibility(View.INVISIBLE);
 
         getFavoriteRestaurants();
+
         getSavedRestaurants();
     }
+
+    private void getViewIds(View view) {
+        tvName = view.findViewById(R.id.tvName);
+        tvLocation = view.findViewById(R.id.tvLocation);
+        tvGender = view.findViewById(R.id.tvGender);
+        tvAge = view.findViewById(R.id.tvAge);
+
+        btnLogout = view.findViewById(R.id.btnLogout);
+        btnSaved =  view.findViewById(R.id.btnSave);
+        btnFavorites = view.findViewById(R.id.btnFavorite);
+        rvFavorites = view.findViewById(R.id.rvFavorites);
+        rvSaved = view.findViewById(R.id.rvSaved);
+    }
+
+
+    private void fillUserInfo() {
+        currUser = ParseUser.getCurrentUser();
+
+        tvName.setText(currUser.getUsername());
+        tvLocation.setText("Your location: " + currUser.getString("location"));
+        tvGender.setText("Gender: " + currUser.getString("gender"));
+        tvAge.setText("Age: " + currUser.getInt("age"));
+    }
+
 
     private void setupRecyclerViews() {
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -127,6 +133,7 @@ public class ProfileFragment extends Fragment {
         saveAdapter = new MoveAdapter(getContext(), saveList);
         rvSaved.setAdapter(saveAdapter);
     }
+
 
     private void getSavedRestaurants() {
         ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
@@ -153,6 +160,7 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+
     private void getFavoriteRestaurants() {
         ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
         restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -178,6 +186,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
     private void setupButtons() {
         btnLogout.setOnClickListener(new View.OnClickListener() {

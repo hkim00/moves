@@ -2,6 +2,7 @@ package com.hkim00.moves;
 
 import android.app.Application;
 
+import com.facebook.soloader.SoLoader;
 import com.parse.Parse;
 
 public class ParseApp extends Application {
@@ -9,8 +10,7 @@ public class ParseApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-       // ParseObject.registerSubclass(xxx.class); --> will need this line to create model for users and categories
-
+        //for Parse
         final Parse.Configuration configuration = new Parse.Configuration.Builder(this)
                 .applicationId("moves-app")
                 .clientKey("thirty-dolphins")
@@ -18,5 +18,8 @@ public class ParseApp extends Application {
                 .build();
 
         Parse.initialize(configuration);
+
+        //for Litho
+        SoLoader.init(this, false);
     }
 }

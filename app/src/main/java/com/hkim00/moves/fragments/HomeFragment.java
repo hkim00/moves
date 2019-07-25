@@ -25,6 +25,7 @@ import com.hkim00.moves.GoogleClient;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.FoodActivity;
+import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.helpers.Helper;
 import com.hkim00.moves.models.Event;
@@ -494,8 +495,8 @@ public class HomeFragment extends Fragment {
                             eventResults.add(event);
                         }
 
-                        Intent intent = new Intent(getContext(), EventsActivity.class);
-                        intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                        Intent intent = new Intent(getContext(), MovesActivity.class);
+                        intent.putExtra("moves", Parcels.wrap(eventResults));
                         startActivity(intent);
 
                     } catch (JSONException e) {
@@ -503,8 +504,8 @@ public class HomeFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    Intent intent = new Intent(getContext(), EventsActivity.class);
-                    intent.putExtra("movesEvents", Parcels.wrap(eventResults));
+                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    intent.putExtra("moves", Parcels.wrap(eventResults));
                     startActivity(intent);
                 }
             }
@@ -571,8 +572,8 @@ public class HomeFragment extends Fragment {
                         restaurantResults.add(restaurant);
                     }
 
-                    Intent intent = new Intent(getContext(), FoodActivity.class);
-                    intent.putExtra("movesRestaurants", Parcels.wrap(restaurantResults));
+                    Intent intent = new Intent(getContext(), MovesActivity.class);
+                    intent.putExtra("moves", Parcels.wrap(restaurantResults));
                     startActivity(intent);
 
                 } catch (JSONException e) {
