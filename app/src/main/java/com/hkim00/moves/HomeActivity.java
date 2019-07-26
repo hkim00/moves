@@ -15,13 +15,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
+import com.hkim00.moves.fragments.SearchFragment;
 import com.loopj.android.http.AsyncHttpClient;
 
 public class HomeActivity extends AppCompatActivity {
 
     private final static String TAG = "HomeActivity";
     private final static int HISTORY_TAG = 0;
-    private final static int HOME_TAG = 1;
+    private final static int SEARCH_TAG = 1;
+    private final static int HOME_TAG = 2;
     private final static int PROFILE_TAG = 2;
 
     public static int screenWidth;
@@ -65,6 +67,20 @@ public class HomeActivity extends AppCompatActivity {
                         }
 
                         currentFrag = HISTORY_TAG;
+                        break;
+
+                    case R.id.action_search:
+                        fragment = new SearchFragment();
+
+                        if (currentFrag != SEARCH_TAG) {
+                            if (currentFrag < SEARCH_TAG) {
+                                fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                            } else {
+                                fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                            }
+                        }
+
+                        currentFrag = SEARCH_TAG;
                         break;
 
                     case R.id.action_home:

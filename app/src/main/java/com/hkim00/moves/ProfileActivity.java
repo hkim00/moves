@@ -7,10 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
-//import com.hkim00.moves.adapters.RestaurantAdapter;
 import com.hkim00.moves.models.Move;
+import com.parse.ParseUser;
+
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,20 +22,21 @@ public class ProfileActivity extends AppCompatActivity {
 
     private Button btnSaved;
     private Button btnFavorites;
+    private Button btnLogout;
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
 
-    //TODO create fragments instead of activities??
-    //TODO create lists for saved and favorites moves
+    private TextView tvName;
+    private TextView tvLocation;
+    private TextView tvGender;
+    private TextView tvAge;
 
-    //TODO create fragments instead of activities(??)
-    //TODO create lists for saved and favorites moves
     private MoveAdapter Faveadapter;
     private MoveAdapter Saveadapter;
     private List<Move> rFaveList;
     private List<Move> rSaveList;
 
-
+    private ParseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +48,32 @@ public class ProfileActivity extends AppCompatActivity {
         setupButtons();
 
         setupRecyclerView();
+
+        fillUserInfo();
+    }
+
+    private void fillUserInfo() {
+        user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
+
+        tvName.setText(user.getUsername());
+        tvLocation.setText("Your location: " + user.getString("location"));
+        tvGender.setText("Gender: " + user.getString("gender"));
+        tvAge.setText("Age: " + user.getInt("age"));
     }
 
     private void findViewIds() {
         btnSaved = findViewById(R.id.btnSave);
         btnFavorites = findViewById(R.id.btnFavorite);
+        btnLogout = findViewById(R.id.btnLogout);
         rvFavorites = findViewById(R.id.rvFavorites);
         rvSaved = findViewById(R.id.rvSaved);
+
+        tvName = findViewById(R.id.tvName);
+        tvLocation = findViewById(R.id.tvLocation);
+        tvGender = findViewById(R.id.tvGender);
+        tvAge = findViewById(R.id.tvAge);
+
+        btnLogout.setVisibility(View.INVISIBLE);
     }
 
     private void setupButtons() {
