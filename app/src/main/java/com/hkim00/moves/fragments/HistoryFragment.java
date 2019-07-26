@@ -40,14 +40,11 @@ import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.specs.MoveItem;
-import com.hkim00.moves.specs.MoveSection;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +55,6 @@ public class HistoryFragment extends Fragment {
     public final static String TAG = "HistoryFragment";
 
     private List<Move> pastMoves;
-
-    private RecyclerCollectionComponent recyclerCollectionComponent;
-
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
 
@@ -68,6 +62,19 @@ public class HistoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return setupRecycler();
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getHistory();
+    }
+
+
+    private View setupRecycler() {
         pastMoves = new ArrayList<>();
 
         componentContext = new ComponentContext(getContext());
@@ -95,14 +102,6 @@ public class HistoryFragment extends Fragment {
 
 
         return LithoView.create(componentContext, component);
-    }
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        getHistory();
     }
 
 
