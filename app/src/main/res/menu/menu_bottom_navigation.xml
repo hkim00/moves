@@ -8,6 +8,11 @@
         android:title="History"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/places_ic_search"
+        android:title="Search"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_home"
         android:icon="?attr/homeAsUpIndicator"
         android:title="Home"

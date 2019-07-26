@@ -23,7 +23,11 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
+
 import com.hkim00.moves.util.MoveCategoriesHelper;
+import com.hkim00.moves.models.Move;
+import com.hkim00.moves.util.MoveCategories;
+
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -56,11 +60,9 @@ public class HomeFragment extends Fragment {
     ParseUser currUser = ParseUser.getCurrentUser();
 
     private String moveType = "";
-
     private int distance;
     private int priceLevel;
-    private List<Restaurant> restaurantResults;
-    private List<Event> eventResults;
+    private List<Move> moveResults;
     private UserLocation location;
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
@@ -91,9 +93,7 @@ public class HomeFragment extends Fragment {
 
         location = new UserLocation();
 
-        // initialize arrays to add JSON objects (Restaurant or Event objects) to
-        restaurantResults = new ArrayList<>();
-        eventResults = new ArrayList<>();
+        moveResults = new ArrayList<>();
 
         getViewIds(view);
 
@@ -247,10 +247,13 @@ public class HomeFragment extends Fragment {
             moveType = "event";
             Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
         });
-
-        btnLocation.setOnClickListener(view -> {
-            Intent intent = new Intent(getContext(), LocationActivity.class);
-            startActivityForResult(intent, LOCATION_REQUEST_CODE );
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), LocationActivity.class);
+                startActivityForResult(intent, LOCATION_REQUEST_CODE );
+                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            }
         });
 
         btnMove.setOnClickListener(view -> typeMoveSelected());
@@ -410,7 +413,7 @@ public class HomeFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
 
-                eventResults.clear();
+                moveResults.clear();
 
                 JSONArray events;
                 if (response.has("_embedded")) {
@@ -419,21 +422,17 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < events.length(); i++) {
                             Event event = Event.fromJSON(events.getJSONObject(i));
                             Log.d(TAG, "got event");
-                            eventResults.add(event);
+                            moveResults.add(event);
                         }
 
-                        Intent intent = new Intent(getContext(), MovesActivity.class);
-                        intent.putExtra("moves", Parcels.wrap(eventResults));
-                        startActivity(intent);
+                        goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
                         Log.e(TAG, "Error getting events");
                         e.printStackTrace();
                     }
                 } else {
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
-                    intent.putExtra("moves", Parcels.wrap(eventResults));
-                    startActivity(intent);
+                    goToMovesActivity(moveResults);
                 }
             }
 
@@ -485,7 +484,7 @@ public class HomeFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
 
-                restaurantResults.clear();
+                moveResults.clear();
 
                 JSONArray results;
                 try {
@@ -495,12 +494,10 @@ public class HomeFragment extends Fragment {
                         Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
                         Log.d(TAG, "got restaurant");
 
-                        restaurantResults.add(restaurant);
+                        moveResults.add(restaurant);
                     }
 
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
-                    intent.putExtra("moves", Parcels.wrap(restaurantResults));
-                    startActivity(intent);
+                    goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {
                     Log.e(TAG, "Error getting nearby");
@@ -581,6 +578,29 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
+    private int milesToMeters(float miles) {
+        return (int) (miles/0.000621317);
+    }
+
+
+    private void goToMovesActivity(List<Move> moves) {
+        Intent intent = new Intent(getContext(), MovesActivity.class);
+        intent.putExtra("moves", Parcels.wrap(moves));
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
+            checkForCurrentLocation();
+        }
+    }
+
     public void UpdateMoveList() {
 
         Map<String, Integer> PrefDict = new HashMap<String, Integer>();
@@ -596,19 +616,6 @@ public class HomeFragment extends Fragment {
         ParseUser currUser = ParseUser.getCurrentUser();
         currUser.put("tester", al);
         currUser.saveInBackground();
-    }
-
-    private int milesToMeters(float miles) {
-        return (int) (miles/0.000621317);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
-            checkForCurrentLocation();
-        }
     }
 
 }

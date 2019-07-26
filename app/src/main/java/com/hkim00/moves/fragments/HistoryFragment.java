@@ -40,14 +40,11 @@ import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.specs.MoveItem;
-import com.hkim00.moves.specs.MoveSection;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +55,6 @@ public class HistoryFragment extends Fragment {
     public final static String TAG = "HistoryFragment";
 
     private List<Move> pastMoves;
-
-    private RecyclerCollectionComponent recyclerCollectionComponent;
-
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
 
@@ -68,6 +62,19 @@ public class HistoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return setupRecycler();
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getHistory();
+    }
+
+
+    private View setupRecycler() {
         pastMoves = new ArrayList<>();
 
         componentContext = new ComponentContext(getContext());
@@ -98,14 +105,6 @@ public class HistoryFragment extends Fragment {
     }
 
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        getHistory();
-    }
-
-
     private void getHistory() {
         ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
         restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -121,9 +120,9 @@ public class HistoryFragment extends Fragment {
 
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding saved restaurants.");
+                    Log.e(TAG, "Error finding past restaurants.");
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error past restaurants", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -141,9 +140,9 @@ public class HistoryFragment extends Fragment {
 
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding saved restaurants.");
+                    Log.e(TAG, "Error finding past events.");
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error past events", Toast.LENGTH_SHORT).show();
                 }
             }
         });
