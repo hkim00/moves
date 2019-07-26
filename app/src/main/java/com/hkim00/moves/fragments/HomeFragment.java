@@ -23,8 +23,11 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
+
+import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.util.MoveCategories;
+
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -531,7 +534,7 @@ public class HomeFragment extends Fragment {
         List<String> preferredList;
 
         if (nonPreferredList.size() == 0) {
-             preferredList = MoveCategories.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+             preferredList = MoveCategoriesHelper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
         } else {
             preferredList = nonPreferredList;
         }
@@ -551,7 +554,7 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("")) {
             return;
         }
-        MoveCategories helper = new MoveCategories();
+        MoveCategoriesHelper helper = new MoveCategoriesHelper();
         List<String> nonPreferredList = new ArrayList<>();
 
         if (moveType.equals("food")) {

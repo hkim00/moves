@@ -15,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
+import com.hkim00.moves.util.UncaughtExceptionHandler;
 import com.hkim00.moves.fragments.SearchFragment;
 import com.loopj.android.http.AsyncHttpClient;
 
@@ -38,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
         setContentView(R.layout.activity_home);
 
         client = new AsyncHttpClient();
