@@ -200,47 +200,130 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ivSave.setImageResource(R.drawable.ufi_save_active);
-                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
-                didSaveQuery.whereEqualTo("name", restaurant.name);
-                didSaveQuery.whereEqualTo("user", currUser);
-                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
+                if (restaurant != null) {
+                    ivSave.setImageResource(R.drawable.ufi_save_active);
+                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
+                    didSaveQuery.whereEqualTo("name", restaurant.name);
+                    didSaveQuery.whereEqualTo("user", currUser);
+                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
 
-                        for (int i =0; i < objects.size(); i++) {
-                            objects.get(i).put("didSave", true);
-                            objects.get(i).saveInBackground();
+
+                                if (objects.size()>0) {
+                                    for (int i = 0; i < objects.size(); i++) {
+                                        objects.get(i).put("didSave", true);
+                                        objects.get(i).saveInBackground();
+                                    }
+                                }
+                                else {
+                                    ParseObject currRest = new ParseObject("Restaurant");
+                                    currRest.put("name", restaurant.name);
+                                    currRest.put("user", currUser);
+                                    currRest.put("didSave", true);
+                                    currRest.saveInBackground();
+                                }
+
+                            Log.d("MoveDetailsActivity", "saved move");
                         }
-                        Log.d("MoveDetailsActivity", "saved move");
-                    }
 
-                });
-            }
+                    });
+
+                }
+
+                if (event != null) {
+                    ivSave.setImageResource(R.drawable.ufi_save_active);
+                        ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Event");
+                        didSaveQuery.whereEqualTo("name", event.name);
+                        didSaveQuery.whereEqualTo("user", currUser);
+                        didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> objects, ParseException e) {
+                                    if (objects.size()>0) {
+                                        for (int i = 0; i < objects.size(); i++) {
+                                            objects.get(0).put("didSave", true);
+                                            objects.get(0).saveInBackground();
+                                        }
+                                    }else {
+                                        ParseObject currEvent = new ParseObject("Event");
+                                        currEvent.put("name", event.name);
+                                        currEvent.put("user", currUser);
+                                        currEvent.put("didSave", true);
+                                        currEvent.saveInBackground();
+                                        Log.d("MoveDetailsActivity", "added move");
+                                    }
+
+
+                                Log.d("MoveDetailsActivity", "saved move");
+                            }
+
+                        });
+                    }
+                }
+
         });
 
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ivFavorite.setImageResource(R.drawable.ufi_heart_active);
-                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
-                didSaveQuery.whereEqualTo("name", restaurant.name);
-                didSaveQuery.whereEqualTo("user", currUser);
-                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
+                if (restaurant != null) {
+                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
+                    didSaveQuery.whereEqualTo("name", restaurant.name);
+                    didSaveQuery.whereEqualTo("user", currUser);
+                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
 
-                        for (int i =0; i < objects.size(); i++) {
-                            objects.get(i).put("didFavorite", true);
-                            objects.get(i).saveInBackground();
+                            if (objects.size()>0) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    objects.get(i).put("didFavorite", true);
+                                    objects.get(i).saveInBackground();
+                                }
+                            }
+                            else {
+                                ParseObject currRest = new ParseObject("Restaurant");
+                                currRest.put("name", restaurant.name);
+                                currRest.put("user", currUser);
+                                currRest.put("didFavorite", true);
+                                currRest.saveInBackground();
+                                Log.d("MoveDetailsActivity", "added move");
+                            }
+
+                            Log.d("MoveDetailsActivity", "favorited move");
                         }
-                        Log.d("MoveDetailsActivity", "favorited move");
-                    }
 
-                });
+                    });
+                }
+                if (event != null) {
+                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Event");
+                    didSaveQuery.whereEqualTo("name", event.name);
+                    didSaveQuery.whereEqualTo("user", currUser);
+                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (objects.size()>0) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    objects.get(0).put("didFavorite", true);
+                                    objects.get(0).saveInBackground();
+                                }
+                            }else {
+                                ParseObject currEvent = new ParseObject("Event");
+                                currEvent.put("name", event.name);
+                                currEvent.put("user", currUser);
+                                currEvent.put("didFavorite", true);
+                                currEvent.saveInBackground();
+                                Log.d("MoveDetailsActivity", "added move");
+                            }
+                            Log.d("MoveDetailsActivity", "favorited move");
+                        }
+
+                    });
+                }
             }
         });
     }
+
 
     /*
     private void lyftButton() {
@@ -265,5 +348,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton.load();
     }
     */
+
 
 }
