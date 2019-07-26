@@ -9,13 +9,13 @@ import com.hkim00.moves.ShowErrorActivity;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandler {
+public class UncaughtExceptionHandler implements java.lang.Thread.UncaughtExceptionHandler {
     // add the line below to Activities that will utilize this exception handler
-    // Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+    // Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
     private final Activity contextActivity;
     private final String LINE_SEPARATOR = "\n";
 
-    public ExceptionHandler(Activity context) {
+    public UncaughtExceptionHandler(Activity context) {
         contextActivity = context;
     }
 

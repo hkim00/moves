@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.hkim00.moves.util.ExceptionHandler;
+import com.hkim00.moves.util.UncaughtExceptionHandler;
 
 public class ShowErrorActivity extends Activity {
 
@@ -14,7 +14,7 @@ public class ShowErrorActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
 
         setContentView(R.layout.activity_main);
 
