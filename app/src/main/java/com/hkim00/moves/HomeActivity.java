@@ -10,16 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
-import com.hkim00.moves.specs.MoveItem;
 import com.loopj.android.http.AsyncHttpClient;
 
 public class HomeActivity extends AppCompatActivity {
@@ -48,7 +42,6 @@ public class HomeActivity extends AppCompatActivity {
         getScreenWidth();
         setupNavBar();
     }
-
 
     private void setupNavBar() {
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

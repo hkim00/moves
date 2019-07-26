@@ -29,6 +29,18 @@ public class MovesActivity extends AppCompatActivity {
         moves = new ArrayList<>();
         moves.addAll(Parcels.unwrap(getIntent().getParcelableExtra("moves")));
 
+        setupRecycler();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+
+    private void setupRecycler() {
         final ComponentContext context = new ComponentContext(this);
 
         final Component component =

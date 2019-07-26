@@ -24,6 +24,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.Move;
 import com.hkim00.moves.util.MoveCategories;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
@@ -40,6 +41,7 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -54,14 +56,9 @@ public class HomeFragment extends Fragment {
 
     private String moveType = "";
 
-    private GoogleClient googleClient;
-
-    private String time;
-    private String numberOfPeople;
     private int distance;
     private int priceLevel;
-    private List<Restaurant> restaurantResults;
-    private List<Event> eventResults;
+    private List<Move> moveResults;
     private UserLocation location;
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
@@ -91,11 +88,8 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         location = new UserLocation();
-        googleClient = new GoogleClient();
 
-        // initialize arrays to add JSON objects (Restaurant or Event objects) to
-        restaurantResults = new ArrayList<>();
-        eventResults = new ArrayList<>();
+        moveResults = new ArrayList<>();
 
         getViewIds(view);
 
@@ -246,6 +240,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), LocationActivity.class);
                 startActivityForResult(intent, LOCATION_REQUEST_CODE );
+                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
             }
         });
 
@@ -474,7 +469,7 @@ public class HomeFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
 
-                eventResults.clear();
+                moveResults.clear();
 
                 JSONArray events;
                 if (response.has("_embedded")) {
@@ -483,21 +478,17 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < events.length(); i++) {
                             Event event = Event.fromJSON(events.getJSONObject(i));
                             Log.d(TAG, "got event");
-                            eventResults.add(event);
+                            moveResults.add(event);
                         }
 
-                        Intent intent = new Intent(getContext(), MovesActivity.class);
-                        intent.putExtra("moves", Parcels.wrap(eventResults));
-                        startActivity(intent);
+                        goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
                         Log.e(TAG, "Error getting events");
                         e.printStackTrace();
                     }
                 } else {
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
-                    intent.putExtra("moves", Parcels.wrap(eventResults));
-                    startActivity(intent);
+                    goToMovesActivity(moveResults);
                 }
             }
 
@@ -550,7 +541,7 @@ public class HomeFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
 
-                restaurantResults.clear();
+                moveResults.clear();
 
                 JSONArray results;
                 try {
@@ -560,12 +551,10 @@ public class HomeFragment extends Fragment {
                         Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
                         Log.d(TAG, "got restaurant");
 
-                        restaurantResults.add(restaurant);
+                        moveResults.add(restaurant);
                     }
 
-                    Intent intent = new Intent(getContext(), MovesActivity.class);
-                    intent.putExtra("moves", Parcels.wrap(restaurantResults));
-                    startActivity(intent);
+                    goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {
                     Log.e(TAG, "Error getting nearby");
@@ -654,6 +643,13 @@ public class HomeFragment extends Fragment {
         return (int) (miles/0.000621317);
     }
 
+
+    private void goToMovesActivity(List<Move> moves) {
+        Intent intent = new Intent(getContext(), MovesActivity.class);
+        intent.putExtra("moves", Parcels.wrap(moves));
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    }
 
 
     @Override
