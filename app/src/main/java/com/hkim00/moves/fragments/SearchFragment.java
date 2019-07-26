@@ -14,17 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.OrientationHelper;
 
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
-import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaEdge;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.specs.MoveItem;
 import com.hkim00.moves.specs.SearchComponent;
 import com.hkim00.moves.specs.SearchComponentSpec;
 import com.hkim00.moves.specs.UserItem;
@@ -40,7 +35,6 @@ import java.util.List;
 public class SearchFragment extends Fragment {
     public final static String TAG = "SearchFragment";
 
-    private List<Move> pastMoves;
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
 
@@ -87,7 +81,7 @@ public class SearchFragment extends Fragment {
         }
 
         ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("_User");
-        userQuery.whereContains("username", username);
+        userQuery.whereContains("username", username.toLowerCase());
         userQuery.orderByDescending("createdAt");
 
         userQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -120,5 +114,4 @@ public class SearchFragment extends Fragment {
             recyclerBinder.appendItem(component);
         }
     }
-
 }

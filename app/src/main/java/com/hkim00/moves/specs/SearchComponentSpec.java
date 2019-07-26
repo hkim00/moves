@@ -1,10 +1,5 @@
 package com.hkim00.moves.specs;
 
-
-import android.util.Log;
-
-import androidx.recyclerview.widget.OrientationHelper;
-
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;

@@ -17,12 +17,11 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import com.hkim00.moves.MoveDetailsActivity;
-import com.hkim00.moves.models.Event;
-import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.ProfileActivity;
 import com.parse.ParseUser;
 
 import org.parceler.Parcels;
+
 
 @LayoutSpec
 public class UserItemSpec {
@@ -33,28 +32,25 @@ public class UserItemSpec {
         return Column.create(c)
                 .paddingDip(YogaEdge.ALL, 15)
                 .backgroundColor(Color.WHITE)
-                .child(
-                        Text.create(c)
-                                .text("name")
-                                .textSizeDip(15)
-                                .textStyle(1)) //bold
+                .clickHandler(UserItem.onClick(c))
                 .child(
                         Text.create(c)
                                 .text(user.getUsername())
-                                .textSizeDip(15))
+                                .textSizeDip(15)
+                                .textStyle(1)) //bold
                 .build();
     }
 
-//    @OnEvent(ClickEvent.class)
-//    static void onClick(
-//            ComponentContext c,
-//            @FromEvent View view,
-//            @Prop Move move) {
-//
-//        final Intent intent = new Intent(c.getAndroidContext(), MoveDetailsActivity.class);
-//        intent.putExtra("move", Parcels.wrap(move));
-//        c.getAndroidContext().startActivity(intent);
-//    }
+    @OnEvent(ClickEvent.class)
+    static void onClick(
+            ComponentContext c,
+            @FromEvent View view,
+            @Prop ParseUser user) {
+
+        final Intent intent = new Intent(c.getAndroidContext(), ProfileActivity.class);
+        intent.putExtra("user", Parcels.wrap(user));
+        c.getAndroidContext().startActivity(intent);
+    }
 }
 
 

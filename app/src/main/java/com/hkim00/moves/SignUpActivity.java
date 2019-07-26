@@ -32,7 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
         btnGetSarted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                user.setUsername(etUsername.getText().toString());
+                user.setUsername(etUsername.getText().toString().toLowerCase());
                 user.setPassword(etPassword.getText().toString());
 
                 user.signUpInBackground(new SignUpCallback() {
