@@ -601,17 +601,17 @@ public class HomeFragment extends Fragment {
     public void UpdateMoveList() {
 
         Map<String, Integer> PrefDict = new HashMap<String, Integer>();
-        ArrayList<Map<String, Integer>> al = new ArrayList();
+        ArrayList<Map<String, Integer>> movePref = new ArrayList();
 
         PrefDict.put ("key1", 1);
         PrefDict.put ("key2", 2);
         PrefDict.put ("key3", 3);
         PrefDict.put ("key4", 4);
 
-        al.add(PrefDict);
+        movePref.add(PrefDict);
 
         ParseUser currUser = ParseUser.getCurrentUser();
-        currUser.put("tester", al);
+        currUser.put("tester", movePref);
         currUser.saveInBackground();
     }
 
