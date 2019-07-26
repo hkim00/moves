@@ -18,6 +18,7 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
+import com.hkim00.moves.util.ParseUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -71,7 +72,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         getViewIds();
         ButtonsSetUp();
-        lyftButton();
+      //  lyftButton();
 
         Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
 
@@ -186,9 +187,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
-                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
-                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
@@ -216,9 +215,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 }
 
                 else if (event != null) {
-                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
-                    didCompleteQuery.whereEqualTo("placeId", event.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Event", event);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
@@ -250,22 +247,29 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ivSave.setImageResource(R.drawable.ufi_save_active);
-                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
-                didSaveQuery.whereEqualTo("name", restaurant.name);
-                didSaveQuery.whereEqualTo("user", currUser);
-                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-
-                        for (int i =0; i < objects.size(); i++) {
-                            objects.get(i).put("didSave", true);
-                            objects.get(i).saveInBackground();
+                if (restaurant != null) {
+                    ivSave.setImageResource(R.drawable.ufi_save_active);
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
+                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            ParseUtil.getDidSave("Restaurant", objects, restaurant);
                         }
-                        Log.d("MoveDetailsActivity", "saved move");
-                    }
+                    });
 
-                });
+                }
+
+                if (event != null) {
+                    ivSave.setImageResource(R.drawable.ufi_save_active);
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("Event", event);
+                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            ParseUtil.getDidSave("Event", objects, event);
+                        }
+                    });
+
+                }
             }
         });
 
@@ -273,25 +277,32 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ivFavorite.setImageResource(R.drawable.ufi_heart_active);
-                ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
-                didSaveQuery.whereEqualTo("name", restaurant.name);
-                didSaveQuery.whereEqualTo("user", currUser);
-                didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-
-                        for (int i =0; i < objects.size(); i++) {
-                            objects.get(i).put("didFavorite", true);
-                            objects.get(i).saveInBackground();
+                if (restaurant != null) {
+                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
+                    didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            ParseUtil.getDidFavorite("Restaurant", objects, restaurant);
                         }
-                        Log.d("MoveDetailsActivity", "favorited move");
-                    }
 
-                });
+                    });
+                }
+                if (event != null) {
+                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("Event", event);
+                    didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            ParseUtil.getDidFavorite("Event", objects, event);
+                        }
+
+                    });
+                }
             }
         });
     }
 
+
+    /*
     private void lyftButton() {
         // add feature to call Lyft to event/restaurant
         ApiConfig apiConfig = new ApiConfig.Builder()
@@ -313,4 +324,5 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton.setRideParams(rideParamsBuilder.build());
         lyftButton.load();
     }
+    */
 }

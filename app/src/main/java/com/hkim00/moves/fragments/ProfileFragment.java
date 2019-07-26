@@ -34,11 +34,13 @@ import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
 //import com.hkim00.moves.adapters.RestaurantAdapter;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
 import com.hkim00.moves.specs.MoveItem;
 import com.hkim00.moves.specs.MoveSection;
+import com.hkim00.moves.util.ParseUtil;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -93,9 +95,9 @@ public class ProfileFragment extends Fragment {
 
         setupRecyclerViews();
 
-        getFavoriteRestaurants();
+        getFavoriteMoves();
 
-        getSavedRestaurants();
+        getSavedMoves();
     }
 
     private void getViewIds(View view) {
@@ -140,62 +142,94 @@ public class ProfileFragment extends Fragment {
     }
 
 
-    private void getSavedRestaurants() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
-        restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        restaurantQuery.whereEqualTo("didSave", true);
-        restaurantQuery.orderByDescending("createdAt");
-
+    private void getSavedMoves() {
+        ParseQuery restaurantQuery = ParseUtil.getSpecificQuery("Restaurant", "didSave");
         restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    saveList.addAll(Restaurant.arrayFromParseObjects(objects));
-                    saveAdapter.notifyDataSetChanged();
-                } else {
-                    Log.e(TAG, "Error finding saved restaurants.");
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving profile", Toast.LENGTH_SHORT).show();
                 //TODO delete duplicates
-                /*
-                List<ParseObject> noDuplicates = new ArrayList<ParseObject>();
-                noDuplicates.add(objects.get(0));
-                for (ParseObject object: objects) {
-                    for (ParseObject uniqueObj: noDuplicates) {
-                        if (object.getString("name") == uniqueObj.getString("name")) {
-                            break;
-                        }
-                        noDuplicates.add(object);
+                for (int i = 0; i < objects.size(); i++) {
+                    if (e == null) {
+                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
+
+                        saveList.add(restaurant);
+                        saveAdapter.notifyItemInserted(saveList.size() - 1);
+                    } else {
+                        Log.e(TAG, "Error finding saved restaurants.");
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
                     }
                 }
-                */
+            }
+        });
+
+        ParseQuery eventQuery = ParseUtil.getSpecificQuery("Event", "didSave");
+        eventQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+
+                        Event event = Event.fromParseObject(objects.get(i));
+                        saveList.add(event);
+                        saveAdapter.notifyItemInserted(saveList.size() - 1);
+                    }
+                } else {
+                    Log.e(TAG, "Error finding saved events.");
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
 
+    private void getFavoriteMoves() {
 
-    private void getFavoriteRestaurants() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
-        restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        restaurantQuery.whereEqualTo("didFavorite", true);
-        restaurantQuery.orderByDescending("createdAt");
-
+        ParseQuery restaurantQuery = ParseUtil.getSpecificQuery("Restaurant", "didFavorite");
         restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+
                 if (e == null) {
-                    favList.addAll(Restaurant.arrayFromParseObjects(objects));
-                    favAdapter.notifyDataSetChanged();
+                    for (int i = 0; i < objects.size(); i++) {
+
+                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
+                        favList.add(restaurant);
+
+                        //retainAll
+                        favAdapter.notifyItemInserted(favList.size() - 1);
+
+                    }
                 } else {
-                        Log.e(TAG, "Error finding favorite restaurants.");
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Error getting favorite restaurants", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error finding saved restaurants.");
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+
+        ParseQuery eventQuery = ParseUtil.getSpecificQuery("Event", "didFavorite");
+        eventQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+
+                        Event event = Event.fromParseObject(objects.get(i));
+                        favList.add(event);
+                        favAdapter.notifyItemInserted(favList.size() - 1);
+                    }
+                } else {
+                    Log.e(TAG, "Error finding favorite events.");
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
 
