@@ -149,6 +149,7 @@ public class HistoryFragment extends Fragment {
         });
     }
 
+
     private void addContents(List<Move> moves) {
         if (moves.size() == 0) {
             return;

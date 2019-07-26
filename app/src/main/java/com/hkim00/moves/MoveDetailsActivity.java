@@ -201,6 +201,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 currRestaurant.put("name", restaurant.name);
                                 currRestaurant.put("user", currUser);
                                 currRestaurant.put("didComplete", true);
+                                currRestaurant.put("priceLevel", restaurant.price_level);
+                                currRestaurant.put("lat", restaurant.lat);
+                                currRestaurant.put("lng", restaurant.lng);
+                                currRestaurant.put("googleRating", restaurant.rating);
                                 currRestaurant.saveInBackground();
 
                                 Log.d("Move", "Move Saved in History Successfully");
