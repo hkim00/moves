@@ -572,7 +572,7 @@ public class HomeFragment extends Fragment {
             getNearbyRestaurants(nonPreferredList);
         } else {
             getNearbyEvents(nonPreferredList);
-        }\
+        }
     }
 
 
@@ -613,19 +613,6 @@ public class HomeFragment extends Fragment {
         ParseUser currUser = ParseUser.getCurrentUser();
         currUser.put("tester", al);
         currUser.saveInBackground();
-    }
-
-    private int milesToMeters(float miles) {
-        return (int) (miles/0.000621317);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
-            checkForCurrentLocation();
-        }
     }
 
 }

@@ -20,6 +20,9 @@ import com.loopj.android.http.AsyncHttpClient;
 public class HomeActivity extends AppCompatActivity {
 
     private final static String TAG = "HomeActivity";
+    private final static int HISTORY_TAG = 0;
+    private final static int HOME_TAG = 1;
+    private final static int PROFILE_TAG = 2;
 
     public static int screenWidth;
     public static AsyncHttpClient client;
@@ -56,24 +59,36 @@ public class HomeActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.action_history:
                         fragment = new HistoryFragment();
-                        fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-                        currentFrag = 0;
-                        break;
-                    case R.id.action_home:
-                        fragment = new HomeFragment();
 
-                        if (currentFrag < 1) {
-                            fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-                        } else {
+                        if (currentFrag != HISTORY_TAG) {
                             fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
                         }
 
-                        currentFrag = 1;
+                        currentFrag = HISTORY_TAG;
                         break;
+
+                    case R.id.action_home:
+                        fragment = new HomeFragment();
+
+                        if (currentFrag != HOME_TAG) {
+                            if (currentFrag < HOME_TAG) {
+                                fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                            } else {
+                                fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                            }
+                        }
+
+                        currentFrag = HOME_TAG;
+                        break;
+
                     case R.id.action_profile:
                         fragment = new ProfileFragment();
-                        fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-                        currentFrag = 2;
+
+                        if (currentFrag != PROFILE_TAG) {
+                            fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+
+                        currentFrag = PROFILE_TAG;
                     default:
                         break;
                 }
