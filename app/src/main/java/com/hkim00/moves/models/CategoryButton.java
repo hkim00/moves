@@ -1,6 +1,5 @@
 package com.hkim00.moves.models;
 
-
 public class CategoryButton {
     public String type;
     public String typeImageURL;

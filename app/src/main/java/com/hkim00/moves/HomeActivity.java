@@ -9,22 +9,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
-import com.hkim00.moves.specs.MoveItem;
 import com.loopj.android.http.AsyncHttpClient;
 
 public class HomeActivity extends AppCompatActivity {
 
     private final static String TAG = "HomeActivity";
+    private final static int HISTORY_TAG = 0;
+    private final static int HOME_TAG = 1;
+    private final static int PROFILE_TAG = 2;
 
     public static int screenWidth;
     public static AsyncHttpClient client;
@@ -33,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     private BottomNavigationView bottomNavigation;
 
+    private int currentFrag = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,27 +48,54 @@ public class HomeActivity extends AppCompatActivity {
         setupNavBar();
     }
 
-
     private void setupNavBar() {
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
                 Fragment fragment = new HomeFragment();
+
 
                 switch (menuItem.getItemId()) {
                     case R.id.action_history:
                         fragment = new HistoryFragment();
+
+                        if (currentFrag != HISTORY_TAG) {
+                            fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                        }
+
+                        currentFrag = HISTORY_TAG;
                         break;
+
                     case R.id.action_home:
                         fragment = new HomeFragment();
+
+                        if (currentFrag != HOME_TAG) {
+                            if (currentFrag < HOME_TAG) {
+                                fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                            } else {
+                                fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                            }
+                        }
+
+                        currentFrag = HOME_TAG;
                         break;
+
                     case R.id.action_profile:
                         fragment = new ProfileFragment();
+
+                        if (currentFrag != PROFILE_TAG) {
+                            fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+
+                        currentFrag = PROFILE_TAG;
                     default:
                         break;
                 }
 
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                fts.replace(R.id.flContainer, fragment, "fragment");
+                fts.commit();
+
                 return true;
             }
         });

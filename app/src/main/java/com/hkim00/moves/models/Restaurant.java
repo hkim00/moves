@@ -3,12 +3,18 @@
 package com.hkim00.moves.models;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import com.parse.ParseObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Parcel
 public class Restaurant implements Move {
@@ -23,6 +29,35 @@ public class Restaurant implements Move {
     public int getMoveType() {
         return Move.RESTAURANT;
     }
+
+
+    public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
+        List<Move> restaurants = new ArrayList<>();
+
+        for (int i = 0; i < objects.size(); i++) {
+                Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
+                restaurants.add(restaurant);
+        }
+
+        return restaurants;
+    }
+
+    public static List<Restaurant> arrayFromJSONArray(JSONArray objects) {
+        List<Restaurant> restaurants = new ArrayList<>();
+
+        for (int i = 0; i < objects.length(); i++) {
+            Restaurant restaurant = new Restaurant();
+            try {
+                restaurant = Restaurant.fromJSON(objects.getJSONObject(i));
+                restaurants.add(restaurant);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return restaurants;
+    }
+
 
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
@@ -48,11 +83,11 @@ public class Restaurant implements Move {
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("id");
 
-        restaurant.price_level = (Integer) parseObject.getNumber("price_level");
+        restaurant.price_level = (Integer) parseObject.getNumber("priceLevel");
 
         restaurant.lat = (Double) parseObject.getNumber("lat");
         restaurant.lng = (Double) parseObject.getNumber("lng");
-        restaurant.rating = (Double) parseObject.getNumber("rating");
+        restaurant.rating = (Double) parseObject.getNumber("googleRating");
 
         return restaurant;
     }

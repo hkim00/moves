@@ -88,6 +88,11 @@ public class LocationActivity extends AppCompatActivity implements
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
 
     private void getViewIds() {
         btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
@@ -231,7 +236,7 @@ public class LocationActivity extends AppCompatActivity implements
 
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
-        finish();
+        onBackPressed();
     }
 
 }

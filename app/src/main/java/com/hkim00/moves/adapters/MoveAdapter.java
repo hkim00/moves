@@ -43,13 +43,11 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             case Move.RESTAURANT:
                 view = LayoutInflater
                         .from(context)
-                        // TODO: create new layout for item_restaurant
                         .inflate(R.layout.item_move, parent, false);
                 return new restaurantViewHolder(view);
             case Move.EVENT:
                 view = LayoutInflater
                         .from(context)
-                        // TODO: create new layout for item_event
                         .inflate(R.layout.item_move, parent, false);
                 return new eventViewHolder(view);
         }
@@ -77,13 +75,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             super(itemView);
 
             tvTitle = itemView.findViewById(R.id.tvTitle);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    goToMoveDetails(move.getMoveType());
-                }
-            });
+            itemView.setOnClickListener(view -> goToMoveDetails(move.getMoveType()));
         }
 
         public abstract void bindType(Move move);
@@ -110,7 +102,6 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             tvTitle = itemView.findViewById(R.id.tvTitle);
         }
 
-
         public void bindType(Move move){
             tvTitle.setText(((Restaurant) move).name);
         }
@@ -128,5 +119,4 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             tvTitle.setText(((Event) move).name);
         }
     }
-
 }

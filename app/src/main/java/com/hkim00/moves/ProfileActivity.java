@@ -11,8 +11,6 @@ import android.widget.Button;
 import com.hkim00.moves.adapters.MoveAdapter;
 //import com.hkim00.moves.adapters.RestaurantAdapter;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,15 +38,21 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_profile);
 
+        findViewIds();
+
+        setupButtons();
+
+        setupRecyclerView();
+    }
+
+    private void findViewIds() {
         btnSaved = findViewById(R.id.btnSave);
         btnFavorites = findViewById(R.id.btnFavorite);
         rvFavorites = findViewById(R.id.rvFavorites);
         rvSaved = findViewById(R.id.rvSaved);
+    }
 
-        //set grid view --> if bug, may be because of context retrieval method
-        rvFavorites.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
-        rvSaved.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
-
+    private void setupButtons() {
         btnFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,9 +70,14 @@ public class ProfileActivity extends AppCompatActivity {
                 rvSaved.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void setupRecyclerView() {
+        //set grid view --> if bug, may be because of context retrieval method
+        rvFavorites.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
+        rvSaved.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
 
         //TODO: need to account for two different adapters (Events vs. Restaurant)
-
         rFaveList = new ArrayList<>();
         Faveadapter = new MoveAdapter(getApplicationContext(), rFaveList);
         rvFavorites.setAdapter(Faveadapter);
@@ -76,7 +85,6 @@ public class ProfileActivity extends AppCompatActivity {
         rSaveList = new ArrayList<>();
         Saveadapter = new MoveAdapter(getApplicationContext(), rSaveList);
         rvSaved.setAdapter(Saveadapter);
-
     }
 }
 
