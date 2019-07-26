@@ -153,18 +153,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 //TODO delete duplicates
-                /*
-                List<ParseObject> noDuplicates = new ArrayList<ParseObject>();
-                noDuplicates.add(objects.get(0));
-                for (ParseObject object: objects) {
-                    for (ParseObject uniqueObj: noDuplicates) {
-                        if (object.getString("name") == uniqueObj.getString("name")) {
-                            break;
-                        }
-                        noDuplicates.add(object);
-                    }
-                }
-                */
                 for (int i = 0; i < objects.size(); i++) {
                     if (e == null) {
                         Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
@@ -213,15 +201,19 @@ public class ProfileFragment extends Fragment {
             restaurantQuery.whereEqualTo("didFavorite", true);
             restaurantQuery.orderByDescending("createdAt");
             restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
+
                 @Override
                 public void done(List<ParseObject> objects, ParseException e) {
+
                     if (e == null) {
                         for (int i = 0; i < objects.size(); i++) {
 
                             Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-
                             favList.add(restaurant);
+
+                           //retainAll
                             favAdapter.notifyItemInserted(favList.size() - 1);
+
                         }
                     } else {
                         Log.e(TAG, "Error finding saved restaurants.");

@@ -325,7 +325,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
 
-    /*
+
     private void lyftButton() {
         ApiConfig apiConfig = new ApiConfig.Builder()
                 .setClientId(getString(R.string.client_id_lyft))
@@ -347,7 +347,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton.setRideParams(rideParamsBuilder.build());
         lyftButton.load();
     }
-    */
+
 
 
 }
