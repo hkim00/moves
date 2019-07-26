@@ -11,8 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.CatButtonsAdapter;
-import com.hkim00.moves.util.CategoryHelper;
-import com.hkim00.moves.util.MoveCategories;
+import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.CategoryButton;
 import com.parse.ParseUser;
 
@@ -34,7 +33,7 @@ public class Intro3Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro3);
 
-        MoveCategories helper = new MoveCategories();
+        MoveCategoriesHelper helper = new MoveCategoriesHelper();
 
         tvInstructions = findViewById(R.id.instructions_tv) ;
         rvCategories = findViewById(R.id.cat_rv);
@@ -46,10 +45,10 @@ public class Intro3Activity extends AppCompatActivity {
         rvCategories.setAdapter(adapter);
         rvCategories.setLayoutManager(new GridLayoutManager(this, 2));
 
-        // populates a category button with cuisines from array declared in CategoryHelper
-        CategoryHelper categoryHelper = new CategoryHelper(helper.eventCategoriesList);
+        // populates a category button with cuisines from array declared in MoveCategoriesHelper
+        helper.CategoryHelper(helper.eventCategoriesList);
 
-        mCatButtons.addAll(categoryHelper.mCategories);
+        mCatButtons.addAll(helper.mCategories);
         adapter.notifyDataSetChanged();
 
         mCategories = new ArrayList<>();
