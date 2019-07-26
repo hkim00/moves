@@ -83,11 +83,11 @@ public class Restaurant implements Move {
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("id");
 
-        restaurant.price_level = (Integer) parseObject.getNumber("price_level");
+        restaurant.price_level = (Integer) parseObject.getNumber("priceLevel");
 
         restaurant.lat = (Double) parseObject.getNumber("lat");
         restaurant.lng = (Double) parseObject.getNumber("lng");
-        restaurant.rating = (Double) parseObject.getNumber("rating");
+        restaurant.rating = (Double) parseObject.getNumber("googleRating");
 
         return restaurant;
     }
