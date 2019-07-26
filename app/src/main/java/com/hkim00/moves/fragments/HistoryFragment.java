@@ -120,9 +120,9 @@ public class HistoryFragment extends Fragment {
 
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding saved restaurants.");
+                    Log.e(TAG, "Error finding past restaurants.");
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error past restaurants", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -140,9 +140,9 @@ public class HistoryFragment extends Fragment {
 
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding saved restaurants.");
+                    Log.e(TAG, "Error finding past events.");
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error past events", Toast.LENGTH_SHORT).show();
                 }
             }
         });

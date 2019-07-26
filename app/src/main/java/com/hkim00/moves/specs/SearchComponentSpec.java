@@ -1,17 +1,21 @@
 package com.hkim00.moves.specs;
 
 
+import android.util.Log;
+
 import androidx.recyclerview.widget.OrientationHelper;
 
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.TextChangedEvent;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.yoga.YogaEdge;
 
@@ -36,6 +40,7 @@ public class SearchComponentSpec {
         return TextInput.create(c)
                 .textSizeDip(16)
                 .hint(hint)
+                .textChangedEventHandler(SearchComponent.onQueryChanged(c))
                 .build();
     }
 
@@ -43,5 +48,15 @@ public class SearchComponentSpec {
         return Recycler.create(c)
                 .binder(binder)
                 .build();
+    }
+
+
+    @OnEvent(TextChangedEvent.class)
+    static void onQueryChanged(ComponentContext c, @Prop OnQueryUpdateListener listener, @FromEvent String text) {
+        listener.onQueryUpdated(text);
+    }
+
+    public interface OnQueryUpdateListener {
+        void onQueryUpdated(String query);
     }
 }
