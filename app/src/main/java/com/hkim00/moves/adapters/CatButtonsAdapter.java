@@ -45,11 +45,6 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
         return catButtons.size();
     }
 
-    public void clear() {
-        catButtons.clear();
-        notifyDataSetChanged();
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView tvCuisine;
@@ -67,7 +62,6 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            ParseUser currUser = ParseUser.getCurrentUser();
             foodPrefList = new ArrayList<>();
             if (position != RecyclerView.NO_POSITION) {
                 CategoryButton categoryButton = catButtons.get(position);
