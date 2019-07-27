@@ -106,7 +106,7 @@ public class HistoryFragment extends Fragment {
 
 
     private void getHistory() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
+        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Move");
         restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
         restaurantQuery.whereEqualTo("didComplete", true);
         restaurantQuery.orderByDescending("createdAt");
@@ -123,26 +123,6 @@ public class HistoryFragment extends Fragment {
                     Log.e(TAG, "Error finding past restaurants.");
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Error past restaurants", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Event");
-        eventQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        eventQuery.whereEqualTo("didComplete", true);
-        eventQuery.orderByDescending("createdAt");
-        eventQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    List<Move> moves = Event.arrayFromParseObjects(objects);
-                    pastMoves.addAll(moves);
-
-                    addContents(moves);
-                } else {
-                    Log.e(TAG, "Error finding past events.");
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error past events", Toast.LENGTH_SHORT).show();
                 }
             }
         });

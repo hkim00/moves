@@ -33,6 +33,7 @@ import com.lyft.networking.ApiConfig;
 import com.lyft.deeplink.RideTypeEnum;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.parceler.Parcels;
@@ -44,6 +45,8 @@ import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
 
 public class MoveDetailsActivity extends AppCompatActivity {
+
+    private final static String TAG = "MoveDetailsActivity";
 
     private TextView tvMoveName;
     private TextView tvTime;
@@ -111,6 +114,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void getFoodView() {
          tvMoveName.setText(restaurant.name);
 
+         if (restaurant.lat == null) {
+             getFoodDetails();
+             return;
+         }
+
           String price = "";
           if (restaurant.price_level < 0) {
               price = "Unknown";
@@ -137,6 +145,59 @@ public class MoveDetailsActivity extends AppCompatActivity {
           }
     }
 
+    private void getFoodDetails() {
+        String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
+
+        RequestParams params = new RequestParams();
+        params.put("placeid", restaurant.id);
+        params.put("key", getString(R.string.api_key));
+
+        HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                JSONObject result;
+                try {
+                    result = response.getJSONObject("result");
+
+                    Restaurant restaurantResult = Restaurant.fromJSON(result);
+                    restaurant = restaurantResult;
+
+                    if (restaurant.lat != null) {
+                        getFoodView();
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error getting restaurant");
+
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e(TAG, responseString);
+                throwable.printStackTrace();
+            }
+        });
+    }
+
     private void getEventView() {
         tvMoveName.setText(event.name);
         String id = event.id;
@@ -151,7 +212,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getEventDetails(String id) {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
-        String TAG = "MoveDetailsActivity";
         String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
 
         RequestParams params = new RequestParams();
@@ -203,14 +263,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
                                 currUser.saveInBackground();
 
-                                ParseObject currRestaurant = new ParseObject("Restaurant");
+                                ParseObject currRestaurant = new ParseObject("Move");
                                 currRestaurant.put("name", restaurant.name);
-                                currRestaurant.put("user", currUser);
+                                currRestaurant.put("placeId", restaurant.id);
+                                currRestaurant.put("moveType", "food");
+                                currRestaurant.put("user", ParseUser.getCurrentUser());
                                 currRestaurant.put("didComplete", true);
-                                currRestaurant.put("priceLevel", restaurant.price_level);
-                                currRestaurant.put("lat", restaurant.lat);
-                                currRestaurant.put("lng", restaurant.lng);
-                                currRestaurant.put("googleRating", restaurant.rating);
                                 currRestaurant.saveInBackground();
 
                                 Log.d("Move", "Move Saved in History Successfully");

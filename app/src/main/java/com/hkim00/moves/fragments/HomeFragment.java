@@ -26,7 +26,6 @@ import com.hkim00.moves.R;
 
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.util.MoveCategories;
 
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
@@ -492,7 +491,7 @@ public class HomeFragment extends Fragment {
 
                     for (int i = 0; i < results.length(); i++) {
                         Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
-                        Log.d(TAG, "got restaurant");
+                        Log.d(TAG, "got restaurant " + restaurant.id);
 
                         moveResults.add(restaurant);
                     }
