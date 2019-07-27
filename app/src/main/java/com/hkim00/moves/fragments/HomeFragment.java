@@ -527,7 +527,7 @@ public class HomeFragment extends Fragment {
         List<String> preferredList;
 
         if (nonPreferredList.size() == 0) {
-             preferredList = MoveCategoriesHelper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+             preferredList = MoveCategoriesHelper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
         } else {
             preferredList = nonPreferredList;
         }
@@ -553,13 +553,13 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("food")) {
             if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
 
-                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
                 nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
             }
         } else {
             if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
 
-                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
+                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("eventPrefList"));
                 nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
             }
         }

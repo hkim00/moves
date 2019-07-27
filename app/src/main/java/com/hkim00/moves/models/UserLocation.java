@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationResult;
@@ -126,6 +127,7 @@ public class UserLocation {
                 return location;
             }
         } catch (JSONException e) {
+            Log.e(context.toString(), e.getMessage());
             e.printStackTrace();
             return location;
         }
