@@ -140,9 +140,8 @@ public class HistoryFragment extends Fragment {
 
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding past events.");
+                    Log.e(TAG, e.getMessage());
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error past events", Toast.LENGTH_SHORT).show();
                 }
             }
         });

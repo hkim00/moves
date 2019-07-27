@@ -33,7 +33,7 @@ public class SignUpActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword2);
 
         btnGetSarted.setOnClickListener(view -> {
-            user.setUsername(etUsername.getText().toString.toLowerCase());
+            user.setUsername(etUsername.getText().toString().toLowerCase());
             user.setPassword(etPassword.getText().toString());
 
             user.signUpInBackground(e -> {
