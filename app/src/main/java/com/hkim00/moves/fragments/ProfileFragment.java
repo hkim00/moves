@@ -31,6 +31,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.Text;
 import com.hkim00.moves.LogInActivity;
+import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
 //import com.hkim00.moves.adapters.RestaurantAdapter;
@@ -47,6 +48,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import com.parse.ParseUser;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +78,8 @@ public class ProfileFragment extends Fragment {
     private List<Move> favList;
     private List<Move> saveList;
 
+    Move move;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -98,6 +103,7 @@ public class ProfileFragment extends Fragment {
         getFavoriteMoves();
 
         getSavedMoves();
+
     }
 
     private void getViewIds(View view) {

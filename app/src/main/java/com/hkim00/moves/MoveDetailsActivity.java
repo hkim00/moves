@@ -75,7 +75,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
       //  lyftButton();
 
         Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
-
         if (move.getMoveType() == Move.RESTAURANT) {
             restaurant = (Restaurant) move;
             getFoodView();
@@ -302,6 +301,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
 
+
     /*
     private void lyftButton() {
         // add feature to call Lyft to event/restaurant
@@ -325,4 +325,5 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton.load();
     }
     */
+
 }
