@@ -84,6 +84,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
     private void getViewIds() {
         tvMoveName = findViewById(R.id.tvMoveName);
         tvTime = findViewById(R.id.tvTime);
