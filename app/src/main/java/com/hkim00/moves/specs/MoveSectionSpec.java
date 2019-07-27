@@ -1,5 +1,6 @@
 package com.hkim00.moves.specs;
 
+import android.content.Context;
 import android.graphics.Color;
 
 import com.facebook.litho.annotations.FromEvent;

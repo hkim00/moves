@@ -1,5 +1,6 @@
 package com.hkim00.moves.specs;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,30 +18,27 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
-import com.hkim00.moves.MoveDetailsActivity;
+import com.hkim00.moves.ProfileActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.models.Event;
-import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
-@LayoutSpec
-public class MoveItemSpec {
 
+@LayoutSpec
+public class UserItemSpec {
     @OnCreateLayout
     static Component onCreateLayout(ComponentContext c,
-                                    @Prop Move move) {
-
-        String name = (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).name : ((Event) move).name;
+                                    @Prop Context context,
+                                    @Prop ParseUser user) {
 
         return Column.create(c)
                 .paddingDip(YogaEdge.ALL, 15)
                 .backgroundColor(Color.WHITE)
-                .clickHandler(MoveItem.onClick(c))
+                .clickHandler(UserItem.onClick(c))
                 .child(
                         Text.create(c)
-                                .text(name)
+                                .text(user.getUsername())
                                 .textSizeDip(15)
                                 .textStyle(1)) //bold
                 .build();
@@ -50,10 +48,17 @@ public class MoveItemSpec {
     static void onClick(
             ComponentContext c,
             @FromEvent View view,
-            @Prop Move move) {
+            @Prop Context context,
+            @Prop ParseUser user) {
 
-        final Intent intent = new Intent(c.getAndroidContext(), MoveDetailsActivity.class);
-        intent.putExtra("move", Parcels.wrap(move));
+        final Intent intent = new Intent(c.getAndroidContext(), ProfileActivity.class);
+        intent.putExtra("user", Parcels.wrap(user));
         c.getAndroidContext().startActivity(intent);
+
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+        }
     }
 }
+
+

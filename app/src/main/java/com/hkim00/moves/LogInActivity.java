@@ -2,31 +2,18 @@ package com.hkim00.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.litho.Column;
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.sections.Section;
-import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.widget.Text;
-import com.facebook.litho.widget.VerticalGravity;
-import com.facebook.soloader.SoLoader;
-import com.hkim00.moves.specs.MoveItem;
-import com.hkim00.moves.specs.MoveSection;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
+import com.hkim00.moves.util.UncaughtExceptionHandler;
 import com.parse.ParseUser;
 
 public class LogInActivity extends AppCompatActivity {
+
+    private String TAG = "LogInActivity";
 
     private EditText etUsername;
     private EditText etPassword;
@@ -36,6 +23,9 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
+
         setContentView(R.layout.activity_login);
 
         checkForCurrentUser();
@@ -58,50 +48,32 @@ public class LogInActivity extends AppCompatActivity {
         }
     }
 
-
     private void setupButtons() {
-        btnLogIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String username = etUsername.getText().toString();
-                final String password = etPassword.getText().toString();
+        btnLogIn.setOnClickListener(view -> {
+            final String username = etUsername.getText().toString();
+            final String password = etPassword.getText().toString();
 
-                login(username, password);
-            }
+            login(username, password);
         });
 
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("LogInActivity", "Sign Up Worked!");
-                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        btnSignUp.setOnClickListener(view -> {
+            Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
-
 
     private void login (String username, String password){
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (e == null) {
-                    Log.d("LoginActivity", "Login Successful!");
+        ParseUser.logInInBackground(username, password, (user, e) -> {
+            if (e == null) {
+                Log.d(TAG, "Login successful!");
+                final Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
 
-
-                    final Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish();
-
-                } else {
-                    Log.e("LoginActivity", "Login failure");
-                    e.printStackTrace();
-                }
+            } else {
+                Log.e(TAG, e.getMessage());
             }
         });
     }
-
-
 }

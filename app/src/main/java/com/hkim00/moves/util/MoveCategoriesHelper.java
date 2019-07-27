@@ -1,5 +1,7 @@
 package com.hkim00.moves.util;
 
+import com.hkim00.moves.models.CategoryButton;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -8,12 +10,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class MoveCategories {
+public class MoveCategoriesHelper {
 
     public static List<String> foodCategoriesList;
     public static List<String> eventCategoriesList;
 
-    public MoveCategories() {
+    public static List<CategoryButton> mCategories;
+
+    public void CategoryHelper(List<String> list) {
+        mCategories = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            CategoryButton categoryButton = new CategoryButton(list.get(i), "");
+            mCategories.add(categoryButton);
+        }
+    }
+
+    public MoveCategoriesHelper() {
         foodCategoriesList = Arrays.asList(
                 "Italian",
                 "Mexican",
