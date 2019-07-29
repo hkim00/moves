@@ -79,7 +79,7 @@ public class HomeFragment extends Fragment {
     private EditText etDistance;
     private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
 
-    private Button btnMove, btnRiskyMove;
+    private Button btnMove, btnRiskyMove, btnAddFriends;
 
     @Nullable
     @Override
@@ -137,7 +137,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents(new ArrayList<>());
+                            getNearbyEvents(new ArrayList<>(), false);
                         } else {
                             Log.e(TAG, "No postal code found.");
                         }
@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents(new ArrayList<>());
+            getNearbyEvents(new ArrayList<>(), false);
         }
     }
 
@@ -199,6 +199,7 @@ public class HomeFragment extends Fragment {
 
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
+        btnAddFriends = view.findViewById(R.id.btnAddFriends);
     }
 
     private void setupDesign() {
@@ -257,7 +258,14 @@ public class HomeFragment extends Fragment {
 
         btnMove.setOnClickListener(view -> typeMoveSelected());
 
-        btnRiskyMove.setOnClickListener(view -> getRiskyMove());
+        btnRiskyMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (moveType == "food") {
+                    getNearbyRestaurants(new ArrayList<>(), true);
+                }
+            }
+        });
     }
 
     private void toggleRightPopup(String type) {
@@ -320,7 +328,7 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType.equals("food")) {
-            getNearbyRestaurants(new ArrayList<>());
+            getNearbyRestaurants(new ArrayList<>(), false);
         }
         else if (moveType.equals("event")) {
             checkForPostalCode();
@@ -378,33 +386,35 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void getNearbyEvents(List<String> nonPreferredList) {
+    private void getNearbyEvents(List<String> nonPreferredList, Boolean isRisky) {
         String apiUrl = API_BASE_URL_TM + ".json";
 
         RequestParams params = new RequestParams();
 
-        if (nonPreferredList.size() == 0) {
-            JSONArray jsonPrefList = currUser.getJSONArray("eventPrefList");
-            if (jsonPrefList != null) {
-                try {
-                    for (int i = 0; i < jsonPrefList.length(); i++) {
-                        String pref = jsonPrefList.get(i).toString();
-                        params.put("keyword", pref);
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            for (int i = 0; i < nonPreferredList.size(); i++) {
-                params.put("keyword", nonPreferredList.get(i));
-            }
-        }
-
         params.put("postalCode", location.postalCode);
         params.put("sort", "date,asc");
         params.put("apikey", getString(R.string.api_key_tm));
+
+        if (!isRisky) {
+            if (nonPreferredList.size() == 0) {
+                JSONArray jsonPrefList = currUser.getJSONArray("eventPrefList");
+                if (jsonPrefList != null) {
+                    try {
+                        for (int i = 0; i < jsonPrefList.length(); i++) {
+                            String pref = jsonPrefList.get(i).toString();
+                            params.put("keyword", pref);
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                for (int i = 0; i < nonPreferredList.size(); i++) {
+                    params.put("keyword", nonPreferredList.get(i));
+                }
+            }
+        }
 
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
@@ -452,7 +462,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getNearbyRestaurants(List<String> nonPreferredList) {
+    private void getNearbyRestaurants(List<String> nonPreferredList, Boolean isRisky) {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
@@ -463,14 +473,15 @@ public class HomeFragment extends Fragment {
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
 
-        String userFoodPref = getUserFoodPreferenceString(nonPreferredList);
-
-        if (!userFoodPref.equals("")) {
-            params.put("keyword", userFoodPref);
-        }
-
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
+        }
+
+        if (!isRisky) {
+            String userFoodPref = getUserFoodPreferenceString(nonPreferredList);
+            if (!userFoodPref.equals("")) {
+                params.put("keyword", userFoodPref);
+            }
         }
 
         params.put("key", getString(R.string.api_key));
@@ -484,7 +495,9 @@ public class HomeFragment extends Fragment {
 
                 JSONArray results;
                 try {
+                    Log.i(TAG, params.toString());
                     results = response.getJSONArray("results");
+
 
                     for (int i = 0; i < results.length(); i++) {
                         Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
@@ -542,35 +555,6 @@ public class HomeFragment extends Fragment {
 
         return userFoodPref;
     }
-
-    private void getRiskyMove() {
-        if (moveType.equals("")) {
-            return;
-        }
-        MoveCategoriesHelper helper = new MoveCategoriesHelper();
-        List<String> nonPreferredList = new ArrayList<>();
-
-        if (moveType.equals("food")) {
-            if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
-
-                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
-                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
-            }
-        } else {
-            if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
-
-                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("eventPrefList"));
-                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
-            }
-        }
-
-        if ((moveType.equals("food"))) {
-            getNearbyRestaurants(nonPreferredList);
-        } else {
-            getNearbyEvents(nonPreferredList);
-        }
-    }
-
 
     private int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
