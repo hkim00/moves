@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
@@ -34,6 +36,7 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import com.parse.Parse;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -58,6 +61,7 @@ public class HomeFragment extends Fragment {
     public static final int LOCATION_REQUEST_CODE = 20;
 
     ParseUser currUser = ParseUser.getCurrentUser();
+    ParseUser friend;
 
     private String moveType = "";
     private int distance;
@@ -78,6 +82,8 @@ public class HomeFragment extends Fragment {
     private TextView tvRightPopupTitle, tvMiles;
     private EditText etDistance;
     private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
+
+    private TextView tvFriend;
 
     private Button btnMove, btnRiskyMove, btnAddFriends;
 
@@ -102,6 +108,12 @@ public class HomeFragment extends Fragment {
         setupButtons();
 
         checkForCurrentLocation();
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            friend = bundle.getParcelable("friend");
+            tvFriend.setText(friend.getUsername());
+        }
     }
 
     private void checkForCurrentLocation() {
@@ -197,6 +209,8 @@ public class HomeFragment extends Fragment {
         btnPriceLevel3 = view.findViewById(R.id.btnPriceLevel3);
         btnPriceLevel4 = view.findViewById(R.id.btnPriceLevel4);
 
+        tvFriend = view.findViewById(R.id.tvFriend);
+
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
@@ -214,6 +228,8 @@ public class HomeFragment extends Fragment {
 
         tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
+
+        tvFriend.setText("");
 
         moveType = "";
 
@@ -267,6 +283,19 @@ public class HomeFragment extends Fragment {
                 if (moveType == "event") {
                     getNearbyEvents(new ArrayList<>(), true);
                 }
+            }
+        });
+
+        btnAddFriends.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new SearchFragment();
+                ((SearchFragment) fragment).isAddFriend = true;
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.flContainer, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
     }
@@ -566,14 +595,12 @@ public class HomeFragment extends Fragment {
         return (int) (miles/0.000621317);
     }
 
-
     private void goToMovesActivity(List<Move> moves) {
         Intent intent = new Intent(getContext(), MovesActivity.class);
         intent.putExtra("moves", Parcels.wrap(moves));
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
