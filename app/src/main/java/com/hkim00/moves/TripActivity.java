@@ -13,12 +13,17 @@ import android.widget.TextView;
 
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.StatusCodeHandler;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+
+import java.text.DateFormatSymbols;
+import java.util.List;
 
 public class TripActivity extends AppCompatActivity {
 
-    public final static String TAG = "TripActivity";
-    public static final int LOCATION_REQUEST_CODE = 20;
+    private final static String TAG = "TripActivity";
+    private static final int LOCATION_REQUEST_CODE = 20;
+    public static final int CALENDAR_REQUEST_CODE = 30;
 
     private EditText etTrip;
     private TextView tvLocation;
@@ -27,6 +32,7 @@ public class TripActivity extends AppCompatActivity {
     private Button btnCalendar;
 
     private UserLocation location;
+    public static List<CalendarDay> dates;
 
 
     @Override
@@ -74,8 +80,17 @@ public class TripActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
+        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE) {
             checkForCurrentLocation();
+        } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
+            if (dates.size() > 0) {
+                tvCalendar.setTextColor(getResources().getColor(R.color.black));
+                String[] months = new DateFormatSymbols().getShortMonths();
+                tvCalendar.setText(months[dates.get(0).getMonth() - 1] + " " + dates.get(0).getDay() + " - " + months[dates.get(dates.size() - 1).getMonth() - 1] + " " + dates.get(dates.size() - 1).getDay());
+            } else {
+                tvCalendar.setText("When?");
+                tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
+            }
         }
     }
 
@@ -102,7 +117,7 @@ public class TripActivity extends AppCompatActivity {
 
     private void goToCalendarActivity() {
         Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, CALENDAR_REQUEST_CODE);
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 }
