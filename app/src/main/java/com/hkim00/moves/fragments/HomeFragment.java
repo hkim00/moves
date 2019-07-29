@@ -84,6 +84,7 @@ public class HomeFragment extends Fragment {
     private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
 
     private TextView tvFriend;
+    private Boolean isFriendMove = false;
 
     private Button btnMove, btnRiskyMove, btnAddFriends;
 
@@ -113,6 +114,7 @@ public class HomeFragment extends Fragment {
         if (bundle != null) {
             friend = bundle.getParcelable("friend");
             tvFriend.setText(friend.getUsername());
+            isFriendMove = true;
         }
     }
 
@@ -278,10 +280,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (moveType == "food") {
-                    getNearbyRestaurants(new ArrayList<>(), true);
+                    getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
                 }
                 if (moveType == "event") {
-                    getNearbyEvents(new ArrayList<>(), true);
+                    getNearbyEvents(new ArrayList<>(), true, isFriendMove);
                 }
             }
         });
@@ -360,10 +362,10 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType.equals("food")) {
-            getNearbyRestaurants(new ArrayList<>(), false);
+            getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
         }
         else if (moveType.equals("event")) {
-            getNearbyEvents(new ArrayList<>(), false);
+            getNearbyEvents(new ArrayList<>(), false, isFriendMove);
         }
     }
 
@@ -418,7 +420,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void getNearbyEvents(List<String> nonPreferredList, Boolean isRisky) {
+    private void getNearbyEvents(List<String> nonPreferredList, Boolean isRisky, Boolean isFriendMove) {
         checkForPostalCode();
 
         String apiUrl = API_BASE_URL_TM + ".json";
@@ -430,22 +432,50 @@ public class HomeFragment extends Fragment {
         params.put("apikey", getString(R.string.api_key_tm));
 
         if (!isRisky) {
-            if (nonPreferredList.size() == 0) {
-                JSONArray jsonPrefList = currUser.getJSONArray("eventPrefList");
-                if (jsonPrefList != null) {
-                    try {
-                        for (int i = 0; i < jsonPrefList.length(); i++) {
-                            String pref = jsonPrefList.get(i).toString();
-                            params.put("keyword", pref);
+            if (!isFriendMove) {
+                if (nonPreferredList.size() == 0) {
+                    JSONArray jsonPrefList = currUser.getJSONArray("eventPrefList");
+                    // TODO: modify this based on our workaround for single keyword problem
+                    if (jsonPrefList != null) {
+                        try {
+                            for (int i = 0; i < jsonPrefList.length(); i++) {
+                                String pref = jsonPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        Log.e(TAG, e.getMessage());
-                        e.printStackTrace();
+                    }
+                } else {
+                    for (int i = 0; i < nonPreferredList.size(); i++) {
+                        params.put("keyword", nonPreferredList.get(i));
                     }
                 }
             } else {
-                for (int i = 0; i < nonPreferredList.size(); i++) {
-                    params.put("keyword", nonPreferredList.get(i));
+                if (nonPreferredList.size() == 0) {
+                    JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
+                    JSONArray friendPrefList = friend.getJSONArray("eventPrefList");
+                    if (currUserPrefList != null || friendPrefList != null) {
+                        // TODO: modify this based on our workaround for single keyword problem
+                        try {
+                            for (int i = 0; i < currUserPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                            }
+                            for (int i = 0; i < friendPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < nonPreferredList.size(); i++) {
+                        params.put("keyword", nonPreferredList.get(i));
+                    }
                 }
             }
         }
@@ -496,9 +526,9 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getNearbyRestaurants(List<String> nonPreferredList, Boolean isRisky) {
+    private void getNearbyRestaurants(List<String> nonPreferredList, Boolean isRisky, Boolean isFriendMove) {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
-
+        
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
 
@@ -512,9 +542,49 @@ public class HomeFragment extends Fragment {
         }
 
         if (!isRisky) {
-            String userFoodPref = getUserFoodPreferenceString(nonPreferredList);
-            if (!userFoodPref.equals("")) {
-                params.put("keyword", userFoodPref);
+            if (!isFriendMove) {
+                if (nonPreferredList.size() == 0) {
+                    JSONArray jsonPrefList = currUser.getJSONArray("foodPrefList");
+                    if (jsonPrefList != null) {
+                        try {
+                            for (int i = 0; i < jsonPrefList.length(); i++) {
+                                String pref = jsonPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < nonPreferredList.size(); i++) {
+                        params.put("keyword", nonPreferredList.get(i));
+                    }
+                }
+            } else {
+                if (nonPreferredList.size() == 0) {
+                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
+                    JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
+                    if (currUserPrefList != null || friendPrefList != null) {
+                        try {
+                            for (int i = 0; i < currUserPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                            }
+                            for (int i = 0; i < friendPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < nonPreferredList.size(); i++) {
+                        params.put("keyword", nonPreferredList.get(i));
+                    }
+                }
             }
         }
 
