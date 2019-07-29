@@ -81,7 +81,7 @@ public class LocationActivity extends AppCompatActivity implements
 
         setupAutoCompleteSearch();
 
-        isTrip = getIntent().getBooleanExtra("type", false);
+        isTrip = getIntent().getBooleanExtra("isTrip", false);
 
         btnCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override

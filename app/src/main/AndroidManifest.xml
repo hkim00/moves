@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TripActivity"></activity>
+        <activity android:name=".CalendarActivity"></activity>
+        <activity android:name=".TripActivity" />
         <activity android:name=".LocationActivity" />
         <activity android:name=".MovesActivity" />
         <activity android:name=".MoveDetailsActivity" />
