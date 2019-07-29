@@ -106,7 +106,7 @@ public class HistoryFragment extends Fragment {
 
 
     private void getHistory() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Restaurant");
+        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Move");
         restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
         restaurantQuery.whereEqualTo("didComplete", true);
         restaurantQuery.orderByDescending("createdAt");

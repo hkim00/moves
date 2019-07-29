@@ -84,10 +84,10 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (moveType == 1) {
-                intent.putExtra("moveRestaurant", Parcels.wrap(move));
+                intent.putExtra("move", Parcels.wrap(move));
             }
             if (moveType == 2) {
-                intent.putExtra("moveEvent", Parcels.wrap(move));
+                intent.putExtra("move", Parcels.wrap(move));
             }
             context.startActivity(intent);
         }

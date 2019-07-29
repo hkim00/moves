@@ -41,17 +41,15 @@ public class MovesActivity extends AppCompatActivity {
 
 
     private void setupRecycler() {
-        final ComponentContext context = new ComponentContext(this);
+        final ComponentContext c = new ComponentContext(this);
 
         final Component component =
-                RecyclerCollectionComponent.create(context)
+                RecyclerCollectionComponent.create(c)
                         .disablePTR(true)
                         .section(
-                                MoveSection.create(new SectionContext(context))
-                                        .moves(moves)
-                                        .build())
+                                MoveSection.create(new SectionContext(c)).moves(moves).build())
                         .build();
 
-        setContentView(LithoView.create(context, component));
+        setContentView(LithoView.create(c, component));
     }
 }

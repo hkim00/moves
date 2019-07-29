@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
-    public final static String TAG = "SearchFragment";
+    private final static String TAG = "SearchFragment";
 
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
@@ -88,7 +88,9 @@ public class SearchFragment extends Fragment {
                     List<ParseUser> users = new ArrayList<>();
 
                     for (int i = 0; i < objects.size(); i++) {
-                        users.add((ParseUser) objects.get(i));
+                        if (!objects.get(i).getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                            users.add((ParseUser) objects.get(i));
+                        }
                     }
 
                     updateContent(users);
@@ -107,7 +109,7 @@ public class SearchFragment extends Fragment {
         recyclerBinder.removeRangeAt(0, recyclerBinder.getItemCount());
 
         for (ParseUser user : users) {
-            Component component = UserItem.create(componentContext).user(user).build();
+            Component component = UserItem.create(componentContext).context(getContext()).user(user).build();
             recyclerBinder.appendItem(component);
         }
     }

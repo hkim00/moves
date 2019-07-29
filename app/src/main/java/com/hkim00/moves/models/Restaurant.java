@@ -63,7 +63,7 @@ public class Restaurant implements Move {
         Restaurant restaurant = new Restaurant();
 
         restaurant.name = jsonObject.getString("name");
-        restaurant.id = jsonObject.getString("id");
+        restaurant.id = jsonObject.getString("place_id");
 
         restaurant.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
 
@@ -81,13 +81,9 @@ public class Restaurant implements Move {
         Restaurant restaurant = new Restaurant();
 
         restaurant.name = parseObject.getString("name");
-        restaurant.id = parseObject.getString("id");
+        restaurant.id = parseObject.getString("placeId");
 
-        restaurant.price_level = (Integer) parseObject.getNumber("priceLevel");
-
-        restaurant.lat = (Double) parseObject.getNumber("lat");
-        restaurant.lng = (Double) parseObject.getNumber("lng");
-        restaurant.rating = (Double) parseObject.getNumber("googleRating");
+        restaurant.lat = null;
 
         return restaurant;
     }

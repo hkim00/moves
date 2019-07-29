@@ -18,6 +18,7 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
+import com.hkim00.moves.util.ParseUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -33,6 +34,7 @@ import com.lyft.networking.ApiConfig;
 import com.lyft.deeplink.RideTypeEnum;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.parceler.Parcels;
@@ -44,6 +46,8 @@ import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
 
 public class MoveDetailsActivity extends AppCompatActivity {
+
+    private final static String TAG = "MoveDetailsActivity";
 
     private TextView tvMoveName;
     private TextView tvTime;
@@ -74,7 +78,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton();
 
         Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
-
         if (move.getMoveType() == Move.RESTAURANT) {
             restaurant = (Restaurant) move;
             getFoodView();
@@ -82,6 +85,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
             event = (Event) move;
             getEventView();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
     private void getViewIds() {
@@ -104,6 +113,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getFoodView() {
          tvMoveName.setText(restaurant.name);
+
+         if (restaurant.lat == null) {
+             getFoodDetails();
+             return;
+         }
 
           String price = "";
           if (restaurant.price_level < 0) {
@@ -131,6 +145,59 @@ public class MoveDetailsActivity extends AppCompatActivity {
           }
     }
 
+    private void getFoodDetails() {
+        String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
+
+        RequestParams params = new RequestParams();
+        params.put("placeid", restaurant.id);
+        params.put("key", getString(R.string.api_key));
+
+        HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                JSONObject result;
+                try {
+                    result = response.getJSONObject("result");
+
+                    Restaurant restaurantResult = Restaurant.fromJSON(result);
+                    restaurant = restaurantResult;
+
+                    if (restaurant.lat != null) {
+                        getFoodView();
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error getting restaurant");
+
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.e(TAG, errorResponse.toString());
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e(TAG, responseString);
+                throwable.printStackTrace();
+            }
+        });
+    }
+
     private void getEventView() {
         tvMoveName.setText(event.name);
         String id = event.id;
@@ -145,7 +212,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getEventDetails(String id) {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
-        String TAG = "MoveDetailsActivity";
         String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
 
         RequestParams params = new RequestParams();
@@ -186,9 +252,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
-                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Restaurant");
-                    didCompleteQuery.whereEqualTo("placeId", restaurant.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
@@ -197,14 +261,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
                                 currUser.saveInBackground();
 
-                                ParseObject currRestaurant = new ParseObject("Restaurant");
+                                ParseObject currRestaurant = new ParseObject("Move");
                                 currRestaurant.put("name", restaurant.name);
-                                currRestaurant.put("user", currUser);
+                                currRestaurant.put("placeId", restaurant.id);
+                                currRestaurant.put("moveType", "food");
+                                currRestaurant.put("user", ParseUser.getCurrentUser());
                                 currRestaurant.put("didComplete", true);
-                                currRestaurant.put("priceLevel", restaurant.price_level);
-                                currRestaurant.put("lat", restaurant.lat);
-                                currRestaurant.put("lng", restaurant.lng);
-                                currRestaurant.put("googleRating", restaurant.rating);
                                 currRestaurant.saveInBackground();
 
                                 Log.d("Move", "Move Saved in History Successfully");
@@ -216,9 +278,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 }
 
                 else if (event != null) {
-                    ParseQuery<ParseObject> didCompleteQuery = ParseQuery.getQuery("Event");
-                    didCompleteQuery.whereEqualTo("placeId", event.id);
-                    didCompleteQuery.whereEqualTo("user", currUser);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Event", event);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
@@ -251,62 +311,27 @@ btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (restaurant != null) {
                     ivSave.setImageResource(R.drawable.ufi_save_active);
-                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
-                    didSaveQuery.whereEqualTo("name", restaurant.name);
-                    didSaveQuery.whereEqualTo("user", currUser);
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
                     didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-
-
-                            if (objects.size()>0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didSave", true);
-                                    objects.get(i).saveInBackground();
-                                }
-                            }
-                            else {
-                                ParseObject currRest = new ParseObject("Restaurant");
-                                currRest.put("name", restaurant.name);
-                                currRest.put("user", currUser);
-                                currRest.put("didSave", true);
-                                currRest.saveInBackground();
-                            }
-
-                            Log.d("MoveDetailsActivity", "saved move");
+                            ParseUtil.getDidSave("Restaurant", objects, restaurant);
                         }
-
                     });
 
                 }
 
                 if (event != null) {
                     ivSave.setImageResource(R.drawable.ufi_save_active);
-                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Event");
-                    didSaveQuery.whereEqualTo("name", event.name);
-                    didSaveQuery.whereEqualTo("user", currUser);
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("Event", event);
                     didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            if (objects.size()>0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(0).put("didSave", true);
-                                    objects.get(0).saveInBackground();
-                                }
-                            }else {
-                                ParseObject currEvent = new ParseObject("Event");
-                                currEvent.put("name", event.name);
-                                currEvent.put("user", currUser);
-                                currEvent.put("didSave", true);
-                                currEvent.saveInBackground();
-                                Log.d("MoveDetailsActivity", "added move");
-                            }
-
-
-                            Log.d("MoveDetailsActivity", "saved move");
+                            ParseUtil.getDidSave("Event", objects, event);
                         }
-
                     });
+
+
                 }
             }
 
@@ -317,54 +342,26 @@ btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 ivFavorite.setImageResource(R.drawable.ufi_heart_active);
                 if (restaurant != null) {
-                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Restaurant");
-                    didSaveQuery.whereEqualTo("name", restaurant.name);
-                    didSaveQuery.whereEqualTo("user", currUser);
-                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+
+                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
+                    didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
+                            ParseUtil.getDidFavorite("Restaurant", objects, restaurant);
 
-                            if (objects.size()>0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(i).put("didFavorite", true);
-                                    objects.get(i).saveInBackground();
-                                }
-                            }
-                            else {
-                                ParseObject currRest = new ParseObject("Restaurant");
-                                currRest.put("name", restaurant.name);
-                                currRest.put("user", currUser);
-                                currRest.put("didFavorite", true);
-                                currRest.saveInBackground();
-                                Log.d("MoveDetailsActivity", "added move");
-                            }
 
-                            Log.d("MoveDetailsActivity", "favorited move");
                         }
 
                     });
                 }
                 if (event != null) {
-                    ParseQuery<ParseObject> didSaveQuery = ParseQuery.getQuery("Event");
-                    didSaveQuery.whereEqualTo("name", event.name);
-                    didSaveQuery.whereEqualTo("user", currUser);
-                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+
+                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("Event", event);
+                    didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            if (objects.size()>0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    objects.get(0).put("didFavorite", true);
-                                    objects.get(0).saveInBackground();
-                                }
-                            }else {
-                                ParseObject currEvent = new ParseObject("Event");
-                                currEvent.put("name", event.name);
-                                currEvent.put("user", currUser);
-                                currEvent.put("didFavorite", true);
-                                currEvent.saveInBackground();
-                                Log.d("MoveDetailsActivity", "added move");
-                            }
-                            Log.d("MoveDetailsActivity", "favorited move");
+                            ParseUtil.getDidFavorite("Event", objects, event);
+
                         }
 
                     });
@@ -372,6 +369,8 @@ btnSave.setOnClickListener(new View.OnClickListener() {
             }
         });
     }
+
+    
 
     private void lyftButton() {
         // add feature to call Lyft to event/restaurant
@@ -394,4 +393,6 @@ btnSave.setOnClickListener(new View.OnClickListener() {
         lyftButton.setRideParams(rideParamsBuilder.build());
         lyftButton.load();
     }
+
+
 }
