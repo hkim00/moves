@@ -30,6 +30,7 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
+import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -137,30 +138,29 @@ public class HomeFragment extends Fragment {
 
                         if (!newLocation.equals("")) {
                             getNearbyEvents(new ArrayList<>());
+                        } else {
+                            Log.e(TAG, "No postal code found.");
                         }
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
-
-                        Log.e(TAG, errorResponse.toString());
+                        new StatusCodeHandler(TAG, statusCode);
                         throwable.printStackTrace();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
-
-                        Log.e(TAG, errorResponse.toString());
+                        new StatusCodeHandler(TAG, statusCode);
                         throwable.printStackTrace();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
-
-                        Log.e(TAG, responseString);
+                        new StatusCodeHandler(TAG, statusCode);
                         throwable.printStackTrace();
                     }
                 });
@@ -239,18 +239,18 @@ public class HomeFragment extends Fragment {
         // TODO: find more user-friendly way to show state (i.e. whether user has selected food or event before clicking move)
         btnFood.setOnClickListener(view -> {
             moveType = "food";
-            Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
         });
 
         btnEvents.setOnClickListener(view -> {
             moveType = "event";
-            Toast.makeText(getContext(), "movetype is: " + moveType, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
         });
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), LocationActivity.class);
-                startActivityForResult(intent, LOCATION_REQUEST_CODE );
+                startActivityForResult(intent, LOCATION_REQUEST_CODE);
                 getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
             }
         });
@@ -300,7 +300,6 @@ public class HomeFragment extends Fragment {
             } else {
                 ivDistance.setVisibility(View.INVISIBLE);
                 tvDistance.setVisibility(View.VISIBLE);
-
                 tvDistance.setText(distanceString + "mi");
             }
         }
@@ -393,7 +392,7 @@ public class HomeFragment extends Fragment {
                         params.put("keyword", pref);
                     }
                 } catch (JSONException e) {
-                    Log.e(TAG, "error getting events");
+                    Log.e(TAG, e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -420,10 +419,8 @@ public class HomeFragment extends Fragment {
                         events = (response.getJSONObject("_embedded")).getJSONArray("events");
                         for (int i = 0; i < events.length(); i++) {
                             Event event = Event.fromJSON(events.getJSONObject(i));
-                            Log.d(TAG, "got event");
                             moveResults.add(event);
                         }
-
                         goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
@@ -437,20 +434,20 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e(TAG, errorResponse.toString());
-                throwable.printStackTrace();
+                new StatusCodeHandler(TAG, statusCode);
+                Log.i(TAG, errorResponse.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e(TAG, errorResponse.toString());
-                throwable.printStackTrace();
+                new StatusCodeHandler(TAG, statusCode);
+                Log.i(TAG, errorResponse.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.e(TAG, responseString);
-                throwable.printStackTrace();
+                new StatusCodeHandler(TAG, statusCode);
+                Log.i(TAG, responseString);
             }
         });
     }
@@ -491,35 +488,32 @@ public class HomeFragment extends Fragment {
 
                     for (int i = 0; i < results.length(); i++) {
                         Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
-                        Log.d(TAG, "got restaurant " + restaurant.id);
-
                         moveResults.add(restaurant);
                     }
 
                     goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {
-                    Log.e(TAG, "Error getting nearby");
-
+                    Log.e(TAG, e.getMessage());
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e(TAG, errorResponse.toString());
+                new StatusCodeHandler(TAG, statusCode);
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e(TAG, errorResponse.toString());
+                new StatusCodeHandler(TAG, statusCode);
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.e(TAG, responseString);
+                new StatusCodeHandler(TAG, statusCode);
                 throwable.printStackTrace();
             }
         });
@@ -533,7 +527,7 @@ public class HomeFragment extends Fragment {
         List<String> preferredList;
 
         if (nonPreferredList.size() == 0) {
-             preferredList = MoveCategoriesHelper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+             preferredList = MoveCategoriesHelper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
         } else {
             preferredList = nonPreferredList;
         }
@@ -559,13 +553,13 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("food")) {
             if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
 
-                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
                 nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
             }
         } else {
             if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
 
-                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
+                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("eventPrefList"));
                 nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
             }
         }
@@ -597,11 +591,12 @@ public class HomeFragment extends Fragment {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             checkForCurrentLocation();
+        } else {
+            new StatusCodeHandler(TAG, requestCode);
         }
     }
 
     public void UpdateMoveList() {
-
         Map<String, Integer> PrefDict = new HashMap<String, Integer>();
         ArrayList<Map<String, Integer>> al = new ArrayList();
 
@@ -616,5 +611,4 @@ public class HomeFragment extends Fragment {
         currUser.put("tester", al);
         currUser.saveInBackground();
     }
-
 }

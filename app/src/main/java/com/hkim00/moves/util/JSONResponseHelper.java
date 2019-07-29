@@ -13,13 +13,12 @@ public class JSONResponseHelper {
 
     // gets and formats start time of an event
     public static String getStartTime (JSONObject response){
-
         String formattedStart = "N/A";
         try {
             String rawStart = response.getJSONObject("dates").getJSONObject("start").getString("localTime");
             formattedStart = formatTime(rawStart);
         } catch (JSONException e)  {
-            Log.e(TAG, "Error getting event start time!");
+            Log.e(TAG, "Error getting event start time!" + " Error msg from JSON: " + e.getMessage());
             e.printStackTrace();
         }
         return formattedStart;
@@ -33,7 +32,7 @@ public class JSONResponseHelper {
             Double priceMax = response.getJSONArray("priceRanges").getJSONObject(0).getDouble("max");
             formattedPriceRange = "$" + String.format("%.2f", priceMin) + " ~ " + "$" + String.format("%.2f", priceMax);
         } catch (JSONException e)  {
-            Log.e(TAG, "Error getting price range");
+            Log.e(TAG, "Error getting price range!" + " Error msg from JSON: " + e.getMessage());
             e.printStackTrace();
         }
         return formattedPriceRange;

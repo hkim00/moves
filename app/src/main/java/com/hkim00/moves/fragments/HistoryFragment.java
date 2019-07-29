@@ -126,6 +126,25 @@ public class HistoryFragment extends Fragment {
                 }
             }
         });
+
+        ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Event");
+        eventQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+        eventQuery.whereEqualTo("didComplete", true);
+        eventQuery.orderByDescending("createdAt");
+        eventQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    List<Move> moves = Event.arrayFromParseObjects(objects);
+                    pastMoves.addAll(moves);
+
+                    addContents(moves);
+                } else {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 
