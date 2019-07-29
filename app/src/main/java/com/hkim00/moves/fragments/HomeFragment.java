@@ -211,7 +211,7 @@ public class HomeFragment extends Fragment {
 
         etDistance.addTextChangedListener(textWatcher);
         tvDistance.setVisibility(View.INVISIBLE);
-        distance = milesToMeters(1);
+        distance = MoveCategoriesHelper.milesToMeters(1);
 
         tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
@@ -467,14 +467,14 @@ public class HomeFragment extends Fragment {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
-        distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
+        distance = (distanceString.equals("")) ? MoveCategoriesHelper.milesToMeters(1) : MoveCategoriesHelper.milesToMeters(Float.valueOf(distanceString));
 
         RequestParams params = new RequestParams();
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
 
-        String userFoodPref = getUserFoodPreferenceString(nonPreferredList);
+        String userFoodPref = MoveCategoriesHelper.getUserFoodPreferenceString(nonPreferredList);
 
         if (!userFoodPref.equals("")) {
             params.put("keyword", userFoodPref);
@@ -493,14 +493,8 @@ public class HomeFragment extends Fragment {
 
                 moveResults.clear();
 
-                JSONArray results;
                 try {
-                    results = response.getJSONArray("results");
-
-                    for (int i = 0; i < results.length(); i++) {
-                        Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
-                        moveResults.add(restaurant);
-                    }
+                    moveResults.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
 
                     goToMovesActivity(moveResults);
 
@@ -530,29 +524,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private String getUserFoodPreferenceString(List<String> nonPreferredList) {
-        if (currUser.getJSONArray("foodPrefList") == null || currUser.getJSONArray("foodPrefList").length() == 0) {
-            return "";
-        }
 
-        List<String> preferredList;
-
-        if (nonPreferredList.size() == 0) {
-             preferredList = MoveCategoriesHelper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
-        } else {
-            preferredList = nonPreferredList;
-        }
-
-        String userFoodPref = "";
-        for (int i = 0; i < preferredList.size(); i++) {
-            userFoodPref += preferredList.get(i);
-            userFoodPref += "+";
-        }
-
-        userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
-
-        return userFoodPref;
-    }
 
     private void getRiskyMove() {
         if (moveType.equals("")) {
@@ -564,13 +536,13 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("food")) {
             if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
 
-                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("foodPrefList"));
+                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
                 nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
             }
         } else {
             if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
 
-                List<String> preferredList = helper.JSONArrayToList(getContext(), currUser.getJSONArray("eventPrefList"));
+                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
                 nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
             }
         }
@@ -583,9 +555,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private int milesToMeters(float miles) {
-        return (int) (miles/0.000621317);
-    }
+
 
 
     private void goToMovesActivity(List<Move> moves) {
