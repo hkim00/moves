@@ -137,7 +137,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents(new ArrayList<>(), false);
+                            return;
                         } else {
                             Log.e(TAG, "No postal code found.");
                         }
@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents(new ArrayList<>(), false);
+            return;
         }
     }
 
@@ -264,6 +264,9 @@ public class HomeFragment extends Fragment {
                 if (moveType == "food") {
                     getNearbyRestaurants(new ArrayList<>(), true);
                 }
+                if (moveType == "event") {
+                    getNearbyEvents(new ArrayList<>(), true);
+                }
             }
         });
     }
@@ -331,7 +334,7 @@ public class HomeFragment extends Fragment {
             getNearbyRestaurants(new ArrayList<>(), false);
         }
         else if (moveType.equals("event")) {
-            checkForPostalCode();
+            getNearbyEvents(new ArrayList<>(), false);
         }
     }
 
@@ -387,6 +390,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyEvents(List<String> nonPreferredList, Boolean isRisky) {
+        checkForPostalCode();
+
         String apiUrl = API_BASE_URL_TM + ".json";
 
         RequestParams params = new RequestParams();
@@ -533,6 +538,7 @@ public class HomeFragment extends Fragment {
     }
 
     private String getUserFoodPreferenceString(List<String> nonPreferredList) {
+
         if (currUser.getJSONArray("foodPrefList") == null || currUser.getJSONArray("foodPrefList").length() == 0) {
             return "";
         }
