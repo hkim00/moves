@@ -68,6 +68,7 @@ public class LocationActivity extends AppCompatActivity implements
     private AutocompleteSupportFragment autocompleteFragment;
     private Button btnCurrentLocation;
 
+    private boolean isTrip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,8 @@ public class LocationActivity extends AppCompatActivity implements
         getViewIds();
 
         setupAutoCompleteSearch();
+
+        isTrip = getIntent().getBooleanExtra("type", false);
 
         btnCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +123,7 @@ public class LocationActivity extends AppCompatActivity implements
             public void onPlaceSelected(Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
 
-                UserLocation.fromPlace(getApplicationContext(), place);
+                UserLocation.fromPlace(getApplicationContext(), isTrip, place);
                 goBack();
             }
 
@@ -194,7 +197,7 @@ public class LocationActivity extends AppCompatActivity implements
                 public void onLocationResult(LocationResult locationResult) {
                     super.onLocationResult(locationResult);
 
-                    UserLocation.fromLocationResult(getApplicationContext(), locationResult);
+                    UserLocation.fromLocationResult(getApplicationContext(), isTrip, locationResult);
                     goBack();
                 }
             },

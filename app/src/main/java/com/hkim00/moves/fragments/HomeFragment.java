@@ -24,6 +24,7 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 
+import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 
@@ -79,7 +80,7 @@ public class HomeFragment extends Fragment {
     private EditText etDistance;
     private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
 
-    private Button btnMove, btnRiskyMove;
+    private Button btnMove, btnRiskyMove, btnTrip;
 
     @Nullable
     @Override
@@ -133,7 +134,7 @@ public class HomeFragment extends Fragment {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);
 
-                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), location, response);
+                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), false, location, response);
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
@@ -199,6 +200,7 @@ public class HomeFragment extends Fragment {
 
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
+        btnTrip = view.findViewById(R.id.btnTrip);
     }
 
     private void setupDesign() {
@@ -258,6 +260,15 @@ public class HomeFragment extends Fragment {
         btnMove.setOnClickListener(view -> typeMoveSelected());
 
         btnRiskyMove.setOnClickListener(view -> getRiskyMove());
+
+        btnTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), TripActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            }
+        });
     }
 
     private void toggleRightPopup(String type) {
