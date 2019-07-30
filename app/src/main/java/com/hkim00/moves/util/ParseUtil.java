@@ -16,11 +16,11 @@ import java.util.List;
 public class ParseUtil {
 
     // searches in Parse for a specific move (by id) that were done by current user
-    public static ParseQuery getParseQuery(String moveType, Move move) {
-        ParseUser currUser = ParseUser.getCurrentUser();
-        ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery(moveType);
+    public static ParseQuery getParseQuery(String moveType, ParseUser currUser, Boolean didComplete, Move move) {
+        ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move");
         parseQuery.whereEqualTo("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
         parseQuery.whereEqualTo("user", currUser);
+        parseQuery.whereEqualTo("didComplete", didComplete);
         return parseQuery;
     }
 
@@ -43,7 +43,10 @@ public class ParseUtil {
             currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
             currObj.put("user", currUser);
             currObj.put("didSave", true);
+            currObj.put("didFavorite", false);
             currObj.put("moveType", moveType);
+            currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+            currObj.put("didComplete", false);
             currObj.saveInBackground();
         }
     }
@@ -69,6 +72,9 @@ public class ParseUtil {
             currObj.put("user", currUser);
             currObj.put("didFavorite", true);
             currObj.put("moveType", moveType);
+            currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+            currObj.put("didComplete", false);
+            currObj.put("didSave", false);
             currObj.saveInBackground();
         }
     }
