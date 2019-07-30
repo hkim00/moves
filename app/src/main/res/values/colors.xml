@@ -22,4 +22,6 @@
     <color name="navy">#000080</color>
 
     <color name="selected_blue">#32A8EB</color>
+    <color name="light_grey">#C8C8C8</color>
+    <color name="selected_category">#2196F3</color>
 </resources>
