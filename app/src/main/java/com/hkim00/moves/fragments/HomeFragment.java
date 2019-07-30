@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
@@ -35,6 +37,7 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import com.parse.Parse;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -44,8 +47,10 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -59,6 +64,7 @@ public class HomeFragment extends Fragment {
     public static final int LOCATION_REQUEST_CODE = 20;
 
     ParseUser currUser = ParseUser.getCurrentUser();
+    ParseUser friend;
 
     private String moveType = "";
     private int distance;
@@ -80,7 +86,10 @@ public class HomeFragment extends Fragment {
     private EditText etDistance;
     private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
 
-    private Button btnMove, btnRiskyMove, btnTrip;
+    private TextView tvFriend;
+    private Boolean isFriendMove = false;
+
+    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends;
 
     @Nullable
     @Override
@@ -103,6 +112,13 @@ public class HomeFragment extends Fragment {
         setupButtons();
 
         checkForCurrentLocation();
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            friend = bundle.getParcelable("friend");
+            tvFriend.setText(friend.getUsername());
+            isFriendMove = true;
+        }
     }
 
     private void checkForCurrentLocation() {
@@ -138,7 +154,7 @@ public class HomeFragment extends Fragment {
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
-                            getNearbyEvents(new ArrayList<>());
+                            return;
                         } else {
                             Log.e(TAG, "No postal code found.");
                         }
@@ -167,7 +183,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         } else {
-            getNearbyEvents(new ArrayList<>());
+            return;
         }
     }
 
@@ -198,9 +214,12 @@ public class HomeFragment extends Fragment {
         btnPriceLevel3 = view.findViewById(R.id.btnPriceLevel3);
         btnPriceLevel4 = view.findViewById(R.id.btnPriceLevel4);
 
+        tvFriend = view.findViewById(R.id.tvFriend);
+
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
         btnTrip = view.findViewById(R.id.btnTrip);
+        btnAddFriends = view.findViewById(R.id.btnAddFriends);
     }
 
     private void setupDesign() {
@@ -215,6 +234,8 @@ public class HomeFragment extends Fragment {
 
         tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
+
+        tvFriend.setText("");
 
         moveType = "";
 
@@ -259,14 +280,35 @@ public class HomeFragment extends Fragment {
 
         btnMove.setOnClickListener(view -> typeMoveSelected());
 
-        btnRiskyMove.setOnClickListener(view -> getRiskyMove());
-
         btnTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), TripActivity.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+
+        btnRiskyMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (moveType == "food") {
+                    getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
+                }
+                if (moveType == "event") {
+                    getNearbyEvents(new ArrayList<>(), true, isFriendMove);
+                }
+            }
+        });
+
+        btnAddFriends.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new SearchFragment();
+                ((SearchFragment) fragment).isAddFriend = true;
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.flContainer, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
     }
@@ -331,10 +373,10 @@ public class HomeFragment extends Fragment {
         }
 
         if (moveType.equals("food")) {
-            getNearbyRestaurants(new ArrayList<>());
+            getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
         }
         else if (moveType.equals("event")) {
-            checkForPostalCode();
+            getNearbyEvents(new ArrayList<>(), false, isFriendMove);
         }
     }
 
@@ -389,33 +431,71 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void getNearbyEvents(List<String> nonPreferredList) {
+    // TODO: depending on move hierarchy, we may need the getNearby... methods to return set/list
+
+    private void getNearbyEvents(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+        checkForPostalCode();
+
         String apiUrl = API_BASE_URL_TM + ".json";
 
         RequestParams params = new RequestParams();
 
-        if (nonPreferredList.size() == 0) {
-            JSONArray jsonPrefList = currUser.getJSONArray("eventPrefList");
-            if (jsonPrefList != null) {
-                try {
-                    for (int i = 0; i < jsonPrefList.length(); i++) {
-                        String pref = jsonPrefList.get(i).toString();
-                        params.put("keyword", pref);
+        params.put("apikey", getString(R.string.api_key_tm));
+        params.put("postalCode", location.postalCode);
+        params.put("sort", "date,asc");
+
+        if (!isRisky) {
+            if (!isFriendMove) {
+                if (totalPref.size() == 0) {
+                    JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
+                    if (currUserPrefList != null) {
+                        try {
+                            for (int i = 0; i < currUserPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                                totalPref.add(pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
-                } catch (JSONException e) {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+                } else {
+                    for (int i = 0; i < totalPref.size(); i++) {
+                        params.put("keyword", totalPref.get(i));
+                    }
                 }
-            }
-        } else {
-            for (int i = 0; i < nonPreferredList.size(); i++) {
-                params.put("keyword", nonPreferredList.get(i));
+            } else {
+                if (totalPref.size() == 0) {
+                    JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
+                    JSONArray friendPrefList = friend.getJSONArray("eventPrefList");
+                    if (currUserPrefList != null || friendPrefList != null) {
+                        // TODO: modify this based on our workaround for single keyword problem
+                        try {
+                            for (int i = 0; i < currUserPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                                totalPref.add(pref);
+                            }
+                            for (int i = 0; i < friendPrefList.length(); i++) {
+                                String pref = friendPrefList.get(i).toString();
+                                totalPref.add(pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < totalPref.size(); i++) {
+                        params.put("keyword", totalPref.get(i));
+                    }
+                }
             }
         }
 
-        params.put("postalCode", location.postalCode);
-        params.put("sort", "date,asc");
-        params.put("apikey", getString(R.string.api_key_tm));
+        Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
+        Log.i("HomeFragment", uniqueTotalPref.toString());
 
         HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
@@ -463,13 +543,14 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getNearbyRestaurants(List<String> nonPreferredList) {
+    private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
         distance = (distanceString.equals("")) ? MoveCategoriesHelper.milesToMeters(1) : MoveCategoriesHelper.milesToMeters(Float.valueOf(distanceString));
 
         RequestParams params = new RequestParams();
+        params.put("key", getString(R.string.api_key));
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
@@ -479,12 +560,71 @@ public class HomeFragment extends Fragment {
         if (!userFoodPref.equals("")) {
             params.put("keyword", userFoodPref);
         }
-
+      
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
         }
 
         params.put("key", getString(R.string.api_key));
+
+
+        if (!isRisky) {
+            if (!isFriendMove) {
+                if (totalPref.size() == 0) {
+                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
+                    if (currUserPrefList != null) {
+                        try {
+                            for (int i = 0; i < currUserPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                                totalPref.add(pref);
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < totalPref.size(); i++) {
+                        String pref = totalPref.get(i);
+                        params.put("keyword", pref);
+                        totalPref.add(pref);
+                    }
+                }
+            } else {
+                if (totalPref.size() == 0) {
+                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
+                    JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
+                    if (currUserPrefList != null || friendPrefList != null) {
+                        try {
+                            for (int i = 0; i < currUserPrefList.length(); i++) {
+                                String pref = currUserPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                                totalPref.add(pref);
+                            }
+                            for (int i = 0; i < friendPrefList.length(); i++) {
+                                String pref = friendPrefList.get(i).toString();
+                                params.put("keyword", pref);
+                                totalPref.add(pref);
+
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < totalPref.size(); i++) {
+                        String pref = totalPref.get(i);
+                        params.put("keyword", pref);
+                        totalPref.add(pref);
+                    }
+                }
+            }
+        }
+
+        Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
+        Log.i("HomeFragment", uniqueTotalPref.toString());
 
         HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
             @Override
@@ -495,7 +635,6 @@ public class HomeFragment extends Fragment {
 
                 try {
                     moveResults.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
-
                     goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {
@@ -523,8 +662,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-
 
     private void getRiskyMove() {
         if (moveType.equals("")) {
@@ -554,17 +691,12 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-
-
-
     private void goToMovesActivity(List<Move> moves) {
         Intent intent = new Intent(getContext(), MovesActivity.class);
         intent.putExtra("moves", Parcels.wrap(moves));
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

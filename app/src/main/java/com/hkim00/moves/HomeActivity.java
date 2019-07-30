@@ -31,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
     public static AsyncHttpClient client;
     public static AsyncHttpClient clientTM;
 
-    FragmentManager fragmentManager;
+    public static FragmentManager fragmentManager;
     private BottomNavigationView bottomNavigation;
 
     private int currentFrag = 1;
@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     case R.id.action_search:
                         fragment = new SearchFragment();
-
+                        ((SearchFragment) fragment).isAddFriend = false;
                         if (currentFrag != SEARCH_TAG) {
                             if (currentFrag < SEARCH_TAG) {
                                 fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
