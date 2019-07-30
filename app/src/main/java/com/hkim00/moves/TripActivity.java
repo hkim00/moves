@@ -311,6 +311,8 @@ public class TripActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if (e == null) {
                     Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
+
+                    UserLocation.clearCurrentTripLocation(getApplicationContext());
                     saveTripMoves(trip);
 
                     onBackPressed();
