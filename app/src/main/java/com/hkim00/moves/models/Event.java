@@ -25,6 +25,12 @@ public class Event implements Move {
     @Override
     public String getName() { return name; }
 
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public boolean equals(Move move) { return (move.getId().equals(this.id)) ? true : false; }
+
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> events = new ArrayList<>();

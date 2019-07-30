@@ -58,7 +58,7 @@ public class TripActivity extends AppCompatActivity {
     public static List<CalendarDay> dates;
     private List<Move> foodMoves;
     private List<Move> eventMoves;
-    private List<Move> selectedMoves;
+    public static List<Move> selectedMoves;
     private List<Move> moves;
 
 
@@ -112,7 +112,7 @@ public class TripActivity extends AppCompatActivity {
         selectedMoves = new ArrayList<>();
         moves = new ArrayList<>();
 
-        movesAdapter = new MoveAdapter(getApplicationContext(), moves);
+        movesAdapter = new MoveAdapter(TripActivity.this, moves);
         rvMoves.setAdapter(movesAdapter);
     }
 
@@ -148,6 +148,8 @@ public class TripActivity extends AppCompatActivity {
             } else {
                 updateMoves(eventMoves);
             }
+        } else {
+            updateMoves(selectedMoves);
         }
     }
 

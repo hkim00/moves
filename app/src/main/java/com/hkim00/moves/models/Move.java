@@ -6,4 +6,7 @@ public interface Move {
     int EVENT = 2;
     int getMoveType();
     String getName();
+    String getId();
+    boolean equals(Move move);
+
 }

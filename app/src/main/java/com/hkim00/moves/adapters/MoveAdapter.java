@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.models.CategoryButton;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
@@ -26,10 +27,13 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     private final Context context;
     private final List<Move> moves;
+    private boolean isTrip;
 
     public MoveAdapter(Context context, List<Move> moves) {
         this.context = context;
         this.moves = moves;
+
+        this.isTrip = (context instanceof TripActivity) ? true : false;
     }
 
     @Override
@@ -81,6 +85,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("move", Parcels.wrap(move));
+            intent.putExtra("isTrip", false);
             context.startActivity(intent);
         }
     }
