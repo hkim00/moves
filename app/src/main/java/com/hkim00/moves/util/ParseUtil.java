@@ -15,52 +15,62 @@ import java.util.List;
 
 public class ParseUtil {
 
+    // searches in Parse for a specific move (by id) that were done by current user
     public static ParseQuery getParseQuery(String moveType, Move move) {
         ParseUser currUser = ParseUser.getCurrentUser();
         ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery(moveType);
-        parseQuery.whereEqualTo("placeId", (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).id : ((Event) move).id);
+        parseQuery.whereEqualTo("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
         parseQuery.whereEqualTo("user", currUser);
         return parseQuery;
     }
 
-
+    // if the move has not been done by current user, this method will save a new move
+    // if it has been done before, then it will save/unsave the move
     public static void getDidSave(String moveType, List<ParseObject> objects, Move move) {
         ParseUser currUser = ParseUser.getCurrentUser();
         if (objects.size() > 0) {
             for (int i = 0; i < objects.size(); i++) {
-                objects.get(i).put("didSave", true);
-                objects.get(i).saveInBackground();
+                if (objects.get(i).getBoolean("didSave") == true){
+                    objects.get(i).put("didSave", false);
+                    objects.get(i).saveInBackground();
+                } else {
+                    objects.get(i).put("didSave", true);
+                    objects.get(i).saveInBackground();
+                }
             }
         } else {
-            ParseObject currRest = new ParseObject(moveType);
-            currRest.put("name", (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).name : ((Event) move).name);
-            currRest.put("user", currUser);
-            currRest.put("didSave", true);
-            currRest.saveInBackground();
+            ParseObject currObj = new ParseObject("Move");
+            currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
+            currObj.put("user", currUser);
+            currObj.put("didSave", true);
+            currObj.put("moveType", moveType);
+            currObj.saveInBackground();
         }
-
-        Log.d("MoveDetailsActivity", "saved move");
     }
 
-
+    // if the move has not been done by current user, this method will like a new move
+    // if it has been done before, then it will like/unlike the move
     public static void getDidFavorite(String moveType, List<ParseObject> objects, Move move) {
         ParseUser currUser = ParseUser.getCurrentUser();
         if (objects.size()>0) {
             for (int i = 0; i < objects.size(); i++) {
-                objects.get(i).put("didFavorite", true);
-                objects.get(i).saveInBackground();
+                if (objects.get(i).getBoolean("didFavorite") == true){
+                    objects.get(i).put("didFavorite", false);
+                    objects.get(i).saveInBackground();
+                } else {
+                    objects.get(i).put("didFavorite", true);
+                    objects.get(i).saveInBackground();
+                }
             }
         }
         else {
-            ParseObject currRest = new ParseObject(moveType);
-            currRest.put("name", (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).name : ((Event) move).name);
-            currRest.put("user", currUser);
-            currRest.put("didFavorite", true);
-            currRest.saveInBackground();
-            Log.d("MoveDetailsActivity", "added move");
+            ParseObject currObj = new ParseObject("Move");
+            currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
+            currObj.put("user", currUser);
+            currObj.put("didFavorite", true);
+            currObj.put("moveType", moveType);
+            currObj.saveInBackground();
         }
-
-        Log.d("MoveDetailsActivity", "favorited move");
     }
 
     public static ParseQuery<ParseObject> getSpecificQuery(String moveType, String didFavOrSave) {

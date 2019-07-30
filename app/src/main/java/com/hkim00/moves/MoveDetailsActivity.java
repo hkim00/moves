@@ -266,11 +266,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
-                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("food", restaurant);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-
                             if (e == null) {
                                 currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
                                 currUser.saveInBackground();
@@ -279,7 +278,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 currRestaurant.put("name", restaurant.name);
                                 currRestaurant.put("placeId", restaurant.id);
                                 currRestaurant.put("moveType", "food");
-                                currRestaurant.put("user", ParseUser.getCurrentUser());
+                                currRestaurant.put("user", currUser);
                                 currRestaurant.put("didComplete", true);
                                 currRestaurant.saveInBackground();
 
@@ -292,17 +291,18 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 }
 
                 else if (event != null) {
-                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Event", event);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("event", event);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-
                                 if (e == null) {
                                     currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
                                     currUser.saveInBackground();
 
-                                    ParseObject currEvent = new ParseObject("Event");
+                                    ParseObject currEvent = new ParseObject("Move");
                                     currEvent.put("name", event.name);
+                                    currEvent.put("placeId", event.id);
+                                    currEvent.put("moveType", "event");
                                     currEvent.put("user", currUser);
                                     currEvent.put("didComplete", true);
                                     currEvent.saveInBackground();
@@ -311,7 +311,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 } else {
                                     Log.d("Move", "Error: saving move to history");
                                 }
-
                         }
                     });
                 }
@@ -319,20 +318,19 @@ public class MoveDetailsActivity extends AppCompatActivity {
             }
         });
 
-
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
                     ivSave.setImageResource(R.drawable.ufi_save_active);
-                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("Restaurant", restaurant);
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("food", restaurant);
                     didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUtil.getDidSave("Restaurant", objects, restaurant);
+                            ParseUtil.getDidSave("food", objects, restaurant);
                         }
-                    });
 
+                    });
                 }
 
                 if (event != null) {
@@ -344,12 +342,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
                             ParseUtil.getDidSave("Event", objects, event);
                         }
                     });
-
-
                 }
             }
 
         });
+
 
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -369,7 +366,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     });
                 }
                 if (event != null) {
-
                     ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("Event", event);
                     didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
@@ -395,8 +391,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             btnAddToTrip.setText("Add To Trip");
         }
     }
-
-
+                               
     private void lyftButton() {
         // add feature to call Lyft to event/restaurant
         ApiConfig apiConfig = new ApiConfig.Builder()
@@ -418,6 +413,4 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton.setRideParams(rideParamsBuilder.build());
         lyftButton.load();
     }
-
-
 }

@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.MoveDetailsActivity;
@@ -93,10 +94,8 @@ public class ProfileFragment extends Fragment {
 
         setupRecyclerViews();
 
-        getFavoriteMoves();
-
-        getSavedMoves();
-
+        getMoveLists("favorites");
+        getMoveLists("saved");
     }
 
     private void getViewIds(View view) {
@@ -114,7 +113,6 @@ public class ProfileFragment extends Fragment {
         rvSaved = view.findViewById(R.id.rvSaved);
     }
 
-
     private void fillUserInfo() {
         currUser = ParseUser.getCurrentUser();
 
@@ -123,7 +121,6 @@ public class ProfileFragment extends Fragment {
         tvGender.setText("Gender: " + currUser.getString("gender"));
         tvAge.setText("Age: " + currUser.getInt("age"));
     }
-
 
     private void setupRecyclerViews() {
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -140,96 +137,38 @@ public class ProfileFragment extends Fragment {
         rvSaved.setVisibility(View.INVISIBLE);
     }
 
-
-    private void getSavedMoves() {
-        ParseQuery restaurantQuery = ParseUtil.getSpecificQuery("Restaurant", "didSave");
-        restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                //TODO delete duplicates
-                for (int i = 0; i < objects.size(); i++) {
+    private void getMoveLists(String listType) {
+        ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
+        moveQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+        moveQuery.orderByDescending("createdAt");
+        if (listType == "saved") {
+            moveQuery.whereEqualTo("didSave", true);
+        } else {
+            moveQuery.whereEqualTo("didFavorite", true);
+        }
+            moveQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
                     if (e == null) {
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
+                        List<Move> moves = new ArrayList<>();
 
-                        saveList.add(restaurant);
+                        for (int i = 0; i < objects.size(); i++) {
+                            if (objects.get(i).getString("moveType").equals("food")) {
+                                moves.add(Restaurant.fromParseObject(objects.get(i)));
+                            } else {
+                                moves.add(Event.fromParseObject(objects.get(i)));
+                            }
+                        }
+                        saveList.addAll(moves);
                         saveAdapter.notifyItemInserted(saveList.size() - 1);
                     } else {
-                        Log.e(TAG, "Error finding saved restaurants.");
+                        Log.e(TAG, "Error finding saved list.");
                         e.printStackTrace();
-                        Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        });
+            });
 
-        ParseQuery eventQuery = ParseUtil.getSpecificQuery("Event", "didSave");
-        eventQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    for (int i = 0; i < objects.size(); i++) {
-
-                        Event event = Event.fromParseObject(objects.get(i));
-                        saveList.add(event);
-                        saveAdapter.notifyItemInserted(saveList.size() - 1);
-                    }
-                } else {
-                    Log.e(TAG, "Error finding saved events.");
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-
-    private void getFavoriteMoves() {
-
-        ParseQuery restaurantQuery = ParseUtil.getSpecificQuery("Restaurant", "didFavorite");
-        restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-
-                if (e == null) {
-                    for (int i = 0; i < objects.size(); i++) {
-
-                        Restaurant restaurant = Restaurant.fromParseObject(objects.get(i));
-                        favList.add(restaurant);
-
-                        //retainAll
-                        favAdapter.notifyItemInserted(favList.size() - 1);
-
-                    }
-                } else {
-                    Log.e(TAG, "Error finding saved restaurants.");
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving restaurant", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-        ParseQuery eventQuery = ParseUtil.getSpecificQuery("Event", "didFavorite");
-        eventQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    for (int i = 0; i < objects.size(); i++) {
-
-                        Event event = Event.fromParseObject(objects.get(i));
-                        favList.add(event);
-                        favAdapter.notifyItemInserted(favList.size() - 1);
-                    }
-                } else {
-                    Log.e(TAG, "Error finding favorite events.");
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error saving event", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-    }
+        }
 
 
     private void setupButtons() {
