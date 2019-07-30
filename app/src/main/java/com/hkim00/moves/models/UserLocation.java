@@ -22,10 +22,7 @@ import java.util.List;
 @Parcel
 public class UserLocation {
 
-    public String name;
-    public String lat;
-    public String lng;
-    public String postalCode;
+    public String name, lat, lng, postalCode;
 
     public UserLocation() {}
 
