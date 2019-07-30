@@ -30,6 +30,9 @@ public class Restaurant implements Move {
         return Move.RESTAURANT;
     }
 
+    @Override
+    public String getName() { return name; }
+
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> restaurants = new ArrayList<>();

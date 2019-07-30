@@ -58,6 +58,7 @@ public class TripActivity extends AppCompatActivity {
     public static List<CalendarDay> dates;
     private List<Move> foodMoves;
     private List<Move> eventMoves;
+    private List<Move> selectedMoves;
     private List<Move> moves;
 
 
@@ -108,6 +109,7 @@ public class TripActivity extends AppCompatActivity {
 
         foodMoves = new ArrayList<>();
         eventMoves = new ArrayList<>();
+        selectedMoves = new ArrayList<>();
         moves = new ArrayList<>();
 
         movesAdapter = new MoveAdapter(getApplicationContext(), moves);
@@ -130,6 +132,10 @@ public class TripActivity extends AppCompatActivity {
         vEventsView.setVisibility((type.equals("events")) ? View.VISIBLE : View.INVISIBLE);
         vSelectedView.setVisibility((type.equals("selected")) ? View.VISIBLE : View.INVISIBLE);
 
+        if (location.lat == null) {
+            return;
+        }
+
         if (type.equals("food")) {
             if (foodMoves.size() == 0) {
                 getNearbyRestaurants();
@@ -147,6 +153,8 @@ public class TripActivity extends AppCompatActivity {
 
 
     private void setupView() {
+        location = UserLocation.clearCurrentTripLocation(this);
+
         tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
         tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
 
@@ -178,7 +186,7 @@ public class TripActivity extends AppCompatActivity {
     private void checkForCurrentLocation() {
         location = UserLocation.getCurrentTripLocation(this);
 
-        if (location.lat.equals("0.0") && location.name.equals("")) {
+        if (location.lat == null) {
             tvLocation.setText("Where?");
             tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
         } else {

@@ -22,6 +22,9 @@ public class Event implements Move {
         return Move.EVENT;
     }
 
+    @Override
+    public String getName() { return name; }
+
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> events = new ArrayList<>();

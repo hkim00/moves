@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.CategoryButton;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
@@ -37,27 +39,15 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     @NonNull
     @Override
-    public MoveAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        switch (viewType) {
-            case Move.RESTAURANT:
-                view = LayoutInflater
-                        .from(context)
-                        .inflate(R.layout.item_move, parent, false);
-                return new restaurantViewHolder(view);
-            case Move.EVENT:
-                view = LayoutInflater
-                        .from(context)
-                        .inflate(R.layout.item_move, parent, false);
-                return new eventViewHolder(view);
-        }
-        return null;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_move, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MoveAdapter.ViewHolder holder, int position) {
         Move move = moves.get(position);
-        holder.bindType(move);
+        holder.bind(move);
         holder.move = move;
     }
 
@@ -66,7 +56,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
         return moves.size();
     }
 
-    public abstract class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView tvTitle;
         public Move move;
@@ -75,48 +65,23 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             super(itemView);
 
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            itemView.setOnClickListener(view -> goToMoveDetails(move.getMoveType()));
+            itemView.setOnClickListener(this);
         }
 
-        public abstract void bindType(Move move);
+        public void bind(Move move) {
+            tvTitle.setText(move.getName());
+        }
 
-        private void goToMoveDetails(int moveType) {
+        @Override
+        public void onClick(View v) {
+            goToMoveDetails();
+        }
+
+        private void goToMoveDetails() {
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (moveType == 1) {
-                intent.putExtra("move", Parcels.wrap(move));
-            }
-            if (moveType == 2) {
-                intent.putExtra("move", Parcels.wrap(move));
-            }
+            intent.putExtra("move", Parcels.wrap(move));
             context.startActivity(intent);
-        }
-    }
-
-    public class restaurantViewHolder extends ViewHolder {
-        private final TextView tvTitle;
-        public Restaurant restaurant;
-
-        public restaurantViewHolder(View itemView) {
-            super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-        }
-
-        public void bindType(Move move){
-            tvTitle.setText(((Restaurant) move).name);
-        }
-    }
-
-    public class eventViewHolder extends ViewHolder {
-        private final TextView tvTitle;
-
-        public eventViewHolder(View itemView) {
-            super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-        }
-
-        public void bindType(Move move){
-            tvTitle.setText(((Event) move).name);
         }
     }
 }
