@@ -111,6 +111,7 @@ public class TripActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         rvMoves.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
+        dates = new ArrayList<>();
         foodMoves = new ArrayList<>();
         eventMoves = new ArrayList<>();
         selectedMoves = new ArrayList<>();
@@ -302,6 +303,29 @@ public class TripActivity extends AppCompatActivity {
         });
     }
 
+
+    private String getDateFormat() {
+        if (dates.size() == 0) {
+            return "";
+        }
+
+        CalendarDay beginDate = dates.get(0);
+        CalendarDay endDate = dates.get(dates.size() - 1);
+
+        String beginDateString = beginDate.getYear() + "-" +
+                ((beginDate.getMonth() < 10) ? "0" + beginDate.getMonth() : beginDate.getMonth())
+                + "-" +
+                ((beginDate.getDay() < 10) ? "0" + beginDate.getDay() : beginDate.getDay())
+                + "T00:00:00,";
+        String endDateString = endDate.getYear() + "-" +
+                ((endDate.getMonth() < 10) ? "0" + endDate.getMonth() : endDate.getMonth())
+                + "-" +
+                ((endDate.getDay() < 10) ? "0" + endDate.getDay() : endDate.getDay())
+                + "T00:00:00";
+
+        return beginDateString + endDateString;
+    }
+
     private void getNearbyEvents() {
         pb.setVisibility(View.VISIBLE);
         checkForPostalCode();
@@ -313,6 +337,9 @@ public class TripActivity extends AppCompatActivity {
 
         params.put("apikey", getString(R.string.api_key_tm));
         params.put("postalCode", location.postalCode);
+        if (dates.size() != 0) {
+            params.put("localStartDateTime", getDateFormat());
+        }
         params.put("sort", "date,asc");
 
             JSONArray currUserPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
