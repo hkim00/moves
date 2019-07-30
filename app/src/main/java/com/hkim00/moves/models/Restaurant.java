@@ -30,6 +30,16 @@ public class Restaurant implements Move {
         return Move.RESTAURANT;
     }
 
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (((Move) obj).getId().equals(this.id)) ? true : false;
+    }
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> restaurants = new ArrayList<>();
