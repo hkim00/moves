@@ -284,6 +284,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 } else {
                                     for (int i = 0; i < objects.size(); i++) {
                                         objects.get(i).put("didComplete", true);
+                                        objects.get(i).put("didSave", false); // user cannot save a move that has been done
                                         objects.get(i).saveInBackground();
                                     }
                                 }
@@ -335,10 +336,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            Log.i("HI", objects.toString());
                             ParseUtil.getDidSave("food", objects, restaurant);
                         }
-
                     });
                 }
 
@@ -355,7 +354,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
             }
 
         });
-
 
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
