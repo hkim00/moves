@@ -45,7 +45,7 @@ public class TripActivity extends AppCompatActivity {
 
 
     private EditText etTrip;
-    private TextView tvLocation, tvCalendar;
+    private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected;
     private Button btnLocation, btnCalendar;
     private Button btnFood, btnEvents, btnSelected;
     private View vFoodView, vEventsView, vSelectedView;
@@ -90,6 +90,10 @@ public class TripActivity extends AppCompatActivity {
         btnLocation = findViewById(R.id.btnLocation);
         tvCalendar = findViewById(R.id.tvCalendar);
         btnCalendar = findViewById(R.id.btnCalendar);
+
+        tvFood = findViewById(R.id.tvFood);
+        tvEvents = findViewById(R.id.tvEvents);
+        tvSelected = findViewById(R.id.tvSelected);
 
         btnFood = findViewById(R.id.btnFood);
         btnEvents = findViewById(R.id.btnEvents);
@@ -164,7 +168,25 @@ public class TripActivity extends AppCompatActivity {
         vSelectedView.setVisibility(View.INVISIBLE);
 
         pb.setVisibility(View.INVISIBLE);
+
+        toggleMovesView(false);
     }
+
+
+    private void toggleMovesView(boolean isShowing) {
+        tvFood.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+        btnFood.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+        vFoodView.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+
+        tvEvents.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+        btnEvents.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+
+        tvSelected.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+        btnSelected.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+
+        rvMoves.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -195,6 +217,7 @@ public class TripActivity extends AppCompatActivity {
             tvLocation.setText(location.name);
             tvLocation.setTextColor(getResources().getColor(R.color.black));
 
+            toggleMovesView(true);
             getNearbyRestaurants();
         }
     }
