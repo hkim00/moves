@@ -29,6 +29,7 @@ public class UserLocation {
 
     public UserLocation() {}
 
+
     public static UserLocation getCurrentLocation(Context context) {
         UserLocation location = new UserLocation();
 
@@ -48,7 +49,26 @@ public class UserLocation {
     }
 
 
-    public static UserLocation fromPlace(Context context, Place place) {
+    public static UserLocation getCurrentTripLocation(Context context) {
+        UserLocation location = new UserLocation();
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("tripLocation", 0); //0 for private mode
+
+        String name = sharedPreferences.getString("tripName", "");
+        String lat = sharedPreferences.getString("tripLat", "0.0");
+        String lng = sharedPreferences.getString("tripLng", "0.0");
+        String postalCode = sharedPreferences.getString("tripPostalCode", "");
+
+        location.name = name;
+        location.lat = lat;
+        location.lng = lng;
+        location.postalCode = postalCode;
+
+        return location;
+    }
+
+
+    public static UserLocation fromPlace(Context context, boolean isTrip, Place place) {
         UserLocation location = new UserLocation();
 
         location.name = place.getName();
@@ -67,13 +87,13 @@ public class UserLocation {
 
         location.postalCode = postalCode;
 
-        saveLocation(context, location);
+        saveLocation(context, isTrip, location);
 
         return location;
     }
 
 
-    public static UserLocation fromLocationResult(Context context, LocationResult locationResult) {
+    public static UserLocation fromLocationResult(Context context, boolean isTrip, LocationResult locationResult) {
         UserLocation location = new UserLocation();
 
         location.name = "Current location";
@@ -81,12 +101,13 @@ public class UserLocation {
         location.lng = String.valueOf(locationResult.getLastLocation().getLongitude());
         location.postalCode = "";
 
-        saveLocation(context, location);
+        saveLocation(context, isTrip, location);
 
         return location;
     }
 
-    public static UserLocation addingPostalCodeFromJSON(Context context, UserLocation location, JSONObject response) {
+
+    public static UserLocation addingPostalCodeFromJSON(Context context, boolean isTrip, UserLocation location, JSONObject response) {
 
         try {
             JSONArray results = response.getJSONArray("results");
@@ -115,7 +136,7 @@ public class UserLocation {
 
                 location.postalCode = postalCode;
 
-                saveLocation(context, location);
+                saveLocation(context, isTrip, location);
 
                 return location;
             } else {
@@ -129,15 +150,15 @@ public class UserLocation {
     }
 
 
-    private static void saveLocation(Context context, UserLocation location) {
+    private static void saveLocation(Context context, boolean isTrip, UserLocation location) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? "tripLocation" : "location", 0); //0 for private mode
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putString("name", location.name);
-        editor.putString("lat", location.lat);
-        editor.putString("lng", location.lng);
-        editor.putString("postalCode", location.postalCode);
+        editor.putString((isTrip) ? "tripName" : "name", location.name);
+        editor.putString((isTrip) ? "tripLat" : "lat", location.lat);
+        editor.putString((isTrip) ? "tripLng" : "lng", location.lng);
+        editor.putString((isTrip) ? "tripPostalCode" : "postalCode", location.postalCode);
 
         editor.commit();
     }

@@ -26,6 +26,7 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 
+import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 
@@ -88,7 +89,7 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnAddFriends;
+    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends;
 
     @Nullable
     @Override
@@ -149,7 +150,7 @@ public class HomeFragment extends Fragment {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);
 
-                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), location, response);
+                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), false, location, response);
                         location.postalCode = newLocation.postalCode;
 
                         if (!newLocation.equals("")) {
@@ -217,6 +218,7 @@ public class HomeFragment extends Fragment {
 
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
+        btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
     }
 
@@ -228,7 +230,7 @@ public class HomeFragment extends Fragment {
 
         etDistance.addTextChangedListener(textWatcher);
         tvDistance.setVisibility(View.INVISIBLE);
-        distance = milesToMeters(1);
+        distance = MoveCategoriesHelper.milesToMeters(1);
 
         tvPriceLevel.setVisibility(View.INVISIBLE);
         priceLevel = 0;
@@ -277,6 +279,13 @@ public class HomeFragment extends Fragment {
         });
 
         btnMove.setOnClickListener(view -> typeMoveSelected());
+
+        btnTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), TripActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
 
         btnRiskyMove.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -538,7 +547,7 @@ public class HomeFragment extends Fragment {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
-        distance = (distanceString.equals("")) ? milesToMeters(1) : milesToMeters(Float.valueOf(distanceString));
+        distance = (distanceString.equals("")) ? MoveCategoriesHelper.milesToMeters(1) : MoveCategoriesHelper.milesToMeters(Float.valueOf(distanceString));
 
         RequestParams params = new RequestParams();
         params.put("key", getString(R.string.api_key));
@@ -546,6 +555,12 @@ public class HomeFragment extends Fragment {
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
 
+        String userFoodPref = MoveCategoriesHelper.getUserFoodPreferenceString(nonPreferredList);
+
+        if (!userFoodPref.equals("")) {
+            params.put("keyword", userFoodPref);
+        }
+      
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
         }
@@ -618,16 +633,8 @@ public class HomeFragment extends Fragment {
 
                 moveResults.clear();
 
-                JSONArray results;
                 try {
-                    results = response.getJSONArray("results");
-
-
-                    for (int i = 0; i < results.length(); i++) {
-                        Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
-                        moveResults.add(restaurant);
-                    }
-
+                    moveResults.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
                     goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {
@@ -656,8 +663,32 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private int milesToMeters(float miles) {
-        return (int) (miles/0.000621317);
+    private void getRiskyMove() {
+        if (moveType.equals("")) {
+            return;
+        }
+        MoveCategoriesHelper helper = new MoveCategoriesHelper();
+        List<String> nonPreferredList = new ArrayList<>();
+
+        if (moveType.equals("food")) {
+            if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        } else {
+            if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
+
+                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
+                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+            }
+        }
+
+        if ((moveType.equals("food"))) {
+            getNearbyRestaurants(nonPreferredList);
+        } else {
+            getNearbyEvents(nonPreferredList);
+        }
     }
 
     private void goToMovesActivity(List<Move> moves) {
