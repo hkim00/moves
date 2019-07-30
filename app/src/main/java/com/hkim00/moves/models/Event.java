@@ -30,7 +30,7 @@ public class Event implements Move {
 
     @Override
     public boolean equals(Object obj) {
-        return (((Event) obj).getId().equals(this.id)) ? true : false;
+        return (((Move) obj).getId().equals(this.id)) ? true : false;
     }
 
 

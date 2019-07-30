@@ -38,7 +38,7 @@ public class Restaurant implements Move {
 
     @Override
     public boolean equals(Object obj) {
-        return (((Restaurant) obj).getId().equals(this.id)) ? true : false;
+        return (((Move) obj).getId().equals(this.id)) ? true : false;
     }
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
