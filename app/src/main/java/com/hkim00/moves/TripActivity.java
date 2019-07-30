@@ -1,6 +1,8 @@
 package com.hkim00.moves;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.location.Location;
@@ -10,8 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -46,9 +50,12 @@ public class TripActivity extends AppCompatActivity {
     private Button btnFood, btnEvents, btnSelected;
     private View vFoodView, vEventsView, vSelectedView;
 
+    private ProgressBar pb;
+    private RecyclerView rvFood;
+    private MoveAdapter foodAdapter;
+
     private UserLocation location;
     public static List<CalendarDay> dates;
-
     private List<Move> foodMoves;
 
 
@@ -58,6 +65,8 @@ public class TripActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trip);
 
         getViewIds();
+
+        setupRecyclerView();
 
         setupButtons();
 
@@ -86,6 +95,18 @@ public class TripActivity extends AppCompatActivity {
         vFoodView = findViewById(R.id.vFoodView);
         vEventsView = findViewById(R.id.vEventsView);
         vSelectedView = findViewById(R.id.vSelectedView);
+
+        pb = findViewById(R.id.pb);
+        rvFood = findViewById(R.id.rvFood);
+    }
+
+
+    private void setupRecyclerView() {
+        rvFood.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        foodMoves = new ArrayList<>();
+        foodAdapter = new MoveAdapter(getApplicationContext(), foodMoves);
+        rvFood.setAdapter(foodAdapter);
     }
 
 
@@ -112,6 +133,8 @@ public class TripActivity extends AppCompatActivity {
 
         vEventsView.setBackgroundColor(getResources().getColor(R.color.white));
         vSelectedView.setBackgroundColor(getResources().getColor(R.color.white));
+
+        pb.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -139,11 +162,11 @@ public class TripActivity extends AppCompatActivity {
         if (location.lat.equals("0.0") && location.name.equals("")) {
             tvLocation.setText("Where?");
             tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
-
-            getNearbyRestaurants();
         } else {
             tvLocation.setText(location.name);
             tvLocation.setTextColor(getResources().getColor(R.color.black));
+
+            getNearbyRestaurants();
         }
     }
 
@@ -163,6 +186,8 @@ public class TripActivity extends AppCompatActivity {
 
 
     private void getNearbyRestaurants() {
+        pb.setVisibility(View.VISIBLE);
+
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
         float distance = MoveCategoriesHelper.milesToMeters(10);
 
@@ -183,10 +208,13 @@ public class TripActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
+                pb.setVisibility(View.INVISIBLE);
 
                 foodMoves.clear();
                 try {
                     foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
+
+                    foodAdapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
@@ -196,18 +224,21 @@ public class TripActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                pb.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                pb.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                pb.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 throwable.printStackTrace();
             }
