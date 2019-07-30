@@ -85,7 +85,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("move", Parcels.wrap(move));
-            intent.putExtra("isTrip", false);
+            intent.putExtra("isTrip", isTrip);
             context.startActivity(intent);
         }
     }

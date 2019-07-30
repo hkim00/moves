@@ -31,9 +31,10 @@
         android:background="#FDD835"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvYourMove"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/yellow_outline" />
 
     <ImageView
@@ -216,23 +217,13 @@
 
     <Button
         android:id="@+id/btnAddToTrip"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivAddToTrip"
-        app:layout_constraintEnd_toEndOf="@+id/ivAddToTrip"
-        app:layout_constraintStart_toStartOf="@+id/ivAddToTrip"
-        app:layout_constraintTop_toTopOf="@+id/ivAddToTrip" />
-
-    <ImageView
-        android:id="@+id/ivAddToTrip"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/btnFavorite"
-        app:layout_constraintStart_toEndOf="@+id/btnFavorite"
-        app:layout_constraintTop_toTopOf="@+id/btnFavorite"
-        lyft:srcCompat="@android:drawable/ic_input_add" />
+        android:layout_height="40dp"
+        android:layout_marginTop="5dp"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="@+id/btnSave"
+        app:layout_constraintTop_toBottomOf="@+id/ivSave"
+        tools:text="Add to trip" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

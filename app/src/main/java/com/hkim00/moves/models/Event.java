@@ -29,7 +29,9 @@ public class Event implements Move {
     public String getId() { return id; }
 
     @Override
-    public boolean equals(Move move) { return (move.getId().equals(this.id)) ? true : false; }
+    public boolean equals(Object obj) {
+        return (((Event) obj).getId().equals(this.id)) ? true : false;
+    }
 
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {

@@ -7,6 +7,4 @@ public interface Move {
     int getMoveType();
     String getName();
     String getId();
-    boolean equals(Move move);
-
 }

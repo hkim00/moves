@@ -50,7 +50,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private final static String TAG = "MoveDetailsActivity";
 
     private TextView tvMoveName, tvTime, tvGroupNum, tvDistance, tvPrice;
-    private ImageView ivGroupNum, ivTime, ivPrice, ivSave, ivFavorite, ivAddToTrip;
+    private ImageView ivGroupNum, ivTime, ivPrice, ivSave, ivFavorite;
     private RatingBar moveRating;
     private Button btnChooseMove, btnFavorite, btnSave, btnAddToTrip;
 
@@ -59,6 +59,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private Restaurant restaurant;
     private Event event;
     private boolean isTrip;
+    private List<Move> selectedMoves;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +73,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         lyftButton();
 
         getMove();
-
     }
+
 
     @Override
     public void onBackPressed() {
@@ -92,6 +93,16 @@ public class MoveDetailsActivity extends AppCompatActivity {
         }
 
         isTrip = getIntent().getBooleanExtra("isTrip", false);
+        btnAddToTrip.setVisibility(isTrip ? View.VISIBLE : View.INVISIBLE);
+        if (isTrip) {
+            selectedMoves = TripActivity.selectedMoves;
+
+            if (selectedMoves.contains(move)) {
+                btnAddToTrip.setText("Remove From Trip");
+            } else {
+                btnAddToTrip.setText("Add To Trip");
+            }
+        }
     }
 
     private void getViewIds() {
@@ -112,7 +123,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         ivSave = findViewById(R.id.ivSave);
 
         btnAddToTrip = findViewById(R.id.btnAddToTrip);
-        ivAddToTrip = findViewById(R.id.ivAddToTrip);
     }
 
     private void getFoodView() {
@@ -377,14 +387,15 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void saveToTrip() {
-        List<Move> selectedMoves = TripActivity.selectedMoves;
-
         if (!selectedMoves.contains(move)) {
-            TripActivity.selectedMoves.add(move);
+            selectedMoves.add(move);
+            btnAddToTrip.setText("Remove From Trip");
+        } else {
+            selectedMoves.remove(move);
+            btnAddToTrip.setText("Add To Trip");
         }
     }
 
-    
 
     private void lyftButton() {
         // add feature to call Lyft to event/restaurant
