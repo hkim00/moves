@@ -19,7 +19,7 @@ import java.util.List;
 @Parcel
 public class Restaurant implements Move {
 
-    public String name, id, text;
+    public String name, id, text, cuisine;
     public Integer price_level;
     public Double lat, lng, rating;
 
@@ -65,6 +65,7 @@ public class Restaurant implements Move {
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("place_id");
 
+
         restaurant.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
 
         JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
@@ -74,6 +75,8 @@ public class Restaurant implements Move {
 
         restaurant.rating = (jsonObject.has("rating")) ? jsonObject.getDouble("rating") : -1;
 
+
+
         return restaurant;
     }
 
@@ -82,6 +85,7 @@ public class Restaurant implements Move {
 
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("placeId");
+        restaurant.cuisine = parseObject.getString("cuisine");
 
         restaurant.lat = null;
 

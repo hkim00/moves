@@ -32,6 +32,7 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
+import com.hkim00.moves.util.ParseUtil;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -96,6 +97,10 @@ public class HomeFragment extends Fragment {
     private Boolean isFriendMove = false;
 
     private Button btnMove, btnRiskyMove, btnAddFriends;
+
+
+
+    Restaurant restaurant;
 
     @Nullable
     @Override
@@ -635,6 +640,31 @@ public class HomeFragment extends Fragment {
                         moveResults.add(restaurant);
                     }
 
+
+                    for (Move move: moveResults) {
+                        ParseQuery<ParseObject> completedResults = new ParseQuery<ParseObject>("Restaurant");
+                        completedResults.whereEqualTo("name", (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).name : ((Event) move).name);
+                        completedResults.whereEqualTo("didComplete", true);
+                        completedResults.whereEqualTo("user", currUser);
+                        completedResults.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> objects, ParseException e) {
+                                for (int i = 0; i < objects.size(); i++) {
+
+                                    for (String pref: totalPref) {
+                                        if (getCuisine(params, pref,objects.get(i).getString("name")) != null) {
+                                            objects.get(i).put("cuisine", pref);
+                                            objects.get(i).saveInBackground();
+                                            Log.d("HomeFragment", "added the cuisine types");
+                                        }
+                                        else continue;
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+
                     goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {
@@ -686,6 +716,8 @@ public class HomeFragment extends Fragment {
     }
 
 
+
+    /*
     public void CreateMoveList() {
 
         Map<String, Integer> PrefDict = new HashMap<String, Integer>();
@@ -705,5 +737,12 @@ public class HomeFragment extends Fragment {
         List<Move> pastMoves = HistoryFragment.getHistory();
 
         
+    }
+*/
+
+    public RequestParams getCuisine(RequestParams params, String pref, String name) {
+            params.put("keyword", pref);
+            params.put("name", name);
+        return params;
     }
 }
