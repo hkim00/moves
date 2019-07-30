@@ -33,6 +33,10 @@ import com.hkim00.moves.models.UserLocation;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -600,20 +604,46 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void UpdateMoveList() {
+    public void CreateMoveList() {
 
         Map<String, Integer> PrefDict = new HashMap<String, Integer>();
-        ArrayList<Map<String, Integer>> al = new ArrayList();
+        ArrayList<Map<String, Integer>> chooseMove = new ArrayList();
 
-        PrefDict.put ("key1", 1);
-        PrefDict.put ("key2", 2);
-        PrefDict.put ("key3", 3);
-        PrefDict.put ("key4", 4);
+        //get user's pref list
+        MoveCategoriesHelper helper = new MoveCategoriesHelper();
+        List<String> foodPrefList =  MoveCategoriesHelper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+        if (foodPrefList != null) {
+            for (String pref: foodPrefList) {
+                if (!PrefDict.containsKey(pref)) {
+                    PrefDict.put(pref, 0);
+                }
+            }
+       }
+        //get user's history and create String list
+        List<Move> pastMoves = HistoryFragment.getHistory();
 
-        al.add(PrefDict);
+
+        //get past move's category type
+        RequestParams params = new RequestParams();
+        params.put("keyword", "Mexican");
+
+        String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
+
+        HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
+
+        });
+
+
+        for (String pref: foodPrefList) {
+
+        }
+            //if restaurant: go through rest categories
+            //if event: go through event categories
+
+       chooseMove.add(PrefDict);
 
         ParseUser currUser = ParseUser.getCurrentUser();
-        currUser.put("tester", al);
+        currUser.put("tester", chooseMove);
         currUser.saveInBackground();
     }
 

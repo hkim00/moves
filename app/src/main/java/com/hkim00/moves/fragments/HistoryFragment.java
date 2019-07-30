@@ -1,5 +1,6 @@
 package com.hkim00.moves.fragments;
 
+import android.content.Context;
 import android.content.pm.ComponentInfo;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -54,9 +55,10 @@ public class HistoryFragment extends Fragment {
 
     public final static String TAG = "HistoryFragment";
 
-    private List<Move> pastMoves;
-    private ComponentContext componentContext;
-    private RecyclerBinder recyclerBinder;
+    private static List<Move> pastMoves;
+    private static ComponentContext componentContext;
+    private static RecyclerBinder recyclerBinder;
+    private static Context context;
 
 
     @Nullable
@@ -105,7 +107,7 @@ public class HistoryFragment extends Fragment {
     }
 
 
-    private void getHistory() {
+    public static List<Move> getHistory() {
         ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Move");
         restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
         restaurantQuery.whereEqualTo("didComplete", true);
@@ -122,14 +124,16 @@ public class HistoryFragment extends Fragment {
                 } else {
                     Log.e(TAG, "Error finding past restaurants.");
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error past restaurants", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Error past restaurants", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        return pastMoves;
     }
 
 
-    private void addContents(List<Move> moves) {
+    private static void addContents(List<Move> moves) {
         if (moves.size() == 0) {
             return;
         }

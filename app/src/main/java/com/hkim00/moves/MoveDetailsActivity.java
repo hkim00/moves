@@ -85,6 +85,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             event = (Event) move;
             getEventView();
         }
+
     }
 
     @Override
@@ -306,7 +307,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
 
 
-btnSave.setOnClickListener(new View.OnClickListener() {
+    btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {

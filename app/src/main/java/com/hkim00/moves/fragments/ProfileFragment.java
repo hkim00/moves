@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.litho.ComponentContext;
 import com.hkim00.moves.LogInActivity;
-import com.hkim00.moves.MoveDetailsActivity;
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.R;
 
 //import com.hkim00.moves.adapters.RestaurantAdapter;
@@ -137,6 +137,7 @@ public class ProfileFragment extends Fragment {
         rvSaved.setAdapter(saveAdapter);
 
         rvSaved.setVisibility(View.INVISIBLE);
+        ivFavorites.setImageResource(R.drawable.ufi_heart_active);
     }
 
 
