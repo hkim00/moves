@@ -32,6 +32,8 @@ import java.util.List;
 public class SearchFragment extends Fragment {
     private final static String TAG = "SearchFragment";
 
+    public static Boolean isAddFriend;
+
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
 
@@ -109,7 +111,7 @@ public class SearchFragment extends Fragment {
         recyclerBinder.removeRangeAt(0, recyclerBinder.getItemCount());
 
         for (ParseUser user : users) {
-            Component component = UserItem.create(componentContext).context(getContext()).user(user).build();
+            Component component = UserItem.create(componentContext).context(getContext()).user(user).isAddFriend(isAddFriend).build();
             recyclerBinder.appendItem(component);
         }
     }
