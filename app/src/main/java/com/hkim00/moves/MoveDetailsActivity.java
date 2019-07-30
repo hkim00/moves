@@ -49,24 +49,17 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "MoveDetailsActivity";
 
-    private TextView tvMoveName;
-    private TextView tvTime;
-    private TextView tvGroupNum;
-    private TextView tvDistance;
-    private TextView tvPrice;
-    private ImageView ivGroupNum;
-    private ImageView ivTime;
-    private ImageView ivPrice;
-    private ImageView ivSave;
-    private ImageView ivFavorite;
+    private TextView tvMoveName, tvTime, tvGroupNum, tvDistance, tvPrice;
+    private ImageView ivGroupNum, ivTime, ivPrice, ivSave, ivFavorite;
     private RatingBar moveRating;
-    private Button btnChooseMove;
-    private Button btnFavorite;
-    private Button btnSave;
+    private Button btnChooseMove, btnFavorite, btnSave, btnAddToTrip;
 
-    ParseUser currUser;
-    Restaurant restaurant;
-    Event event;
+    private ParseUser currUser;
+    private Move move;
+    private Restaurant restaurant;
+    private Event event;
+    private boolean isTrip;
+    private List<Move> selectedMoves;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +67,23 @@ public class MoveDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_move_details);
 
         getViewIds();
-        ButtonsSetUp();
+
+        setupButtons();
+
         lyftButton();
 
-        Move move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
+        getMove();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    private void getMove() {
+        move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
         if (move.getMoveType() == Move.RESTAURANT) {
             restaurant = (Restaurant) move;
             getFoodView();
@@ -85,12 +91,18 @@ public class MoveDetailsActivity extends AppCompatActivity {
             event = (Event) move;
             getEventView();
         }
-    }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+        isTrip = getIntent().getBooleanExtra("isTrip", false);
+        btnAddToTrip.setVisibility(isTrip ? View.VISIBLE : View.INVISIBLE);
+        if (isTrip) {
+            selectedMoves = TripActivity.selectedMoves;
+
+            if (selectedMoves.contains(move)) {
+                btnAddToTrip.setText("Remove From Trip");
+            } else {
+                btnAddToTrip.setText("Add To Trip");
+            }
+        }
     }
 
     private void getViewIds() {
@@ -109,6 +121,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         currUser = ParseUser.getCurrentUser();
         ivSave = findViewById(R.id.ivSave);
+
+        btnAddToTrip = findViewById(R.id.btnAddToTrip);
     }
 
     private void getFoodView() {
@@ -247,7 +261,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void ButtonsSetUp() {
+    private void setupButtons() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -306,7 +320,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
 
 
-btnSave.setOnClickListener(new View.OnClickListener() {
+        btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
@@ -337,7 +351,7 @@ btnSave.setOnClickListener(new View.OnClickListener() {
 
         });
 
-     btnFavorite.setOnClickListener(new View.OnClickListener() {
+        btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ivFavorite.setImageResource(R.drawable.ufi_heart_active);
@@ -368,9 +382,20 @@ btnSave.setOnClickListener(new View.OnClickListener() {
                 }
             }
         });
+
+        btnAddToTrip.setOnClickListener(view -> saveToTrip());
     }
 
-    
+    private void saveToTrip() {
+        if (!selectedMoves.contains(move)) {
+            selectedMoves.add(move);
+            btnAddToTrip.setText("Remove From Trip");
+        } else {
+            selectedMoves.remove(move);
+            btnAddToTrip.setText("Add To Trip");
+        }
+    }
+
 
     private void lyftButton() {
         // add feature to call Lyft to event/restaurant

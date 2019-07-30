@@ -286,6 +286,8 @@ public class HomeFragment extends Fragment {
                 Intent intent = new Intent(getContext(), TripActivity.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            }
+            });
 
         btnRiskyMove.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -507,11 +509,7 @@ public class HomeFragment extends Fragment {
                 JSONArray events;
                 if (response.has("_embedded")) {
                     try {
-                        events = (response.getJSONObject("_embedded")).getJSONArray("events");
-                        for (int i = 0; i < events.length(); i++) {
-                            Event event = Event.fromJSON(events.getJSONObject(i));
-                            moveResults.add(event);
-                        }
+                        moveResults = Event.arrayFromJSONArray((response.getJSONObject("_embedded")).getJSONArray("events"));
                         goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
@@ -554,12 +552,6 @@ public class HomeFragment extends Fragment {
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
-
-        String userFoodPref = MoveCategoriesHelper.getUserFoodPreferenceString(nonPreferredList);
-
-        if (!userFoodPref.equals("")) {
-            params.put("keyword", userFoodPref);
-        }
       
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
@@ -663,33 +655,33 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getRiskyMove() {
-        if (moveType.equals("")) {
-            return;
-        }
-        MoveCategoriesHelper helper = new MoveCategoriesHelper();
-        List<String> nonPreferredList = new ArrayList<>();
-
-        if (moveType.equals("food")) {
-            if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
-
-                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
-                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
-            }
-        } else {
-            if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
-
-                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
-                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
-            }
-        }
-
-        if ((moveType.equals("food"))) {
-            getNearbyRestaurants(nonPreferredList);
-        } else {
-            getNearbyEvents(nonPreferredList);
-        }
-    }
+//    private void getRiskyMove() {
+//        if (moveType.equals("")) {
+//            return;
+//        }
+//        MoveCategoriesHelper helper = new MoveCategoriesHelper();
+//        List<String> nonPreferredList = new ArrayList<>();
+//
+//        if (moveType.equals("food")) {
+//            if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
+//
+//                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
+//                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+//            }
+//        } else {
+//            if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
+//
+//                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
+//                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
+//            }
+//        }
+//
+//        if ((moveType.equals("food"))) {
+//            getNearbyRestaurants(nonPreferredList);
+//        } else {
+//            getNearbyEvents(nonPreferredList);
+//        }
+//    }
 
     private void goToMovesActivity(List<Move> moves) {
         Intent intent = new Intent(getContext(), MovesActivity.class);
@@ -725,3 +717,4 @@ public class HomeFragment extends Fragment {
         currUser.saveInBackground();
     }
 }
+
