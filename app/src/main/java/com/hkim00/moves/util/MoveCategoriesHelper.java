@@ -1,5 +1,8 @@
 package com.hkim00.moves.util;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.hkim00.moves.models.CategoryButton;
 
 import org.json.JSONArray;
@@ -82,12 +85,11 @@ public class MoveCategoriesHelper {
             i++;
 
         }
-
         return nonPreferred;
     }
 
 
-    public static List<String> JSONArrayToList(JSONArray jsonArray) {
+    public static List<String> JSONArrayToList(Context context, JSONArray jsonArray) {
 
         List<String> stringList = new ArrayList<String>();
 
@@ -95,10 +97,10 @@ public class MoveCategoriesHelper {
             try {
                 stringList.add((String) jsonArray.get(i));
             } catch (JSONException e) {
+                Log.e(context.toString(), e.getMessage());
                 e.printStackTrace();
             }
         }
-
         return stringList;
     }
 

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationResult;
@@ -50,26 +51,21 @@ public class UserLocation {
     public static UserLocation fromPlace(Context context, Place place) {
         UserLocation location = new UserLocation();
 
+        location.name = place.getName();
         location.lat = String.valueOf(place.getLatLng().latitude);
         location.lng = String.valueOf(place.getLatLng().longitude);
 
-        String streetNumber = "";
-        String route = "";
+        String postalCode = "";
 
         List<AddressComponent> addressComponents = place.getAddressComponents().asList();
         for (int i = 0; i < addressComponents.size(); i++) {
             AddressComponent component = addressComponents.get(i);
-
-            if (component.getTypes().contains("street_number")) {
-                streetNumber = component.getName();
-            } else if (component.getTypes().contains("route")) {
-                route = component.getName();
-            } else if (component.getTypes().contains("postal_code")) {
-                location.postalCode = component.getName();
+            if (component.getTypes().contains("postal_code")) {
+                postalCode = component.getName();
             }
         }
 
-        location.name = streetNumber + " " + route;
+        location.postalCode = postalCode;
 
         saveLocation(context, location);
 
@@ -126,6 +122,7 @@ public class UserLocation {
                 return location;
             }
         } catch (JSONException e) {
+            Log.e(context.toString(), e.getMessage());
             e.printStackTrace();
             return location;
         }

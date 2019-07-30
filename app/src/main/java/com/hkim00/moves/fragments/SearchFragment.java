@@ -1,8 +1,6 @@
 package com.hkim00.moves.fragments;
 
-import android.content.pm.ComponentInfo;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
-import com.hkim00.moves.models.Move;
 import com.hkim00.moves.specs.SearchComponent;
 import com.hkim00.moves.specs.SearchComponentSpec;
 import com.hkim00.moves.specs.UserItem;
@@ -34,6 +31,8 @@ import java.util.List;
 
 public class SearchFragment extends Fragment {
     private final static String TAG = "SearchFragment";
+
+    public static Boolean isAddFriend;
 
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
@@ -112,7 +111,7 @@ public class SearchFragment extends Fragment {
         recyclerBinder.removeRangeAt(0, recyclerBinder.getItemCount());
 
         for (ParseUser user : users) {
-            Component component = UserItem.create(componentContext).context(getContext()).user(user).build();
+            Component component = UserItem.create(componentContext).context(getContext()).user(user).isAddFriend(isAddFriend).build();
             recyclerBinder.appendItem(component);
         }
     }

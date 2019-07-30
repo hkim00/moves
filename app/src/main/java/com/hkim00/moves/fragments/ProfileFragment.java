@@ -26,6 +26,7 @@ import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.R;
 
 //import com.hkim00.moves.adapters.RestaurantAdapter;
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
