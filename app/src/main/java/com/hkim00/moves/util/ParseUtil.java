@@ -55,7 +55,7 @@ public class ParseUtil {
     // if it has been done before, then it will like/unlike the move
     public static void getDidFavorite(String moveType, List<ParseObject> objects, Move move) {
         ParseUser currUser = ParseUser.getCurrentUser();
-        if (objects.size()>0) {
+        if (objects.size() > 0) {
             for (int i = 0; i < objects.size(); i++) {
                 if (objects.get(i).getBoolean("didFavorite") == true){
                     objects.get(i).put("didFavorite", false);
@@ -65,17 +65,6 @@ public class ParseUtil {
                     objects.get(i).saveInBackground();
                 }
             }
-        }
-        else {
-            ParseObject currObj = new ParseObject("Move");
-            currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
-            currObj.put("user", currUser);
-            currObj.put("didFavorite", true);
-            currObj.put("moveType", moveType);
-            currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
-            currObj.put("didComplete", false);
-            currObj.put("didSave", false);
-            currObj.saveInBackground();
         }
     }
 
