@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -171,10 +173,13 @@ public class TripActivity extends AppCompatActivity {
         tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
         tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
 
+        etTrip.addTextChangedListener(charTextWatcher);
+
         vEventsView.setVisibility(View.INVISIBLE);
         vSelectedView.setVisibility(View.INVISIBLE);
 
         pb.setVisibility(View.INVISIBLE);
+        btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
 
         toggleMovesView(false);
     }
@@ -210,12 +215,16 @@ public class TripActivity extends AppCompatActivity {
                 tvCalendar.setText("When?");
                 tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
             }
+
+            isReadyToSave(false);
         }
     }
 
 
     private void checkForCurrentLocation() {
         location = UserLocation.getCurrentTripLocation(this);
+
+        isReadyToSave(false);
 
         if (location.lat == null) {
             tvLocation.setText("Where?");
@@ -251,19 +260,39 @@ public class TripActivity extends AppCompatActivity {
         movesAdapter.notifyDataSetChanged();
     }
 
-    private void saveTrip() {
+
+    private boolean isReadyToSave(boolean needsToast) {
         if (etTrip.getText().toString().trim().equals("")) {
-            Toast.makeText(getApplicationContext(), "Name this trip", Toast.LENGTH_LONG).show();
-            return;
+            if (needsToast) {
+                Toast.makeText(getApplicationContext(), "Name this trip", Toast.LENGTH_LONG).show();
+            }
+            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            return false;
         }
 
         if (location.lat == null) {
-            Toast.makeText(getApplicationContext(), "Set a location for this trip", Toast.LENGTH_LONG).show();
-            return;
+            if (needsToast) {
+                Toast.makeText(getApplicationContext(), "Set a location for this trip", Toast.LENGTH_LONG).show();
+            }
+            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            return false;
         }
 
         if (dates.size() == 0) {
-            Toast.makeText(getApplicationContext(), "Set trip dates", Toast.LENGTH_LONG).show();
+            if (needsToast) {
+                Toast.makeText(getApplicationContext(), "Set trip dates", Toast.LENGTH_LONG).show();
+            }
+
+            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            return false;
+        }
+
+        btnSave.setBackgroundColor(getResources().getColor(R.color.selected_blue));
+        return true;
+    }
+
+    private void saveTrip() {
+        if (!isReadyToSave(true)) {
             return;
         }
 
@@ -531,5 +560,21 @@ public class TripActivity extends AppCompatActivity {
         }
     }
 
+    //character counter
+    private final TextWatcher charTextWatcher= new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            isReadyToSave(false);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
 }
