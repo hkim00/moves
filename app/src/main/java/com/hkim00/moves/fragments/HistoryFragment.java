@@ -106,42 +106,30 @@ public class HistoryFragment extends Fragment {
 
 
     private void getHistory() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Move");
-        restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        restaurantQuery.whereEqualTo("didComplete", true);
-        restaurantQuery.orderByDescending("createdAt");
+        ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
+        moveQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+        moveQuery.whereEqualTo("didComplete", true);
+        moveQuery.orderByDescending("createdAt");
 
-        restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
+        moveQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    List<Move> moves = Restaurant.arrayFromParseObjects(objects);
-                    pastMoves.addAll(moves);
+                    List<Move> moves = new ArrayList<>();
 
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (objects.get(i).getString("moveType").equals("food")) {
+                            moves.add(Restaurant.fromParseObject(objects.get(i)));
+                        } else {
+                            moves.add(Event.fromParseObject(objects.get(i)));
+                        }
+                    }
+                    pastMoves.addAll(moves);
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding past restaurants.");
+                    Log.e(TAG, "Error finding past moves.");
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Error past restaurants", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Event");
-        eventQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        eventQuery.whereEqualTo("didComplete", true);
-        eventQuery.orderByDescending("createdAt");
-        eventQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    List<Move> moves = Event.arrayFromParseObjects(objects);
-                    pastMoves.addAll(moves);
-
-                    addContents(moves);
-                } else {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error past moves", Toast.LENGTH_SHORT).show();
                 }
             }
         });
