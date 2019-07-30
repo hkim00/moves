@@ -70,7 +70,6 @@ public class ParseUtil {
         favQuery.orderByDescending("createdAt");
         return favQuery;
     }
-
 }
 
 

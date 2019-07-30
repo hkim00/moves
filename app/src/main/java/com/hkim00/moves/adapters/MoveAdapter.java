@@ -1,5 +1,6 @@
 package com.hkim00.moves.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -87,6 +88,10 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             intent.putExtra("move", Parcels.wrap(move));
             intent.putExtra("isTrip", isTrip);
             context.startActivity(intent);
+
+            if (context instanceof Activity) {
+                ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            }
         }
     }
 }

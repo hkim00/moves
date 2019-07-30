@@ -23,7 +23,11 @@ import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import org.json.JSONArray;
@@ -46,8 +50,7 @@ public class TripActivity extends AppCompatActivity {
 
     private EditText etTrip;
     private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected;
-    private Button btnLocation, btnCalendar;
-    private Button btnFood, btnEvents, btnSelected;
+    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave;
     private View vFoodView, vEventsView, vSelectedView;
 
     private ProgressBar pb;
@@ -105,6 +108,7 @@ public class TripActivity extends AppCompatActivity {
 
         pb = findViewById(R.id.pb);
         rvMoves = findViewById(R.id.rvMoves);
+        btnSave = findViewById(R.id.btnSave);
     }
 
 
@@ -130,6 +134,8 @@ public class TripActivity extends AppCompatActivity {
         btnFood.setOnClickListener(view -> toggleSection("food"));
         btnEvents.setOnClickListener(view -> toggleSection("events"));
         btnSelected.setOnClickListener(view -> toggleSection("selected"));
+
+        btnSave.setOnClickListener(view -> saveTrip());
     }
 
     private void toggleSection(String type) {
@@ -237,11 +243,80 @@ public class TripActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 
+
     private void updateMoves(List<Move> replacementArray) {
         moves.clear();
         moves.addAll(replacementArray);
 
         movesAdapter.notifyDataSetChanged();
+    }
+
+    private void saveTrip() {
+        if (etTrip.getText().toString().trim().equals("")) {
+            Toast.makeText(getApplicationContext(), "Name this trip", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (location.lat == null) {
+            Toast.makeText(getApplicationContext(), "Set a location for this trip", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (dates.size() == 0) {
+            Toast.makeText(getApplicationContext(), "Set trip dates", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        ParseObject trip = new ParseObject("Trip");
+
+        trip.put("name", etTrip.getText().toString().trim());
+        trip.put("locationName", location.name);
+        trip.put("lat", location.lat);
+        trip.put("lng", location.lng);
+        trip.put("postalCode", location.postalCode);
+        trip.put("owner", ParseUser.getCurrentUser());
+        trip.put("dateRange", tvCalendar.getText().toString().trim());
+
+        trip.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
+                    saveTripMoves(trip);
+
+                    onBackPressed();
+                } else {
+                    Toast.makeText(getApplicationContext(), "error saving trip", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private void saveTripMoves(ParseObject trip) {
+        if (selectedMoves.size() > 0) {
+            for (Move selectedMove : selectedMoves) {
+                ParseObject move = new ParseObject("Move");
+
+                move.put("name", selectedMove.getName());
+                move.put("placeId", selectedMove.getId());
+                move.put("trip", trip);
+                move.put("moveType", (selectedMove.getMoveType() == Restaurant.RESTAURANT) ? "food" : "event");
+
+                move.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.getName(), Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }
     }
 
 
@@ -455,4 +530,6 @@ public class TripActivity extends AppCompatActivity {
             return;
         }
     }
+
+
 }
