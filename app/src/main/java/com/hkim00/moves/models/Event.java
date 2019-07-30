@@ -2,6 +2,7 @@ package com.hkim00.moves.models;
 
 import com.parse.ParseObject;
 
+import org.json.JSONArray;
 import org.parceler.Parcel;
 
 import org.json.JSONException;
@@ -31,6 +32,21 @@ public class Event implements Move {
         }
 
         return events;
+    }
+
+    public static List<Move> arrayFromJSONArray(JSONArray objects) {
+        List<Move> eventMoves = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < objects.length(); i++) {
+                Event event = Event.fromJSON(objects.getJSONObject(i));
+                eventMoves.add(event);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return eventMoves;
     }
 
 

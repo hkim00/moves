@@ -5,17 +5,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -23,8 +23,8 @@ import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.ParseUser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,12 +51,14 @@ public class TripActivity extends AppCompatActivity {
     private View vFoodView, vEventsView, vSelectedView;
 
     private ProgressBar pb;
-    private RecyclerView rvFood;
-    private MoveAdapter foodAdapter;
+    private RecyclerView rvMoves;
+    private MoveAdapter movesAdapter;
 
     private UserLocation location;
     public static List<CalendarDay> dates;
     private List<Move> foodMoves;
+    private List<Move> eventMoves;
+    private List<Move> moves;
 
 
     @Override
@@ -97,16 +99,19 @@ public class TripActivity extends AppCompatActivity {
         vSelectedView = findViewById(R.id.vSelectedView);
 
         pb = findViewById(R.id.pb);
-        rvFood = findViewById(R.id.rvFood);
+        rvMoves = findViewById(R.id.rvMoves);
     }
 
 
     private void setupRecyclerView() {
-        rvFood.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        rvMoves.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         foodMoves = new ArrayList<>();
-        foodAdapter = new MoveAdapter(getApplicationContext(), foodMoves);
-        rvFood.setAdapter(foodAdapter);
+        eventMoves = new ArrayList<>();
+        moves = new ArrayList<>();
+
+        movesAdapter = new MoveAdapter(getApplicationContext(), moves);
+        rvMoves.setAdapter(movesAdapter);
     }
 
 
@@ -121,9 +126,23 @@ public class TripActivity extends AppCompatActivity {
     }
 
     private void toggleSection(String type) {
-        vFoodView.setBackgroundColor(getResources().getColor((type.equals("food")) ? R.color.selected_category : R.color.white));
-        vEventsView.setBackgroundColor(getResources().getColor((type.equals("events")) ? R.color.selected_category : R.color.white));
-        vSelectedView.setBackgroundColor(getResources().getColor((type.equals("selected")) ? R.color.selected_category : R.color.white));
+        vFoodView.setVisibility((type.equals("food")) ? View.VISIBLE : View.INVISIBLE);
+        vEventsView.setVisibility((type.equals("events")) ? View.VISIBLE : View.INVISIBLE);
+        vSelectedView.setVisibility((type.equals("selected")) ? View.VISIBLE : View.INVISIBLE);
+
+        if (type.equals("food")) {
+            if (foodMoves.size() == 0) {
+                getNearbyRestaurants();
+            } else {
+                updateMoves(foodMoves);
+            }
+        } else if (type.equals("events")) {
+            if (eventMoves.size() == 0) {
+                getNearbyEvents();
+            } else {
+                updateMoves(eventMoves);
+            }
+        }
     }
 
 
@@ -131,8 +150,8 @@ public class TripActivity extends AppCompatActivity {
         tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
         tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
 
-        vEventsView.setBackgroundColor(getResources().getColor(R.color.white));
-        vSelectedView.setBackgroundColor(getResources().getColor(R.color.white));
+        vEventsView.setVisibility(View.INVISIBLE);
+        vSelectedView.setVisibility(View.INVISIBLE);
 
         pb.setVisibility(View.INVISIBLE);
     }
@@ -184,6 +203,13 @@ public class TripActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 
+    private void updateMoves(List<Move> replacementArray) {
+        moves.clear();
+        moves.addAll(replacementArray);
+
+        movesAdapter.notifyDataSetChanged();
+    }
+
 
     private void getNearbyRestaurants() {
         pb.setVisibility(View.VISIBLE);
@@ -213,9 +239,7 @@ public class TripActivity extends AppCompatActivity {
                 foodMoves.clear();
                 try {
                     foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
-
-                    foodAdapter.notifyDataSetChanged();
-
+                    updateMoves(foodMoves);
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();
@@ -243,5 +267,132 @@ public class TripActivity extends AppCompatActivity {
                 throwable.printStackTrace();
             }
         });
+    }
+
+    private void getNearbyEvents() {
+        pb.setVisibility(View.VISIBLE);
+        checkForPostalCode();
+
+        String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
+        String apiUrl = API_BASE_URL_TM + ".json";
+
+        RequestParams params = new RequestParams();
+
+        params.put("apikey", getString(R.string.api_key_tm));
+        params.put("postalCode", location.postalCode);
+        params.put("sort", "date,asc");
+
+            JSONArray currUserPrefList = ParseUser.getCurrentUser().getJSONArray("eventPrefList");
+            if (currUserPrefList != null) {
+                try {
+                    for (int i = 0; i < currUserPrefList.length(); i++) {
+                        String pref = currUserPrefList.get(i).toString();
+                        params.put("keyword", pref);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+        HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                pb.setVisibility(View.INVISIBLE);
+
+                eventMoves.clear();
+
+                JSONArray events;
+                if (response.has("_embedded")) {
+                    try {
+                        eventMoves = Event.arrayFromJSONArray((response.getJSONObject("_embedded")).getJSONArray("events"));
+                        updateMoves(eventMoves);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error getting events");
+                        e.printStackTrace();
+                    }
+                } else {
+                    movesAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                pb.setVisibility(View.INVISIBLE);
+                new StatusCodeHandler(TAG, statusCode);
+                Log.i(TAG, errorResponse.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                pb.setVisibility(View.INVISIBLE);
+                new StatusCodeHandler(TAG, statusCode);
+                Log.i(TAG, errorResponse.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                pb.setVisibility(View.INVISIBLE);
+                new StatusCodeHandler(TAG, statusCode);
+                Log.i(TAG, responseString);
+            }
+        });
+    }
+
+    private void checkForPostalCode() {
+        if (location.postalCode.equals("")) {
+
+            if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+                Toast.makeText(getApplicationContext(), "Set a location", Toast.LENGTH_LONG).show();
+                return;
+
+            } else {
+                String apiUrl = API_BASE_URL + "/geocode/json";
+
+                RequestParams params = new RequestParams();
+                params.put("latlng",location.lat + "," + location.lng);
+                params.put("key", getString(R.string.api_key));
+
+                HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+
+                        UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getApplicationContext(), false, location, response);
+                        location.postalCode = newLocation.postalCode;
+
+                        if (!newLocation.equals("")) {
+                            return;
+                        } else {
+                            Log.e(TAG, "No postal code found.");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                        new StatusCodeHandler(TAG, statusCode);
+                        throwable.printStackTrace();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                        new StatusCodeHandler(TAG, statusCode);
+                        throwable.printStackTrace();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        new StatusCodeHandler(TAG, statusCode);
+                        throwable.printStackTrace();
+                    }
+                });
+            }
+        } else {
+            return;
+        }
     }
 }
