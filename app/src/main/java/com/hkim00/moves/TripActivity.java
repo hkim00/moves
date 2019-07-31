@@ -20,14 +20,17 @@ import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -35,6 +38,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -59,6 +63,7 @@ public class TripActivity extends AppCompatActivity {
     private RecyclerView rvMoves;
     private MoveAdapter movesAdapter;
 
+    private Trip trip;
     private UserLocation location;
     public static List<CalendarDay> dates;
     private List<Move> foodMoves;
@@ -66,6 +71,8 @@ public class TripActivity extends AppCompatActivity {
     public static List<Move> selectedMoves;
     private List<Move> moves;
 
+    private boolean isEditingTrip;
+    private boolean didCheckSavedSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,26 +169,52 @@ public class TripActivity extends AppCompatActivity {
                 updateMoves(eventMoves);
             }
         } else {
-            updateMoves(selectedMoves);
+            if (selectedMoves.size() == 0 && !didCheckSavedSelected && isEditingTrip) {
+                getSavedTripMoves(trip);
+            } else {
+                updateMoves(selectedMoves);
+            }
         }
     }
 
 
     private void setupView() {
-        location = UserLocation.clearCurrentTripLocation(this);
-
-        tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
-        tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
-
         etTrip.addTextChangedListener(charTextWatcher);
+        pb.setVisibility(View.INVISIBLE);
 
         vEventsView.setVisibility(View.INVISIBLE);
         vSelectedView.setVisibility(View.INVISIBLE);
 
-        pb.setVisibility(View.INVISIBLE);
-        btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+        didCheckSavedSelected = false;
 
-        toggleMovesView(false);
+        if (getIntent().hasExtra("trip")) {
+            trip = Parcels.unwrap(getIntent().getParcelableExtra("trip"));
+
+            location = trip.location;
+            etTrip.setText(trip.name);
+
+            tvLocation.setText(trip.location.name);
+            tvCalendar.setText(trip.dateRange);
+
+            tvLocation.setTextColor(getResources().getColor(R.color.black));
+            tvCalendar.setTextColor(getResources().getColor(R.color.black));
+
+            isEditingTrip = true;
+
+            getNearbyRestaurants();
+            getSavedTripMoves(trip);
+        } else {
+            location = UserLocation.clearCurrentTripLocation(this);
+
+            tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
+            tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
+
+            isEditingTrip = false;
+
+            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+            toggleMovesView(false);
+        }
     }
 
 
@@ -295,6 +328,7 @@ public class TripActivity extends AppCompatActivity {
         if (!isReadyToSave(true)) {
             return;
         }
+        btnSave.setEnabled(false);
 
         ParseObject trip = new ParseObject("Trip");
 
@@ -309,6 +343,7 @@ public class TripActivity extends AppCompatActivity {
         trip.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                btnSave.setEnabled(true);
                 if (e == null) {
                     Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
 
@@ -325,6 +360,34 @@ public class TripActivity extends AppCompatActivity {
         });
     }
 
+    private void getSavedTripMoves(Trip trip) {
+        ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
+        moveQuery.whereEqualTo("trip", trip.parseObject);
+        moveQuery.orderByDescending("createdAt");
+        moveQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                didCheckSavedSelected = true;
+
+                if (e == null) {
+                    List<Move> moves = new ArrayList<>();
+
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (objects.get(i).getString("moveType").equals("food")) {
+                            moves.add(Restaurant.fromParseObject(objects.get(i)));
+                        } else {
+                            moves.add(Event.fromParseObject(objects.get(i)));
+                        }
+                    }
+                    selectedMoves.addAll(moves);
+                } else {
+                    Log.e(TAG, "Error getting selected moves");
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Error getting selected moves", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     private void saveTripMoves(ParseObject trip) {
         if (selectedMoves.size() > 0) {
