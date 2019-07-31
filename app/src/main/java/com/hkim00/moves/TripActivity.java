@@ -586,7 +586,7 @@ public class TripActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    movesAdapter.notifyDataSetChanged();
+                    updateMoves(eventMoves);
                 }
             }
 
