@@ -59,7 +59,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private Restaurant restaurant;
     private Event event;
     private boolean isTrip;
+
     private List<Move> selectedMoves;
+    private List<Move> newSelectedMoves;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnAddToTrip.setVisibility(isTrip ? View.VISIBLE : View.INVISIBLE);
         if (isTrip) {
             selectedMoves = TripActivity.selectedMoves;
+            newSelectedMoves = TripActivity.newSelectedMoves;
 
             if (selectedMoves.contains(move)) {
                 btnAddToTrip.setText("Remove From Trip");
@@ -385,6 +388,14 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void saveToTrip() {
+        if (TripActivity.isEditingTrip) {
+            if (!newSelectedMoves.contains(move)) {
+                newSelectedMoves.add(move);
+            } else {
+                newSelectedMoves.remove(move);
+            }
+        }
+
         if (!selectedMoves.contains(move)) {
             selectedMoves.add(move);
             btnAddToTrip.setText("Remove From Trip");
