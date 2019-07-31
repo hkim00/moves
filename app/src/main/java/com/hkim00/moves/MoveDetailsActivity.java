@@ -44,6 +44,7 @@ import cz.msebera.android.httpclient.Header;
 //import util methods: JSONObject response formatters
 import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
+import static com.hkim00.moves.util.ParseUtil.getParseQuery;
 
 public class MoveDetailsActivity extends AppCompatActivity {
 
@@ -66,22 +67,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move_details);
 
-        if (this.move != null) {
-            if (this.move.getDidSave() == true) {
-                ivSave.setImageResource(R.drawable.ufi_save_active);
-            } else {
-                ivSave.setImageResource(R.drawable.ufi_save);
-            }
-        }
-
-
         getViewIds();
 
-        setupButtons();
-
-        lyftButton();
-
         getMove();
+
+        setupButtons();
+        
+        lyftButton();
     }
 
     @Override
@@ -92,6 +84,25 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getMove() {
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
+        ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (objects.size() == 0) {
+                    ParseObject currObj = new ParseObject("Move");
+                    currObj.put("name", move.getName());
+                    currObj.put("placeId", move.getId());
+                    currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
+                    currObj.put("user", currUser);
+                    currObj.put("didComplete", false);
+                    currObj.put("didSave", false);
+                    currObj.put("didFavorite", false);
+                    currObj.saveInBackground();
+                }
+            }
+        });
+
+        // move details layout is different for a restaurant vs. event
         if (move.getMoveType() == Move.RESTAURANT) {
             restaurant = (Restaurant) move;
             getFoodView();
@@ -111,7 +122,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 btnAddToTrip.setText("Add To Trip");
             }
         }
-    }
+     }
 
     private void getViewIds() {
         tvMoveName = findViewById(R.id.tvMoveName);
@@ -271,66 +282,62 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void setupButtons() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 if (move != null) {
-                     // TODO:
-                     ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move")
-                             .whereEqualTo("placeId", move.getId())
-                             .whereEqualTo("user", currUser);
-                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                         @Override
-                         public void done(List<ParseObject> objects, ParseException e) {
-                             if (e == null) {
-                                 if (move.getMoveType() == 1) { // 1 means restaurant
-                                     currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.getName()));
-                                 } else {
-                                     currUser.addAllUnique("eventsCompleted", Arrays.asList(move.getName()));
-                                 }
-                                 currUser.saveInBackground();
-                                 if (objects.size() == 0) { // occurs if the user has not ever completed this move
-                                     ParseObject currObj = new ParseObject("Move");
-                                     currObj.put("name", move.getName());
-                                     currObj.put("placeId", move.getId());
-                                     currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
-                                     currObj.put("user", currUser);
-                                     currObj.put("didComplete", true);
-                                     currObj.saveInBackground();
-                                 } else { // the user has already completed the move
-                                     for (int i = 0; i < objects.size(); i++) {
-                                         objects.get(i).put("didComplete", true);
-                                         objects.get(i).put("didSave", false); // user cannot save a move that has been done
-                                         ivSave.setImageResource(R.drawable.ufi_save);
-                                         objects.get(i).saveInBackground();
-                                     }
-                                 }
-                                 Log.d("Move", "Move saved in History Successfully");
-                             } else {
-                                 Log.d("Move", "Error: saving move to history");
-                             }
-                         }
-                     });
-                 }
-             }
-         });
+            @Override
+            public void onClick(View view) {
+                if (move != null) {
+                    ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                if (move.getMoveType() == 1) { // 1 means restaurant
+                                    currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.getName()));
+                                } else {
+                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(move.getName()));
+                                }
+                                currUser.saveInBackground();
+                                if (objects.size() == 0) { // occurs if the user has not ever completed this move
+                                    ParseObject currObj = new ParseObject("Move");
+                                    currObj.put("name", move.getName());
+                                    currObj.put("placeId", move.getId());
+                                    currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
+                                    currObj.put("user", currUser);
+                                    currObj.put("didComplete", true);
+                                    currObj.saveInBackground();
+                                } else { // the user has already completed the move
+                                    for (int i = 0; i < objects.size(); i++) {
+                                        objects.get(i).put("didComplete", true);
+                                        objects.get(i).put("didSave", false); // user cannot save a move that has been done
+                                        ivSave.setImageResource(R.drawable.ufi_save);
+                                        objects.get(i).saveInBackground();
+                                    }
+                                }
+                                Log.d("Move", "Move saved in History Successfully");
+                            } else {
+                                Log.d("Move", "Error: saving move to history");
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (move != null) {
-                    ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move");
-                    parseQuery.whereEqualTo("placeId", move.getId());
-                    parseQuery.whereEqualTo("user", currUser);
+                    ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (objects.size() > 0) {
                                 for (int i = 0; i < objects.size(); i++) {
-                                    if (objects.get(i).getBoolean("didComplete") == true) {
+                                    if (objects.get(i).getBoolean("didComplete") == true) { // user cannot save an already completed move
                                         Toast.makeText(MoveDetailsActivity.this, "You cannot save a move you have already completed!",
-                                                Toast.LENGTH_SHORT).show(); return;
+                                                Toast.LENGTH_SHORT).show();
+                                        return;
                                     }
-                                    if (objects.get(i).getBoolean("didSave") == true){
+                                    if (objects.get(i).getBoolean("didSave") == true) {
                                         objects.get(i).put("didSave", false);
                                         ivSave.setImageResource(R.drawable.ufi_save);
                                         objects.get(i).saveInBackground();
@@ -341,14 +348,14 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                     }
 
                                 }
-                            } else {
+                            } else { // user is saving a move that has not been completed ever before
                                 ivSave.setImageResource(R.drawable.ufi_save_active);
                                 ParseObject currObj = new ParseObject("Move");
                                 currObj.put("name", move.getName());
                                 currObj.put("user", currUser);
                                 currObj.put("didSave", true);
                                 currObj.put("didFavorite", false);
-                                currObj.put("moveType", (move.getMoveType() == 1 ) ? "food" : "event");
+                                currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
                                 currObj.put("placeId", move.getId());
                                 currObj.put("didComplete", false);
                                 currObj.saveInBackground();
@@ -362,18 +369,19 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (restaurant != null) {
-                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("food", currUser, restaurant);
-                    didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
+                if (move != null) {
+                    ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (objects.size() > 0) {
                                 for (int i = 0; i < objects.size(); i++) {
-                                    if (objects.get(i).getBoolean("didComplete") == false) {
+                                    if (objects.get(i).getBoolean("didComplete") == false) { // user cannot like move if it has not been completed
                                         Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!",
-                                                Toast.LENGTH_SHORT).show(); return;
+                                                Toast.LENGTH_SHORT).show();
+                                        return;
                                     }
-                                    if (objects.get(i).getBoolean("didFavorite") == true){
+                                    if (objects.get(i).getBoolean("didFavorite") == true) {
                                         ivFavorite.setImageResource(R.drawable.ufi_heart);
                                         objects.get(i).put("didFavorite", false);
                                         objects.get(i).saveInBackground();
@@ -383,29 +391,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                         objects.get(i).saveInBackground();
                                     }
                                 }
-                            } else {
-                                return;
-                            }
-                        }
-                    });
-                }
-                if (event != null) {
-                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("event", currUser, event);
-                    didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (objects.size() > 0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    if (objects.get(i).getBoolean("didFavorite") == true){
-                                        ivFavorite.setImageResource(R.drawable.ufi_heart);
-                                        objects.get(i).put("didFavorite", false);
-                                        objects.get(i).saveInBackground();
-                                    } else {
-                                        objects.get(i).put("didFavorite", true);
-                                        ivFavorite.setImageResource(R.drawable.ufi_heart);
-                                        objects.get(i).saveInBackground();
-                                    }
-                                }
+                            } else { // we enter this part of code when the user has not completed any moves
+                                Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

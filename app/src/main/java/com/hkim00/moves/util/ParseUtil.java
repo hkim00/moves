@@ -16,9 +16,9 @@ import java.util.List;
 public class ParseUtil {
 
     // searches in Parse for a specific move (by id) that were done by current user
-    public static ParseQuery getParseQuery(String moveType, ParseUser currUser, Move move) {
+    public static ParseQuery getParseQuery(ParseUser currUser, Move move) {
         ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move");
-        parseQuery.whereEqualTo("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+        parseQuery.whereEqualTo("placeId", move.getId());
         parseQuery.whereEqualTo("user", currUser);
         return parseQuery;
     }
