@@ -66,6 +66,15 @@ public class MoveDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move_details);
 
+        if (this.move != null) {
+            if (this.move.getDidSave() == true) {
+                ivSave.setImageResource(R.drawable.ufi_save_active);
+            } else {
+                ivSave.setImageResource(R.drawable.ufi_save);
+            }
+        }
+
+
         getViewIds();
 
         setupButtons();
@@ -74,7 +83,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         getMove();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -266,7 +274,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
-                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("food", currUser, false, restaurant);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("food", currUser, restaurant);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
@@ -285,10 +293,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                     for (int i = 0; i < objects.size(); i++) {
                                         objects.get(i).put("didComplete", true);
                                         objects.get(i).put("didSave", false); // user cannot save a move that has been done
+                                        ivSave.setImageResource(R.drawable.ufi_save);
                                         objects.get(i).saveInBackground();
                                     }
                                 }
-
 
                                 Log.d("Move", "Move Saved in History Successfully");
                             } else {
@@ -300,7 +308,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 }
 
                 else if (event != null) {
-                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("event", currUser, false, event);
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("event", currUser, event);
                     didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
@@ -330,53 +338,19 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (restaurant != null) {
-                    String moveType = "food";
-                    ParseQuery didSaveQuery = ParseUtil.getParseQuery(moveType, currUser, false, restaurant);
-                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
+                if (move != null) {
+                    ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move");
+                    parseQuery.whereEqualTo("placeId", move.getId());
+                    parseQuery.whereEqualTo("user", currUser);
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUser currUser = ParseUser.getCurrentUser();
                             if (objects.size() > 0) {
                                 for (int i = 0; i < objects.size(); i++) {
-                                    if (objects.get(i).getBoolean("didSave") == true){
-                                        objects.get(i).put("didSave", false);
-                                        ivSave.setImageResource(R.drawable.ufi_save);
-                                        objects.get(i).saveInBackground();
-                                        Log.i("hello", "unlike");
-                                    } else {
-                                        objects.get(i).put("didSave", true);
-                                        ivSave.setImageResource(R.drawable.ufi_save_active);
-                                        objects.get(i).saveInBackground();
-                                        Log.i("hello", "like");
+                                    if (objects.get(i).getBoolean("didComplete") == true) {
+                                        Toast.makeText(MoveDetailsActivity.this, "You cannot save a move you have already completed!",
+                                                Toast.LENGTH_SHORT).show(); return;
                                     }
-
-                                }
-                            } else {
-                                ivSave.setImageResource(R.drawable.ufi_save_active);
-                                ParseObject currObj = new ParseObject("Move");
-                                currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
-                                currObj.put("user", currUser);
-                                currObj.put("didSave", true);
-                                currObj.put("didFavorite", false);
-                                currObj.put("moveType", moveType);
-                                currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
-                                currObj.put("didComplete", false);
-                                currObj.saveInBackground();
-                            }
-                        }
-                    });
-                }
-
-                if (event != null) {
-                    String moveType = "event";
-                    ParseQuery didSaveQuery = ParseUtil.getParseQuery(moveType, currUser, false, event);
-                    didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUser currUser = ParseUser.getCurrentUser();
-                            if (objects.size() > 0) {
-                                for (int i = 0; i < objects.size(); i++) {
                                     if (objects.get(i).getBoolean("didSave") == true){
                                         objects.get(i).put("didSave", false);
                                         ivSave.setImageResource(R.drawable.ufi_save);
@@ -386,16 +360,17 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                         ivSave.setImageResource(R.drawable.ufi_save_active);
                                         objects.get(i).saveInBackground();
                                     }
+
                                 }
                             } else {
                                 ivSave.setImageResource(R.drawable.ufi_save_active);
                                 ParseObject currObj = new ParseObject("Move");
-                                currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
+                                currObj.put("name", move.getName());
                                 currObj.put("user", currUser);
                                 currObj.put("didSave", true);
                                 currObj.put("didFavorite", false);
-                                currObj.put("moveType", moveType);
-                                currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+                                currObj.put("moveType", (move.getMoveType() == 1 ) ? "food" : "event");
+                                currObj.put("placeId", move.getId());
                                 currObj.put("didComplete", false);
                                 currObj.saveInBackground();
                             }
@@ -403,19 +378,22 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     });
                 }
             }
-
         });
 
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
-                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("food", currUser, true, restaurant);
+                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("food", currUser, restaurant);
                     didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (objects.size() > 0) {
                                 for (int i = 0; i < objects.size(); i++) {
+                                    if (objects.get(i).getBoolean("didComplete") == false) {
+                                        Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!",
+                                                Toast.LENGTH_SHORT).show(); return;
+                                    }
                                     if (objects.get(i).getBoolean("didFavorite") == true){
                                         ivFavorite.setImageResource(R.drawable.ufi_heart);
                                         objects.get(i).put("didFavorite", false);
@@ -427,14 +405,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                     }
                                 }
                             } else {
-                                Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!", Toast.LENGTH_SHORT).show();
+                                return;
                             }
                         }
-
                     });
                 }
                 if (event != null) {
-                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("event", currUser, true, event);
+                    ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("event", currUser, event);
                     didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {

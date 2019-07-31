@@ -14,6 +14,7 @@ import java.util.List;
 @Parcel
 public class Event implements Move {
     public String name, id, text;
+    public Boolean didSave, didFavorite, didComplete;
 
     public Event() {}
 
@@ -27,6 +28,15 @@ public class Event implements Move {
 
     @Override
     public String getId() { return id; }
+
+    @Override
+    public Boolean getDidSave() {return didSave; }
+
+    @Override
+    public Boolean getDidFavorite() {return didFavorite; }
+
+    @Override
+    public Boolean getDidComplete() {return didComplete; }
 
     @Override
     public boolean equals(Object obj) {
@@ -76,6 +86,10 @@ public class Event implements Move {
 
         event.name = parseObject.getString("name");
         event.id = parseObject.getString("id");
+
+        event.didSave = parseObject.getBoolean("didSave");
+        event.didFavorite = parseObject.getBoolean("didFavorite");
+        event.didComplete = parseObject.getBoolean("didComplete");
 
         return event;
     }

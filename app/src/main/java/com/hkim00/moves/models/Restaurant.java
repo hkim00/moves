@@ -22,6 +22,7 @@ public class Restaurant implements Move {
     public String name, id, text;
     public Integer price_level;
     public Double lat, lng, rating;
+    public Boolean didSave, didFavorite, didComplete;
 
     public Restaurant() {}
 
@@ -35,6 +36,15 @@ public class Restaurant implements Move {
 
     @Override
     public String getId() { return id; }
+
+    @Override
+    public Boolean getDidSave() {return didSave; }
+
+    @Override
+    public Boolean getDidFavorite() {return didFavorite; }
+
+    @Override
+    public Boolean getDidComplete() {return didComplete; }
 
     @Override
     public boolean equals(Object obj) {
@@ -92,6 +102,10 @@ public class Restaurant implements Move {
 
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("placeId");
+
+        restaurant.didSave = parseObject.getBoolean("didSave");
+        restaurant.didFavorite = parseObject.getBoolean("didFavorite");
+        restaurant.didComplete = parseObject.getBoolean("didComplete");
 
         restaurant.lat = null;
 
