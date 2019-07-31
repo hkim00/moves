@@ -75,7 +75,7 @@ public class Event implements Move {
         Event event = new Event();
 
         event.name = parseObject.getString("name");
-        event.id = parseObject.getString("id");
+        event.id = parseObject.getString("placeId");
 
         return event;
     }

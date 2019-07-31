@@ -59,7 +59,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private Restaurant restaurant;
     private Event event;
     private boolean isTrip;
-    private List<Move> selectedMoves;
+
+    private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnAddToTrip.setVisibility(isTrip ? View.VISIBLE : View.INVISIBLE);
         if (isTrip) {
             selectedMoves = TripActivity.selectedMoves;
+            newSelectedMoves = TripActivity.newSelectedMoves;
+            deleteFromServerMoves = TripActivity.deleteFromServerMoves;
 
             if (selectedMoves.contains(move)) {
                 btnAddToTrip.setText("Remove From Trip");
@@ -385,12 +389,32 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void saveToTrip() {
-        if (!selectedMoves.contains(move)) {
-            selectedMoves.add(move);
-            btnAddToTrip.setText("Remove From Trip");
+        if (TripActivity.isEditingTrip) {
+            if ((selectedMoves.contains(move) && newSelectedMoves.contains(move))) {
+                selectedMoves.remove(move);
+                newSelectedMoves.remove(move);
+                btnAddToTrip.setText("Add To Trip");
+            } else if (selectedMoves.contains(move) && !newSelectedMoves.contains(move)) {
+                selectedMoves.remove(move);
+                deleteFromServerMoves.add(move);
+                btnAddToTrip.setText("Add To Trip");
+            } else if (!selectedMoves.contains(move) && newSelectedMoves.contains(move)) {
+                newSelectedMoves.remove(move);
+                btnAddToTrip.setText("Add To Trip");
+            } else {
+                selectedMoves.add(move);
+                newSelectedMoves.add(move);
+                btnAddToTrip.setText("Remove From Trip");
+            }
         } else {
-            selectedMoves.remove(move);
-            btnAddToTrip.setText("Add To Trip");
+
+            if (!selectedMoves.contains(move)) {
+                selectedMoves.add(move);
+                btnAddToTrip.setText("Remove From Trip");
+            } else {
+                selectedMoves.remove(move);
+                btnAddToTrip.setText("Add To Trip");
+            }
         }
     }
                                

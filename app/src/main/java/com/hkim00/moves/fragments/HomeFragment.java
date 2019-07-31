@@ -27,6 +27,7 @@ import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 
@@ -37,7 +38,12 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -89,7 +95,7 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends;
+    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnNextTrip;
 
     @Nullable
     @Override
@@ -220,6 +226,7 @@ public class HomeFragment extends Fragment {
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
         btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
+        btnNextTrip = view.findViewById(R.id.btnNextTrip);
     }
 
     private void setupDesign() {
@@ -313,7 +320,29 @@ public class HomeFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
+
+        btnNextTrip.setOnClickListener(view -> getNextTrip());
     }
+
+
+    private void getNextTrip() {
+        ParseQuery<ParseObject> tripQuery = ParseQuery.getQuery("Trip");
+        tripQuery.whereEqualTo("owner", ParseUser.getCurrentUser());
+        tripQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e == null && object != null) {
+                    Trip trip = Trip.fromParseObject(object);
+
+                    Intent intent = new Intent(getContext(), TripActivity.class);
+                    intent.putExtra("trip", Parcels.wrap(trip));
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                }
+            }
+        });
+    }
+
 
     private void toggleRightPopup(String type) {
         if (!(!tvRightPopupTitle.getText().toString().toLowerCase().equals(type) && clPrice.getVisibility() == View.VISIBLE)) {

@@ -20,14 +20,16 @@ import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.Parse;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -35,6 +37,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -59,13 +62,16 @@ public class TripActivity extends AppCompatActivity {
     private RecyclerView rvMoves;
     private MoveAdapter movesAdapter;
 
+    private Trip currentTrip;
     private UserLocation location;
     public static List<CalendarDay> dates;
-    private List<Move> foodMoves;
-    private List<Move> eventMoves;
-    public static List<Move> selectedMoves;
-    private List<Move> moves;
+    private List<Move> foodMoves, eventMoves, moves;
+    public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
 
+    private List<ParseObject> serverMoves;
+
+    public static boolean isEditingTrip;
+    private boolean didCheckSavedSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,8 +126,13 @@ public class TripActivity extends AppCompatActivity {
         dates = new ArrayList<>();
         foodMoves = new ArrayList<>();
         eventMoves = new ArrayList<>();
-        selectedMoves = new ArrayList<>();
         moves = new ArrayList<>();
+
+        selectedMoves = new ArrayList<>();
+        newSelectedMoves = new ArrayList<>();
+        deleteFromServerMoves = new ArrayList<>();
+
+        serverMoves = new ArrayList<>();
 
         movesAdapter = new MoveAdapter(TripActivity.this, moves);
         rvMoves.setAdapter(movesAdapter);
@@ -162,26 +173,57 @@ public class TripActivity extends AppCompatActivity {
                 updateMoves(eventMoves);
             }
         } else {
-            updateMoves(selectedMoves);
+            if (selectedMoves.size() == 0 && !didCheckSavedSelected && isEditingTrip) {
+                getSavedTripMoves(currentTrip);
+            } else {
+                updateMoves(selectedMoves);
+            }
         }
     }
 
 
     private void setupView() {
-        location = UserLocation.clearCurrentTripLocation(this);
-
-        tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
-        tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
-
         etTrip.addTextChangedListener(charTextWatcher);
+        pb.setVisibility(View.INVISIBLE);
 
         vEventsView.setVisibility(View.INVISIBLE);
         vSelectedView.setVisibility(View.INVISIBLE);
 
-        pb.setVisibility(View.INVISIBLE);
-        btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+        didCheckSavedSelected = false;
 
-        toggleMovesView(false);
+        if (getIntent().hasExtra("trip")) {
+            currentTrip = Parcels.unwrap(getIntent().getParcelableExtra("trip"));
+
+            location = currentTrip.location;
+            etTrip.setText(currentTrip.name);
+
+            dates.add(currentTrip.startDay);
+            dates.add(currentTrip.endDay);
+
+            tvLocation.setText(currentTrip.location.name);
+            tvCalendar.setText(getDateRangeString());
+
+            tvLocation.setTextColor(getResources().getColor(R.color.black));
+            tvCalendar.setTextColor(getResources().getColor(R.color.black));
+
+            isEditingTrip = true;
+
+            isReadyToSave(false);
+
+            getNearbyRestaurants();
+            getSavedTripMoves(currentTrip);
+        } else {
+            location = UserLocation.clearCurrentTripLocation(this);
+
+            tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
+            tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
+
+            isEditingTrip = false;
+
+            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+            toggleMovesView(false);
+        }
     }
 
 
@@ -209,8 +251,7 @@ public class TripActivity extends AppCompatActivity {
         } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
                 tvCalendar.setTextColor(getResources().getColor(R.color.black));
-                String[] months = new DateFormatSymbols().getShortMonths();
-                tvCalendar.setText(months[dates.get(0).getMonth() - 1] + " " + dates.get(0).getDay() + " - " + months[dates.get(dates.size() - 1).getMonth() - 1] + " " + dates.get(dates.size() - 1).getDay());
+                tvCalendar.setText(getDateRangeString());
             } else {
                 tvCalendar.setText("When?");
                 tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
@@ -218,6 +259,11 @@ public class TripActivity extends AppCompatActivity {
 
             isReadyToSave(false);
         }
+    }
+
+    private String getDateRangeString() {
+        String[] months = new DateFormatSymbols().getShortMonths();
+        return months[dates.get(0).getMonth() - 1] + " " + dates.get(0).getDay() + " - " + months[dates.get(dates.size() - 1).getMonth() - 1] + " " + dates.get(dates.size() - 1).getDay();
     }
 
 
@@ -294,60 +340,121 @@ public class TripActivity extends AppCompatActivity {
     private void saveTrip() {
         if (!isReadyToSave(true)) {
             return;
+        } else if (isEditingTrip) {
+            saveTripMoves(currentTrip.parseObject);
+            onBackPressed();
+        } else {
+            btnSave.setEnabled(false);
+
+            ParseObject trip = new ParseObject("Trip");
+
+            trip.put("name", etTrip.getText().toString().trim());
+            trip.put("locationName", location.name);
+            trip.put("lat", location.lat);
+            trip.put("lng", location.lng);
+            trip.put("postalCode", location.postalCode);
+            trip.put("owner", ParseUser.getCurrentUser());
+
+            trip.put("startDay", dates.get(0).getDay());
+            trip.put("startMonth", dates.get(0).getMonth());
+            trip.put("startYear", dates.get(0).getYear());
+            trip.put("endDay", dates.get(dates.size() - 1).getDay());
+            trip.put("endMonth", dates.get(dates.size() - 1).getMonth());
+            trip.put("endYear", dates.get(dates.size() - 1).getYear());
+
+            trip.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    btnSave.setEnabled(true);
+                    if (e == null) {
+                        Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
+
+                        UserLocation.clearCurrentTripLocation(getApplicationContext());
+                        saveTripMoves(trip);
+
+                        onBackPressed();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "error saving trip", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
+    }
 
-        ParseObject trip = new ParseObject("Trip");
-
-        trip.put("name", etTrip.getText().toString().trim());
-        trip.put("locationName", location.name);
-        trip.put("lat", location.lat);
-        trip.put("lng", location.lng);
-        trip.put("postalCode", location.postalCode);
-        trip.put("owner", ParseUser.getCurrentUser());
-        trip.put("dateRange", tvCalendar.getText().toString().trim());
-
-        trip.saveInBackground(new SaveCallback() {
+    private void getSavedTripMoves(Trip trip) {
+        ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
+        moveQuery.whereEqualTo("trip", trip.parseObject);
+        moveQuery.orderByDescending("createdAt");
+        moveQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(ParseException e) {
+            public void done(List<ParseObject> objects, ParseException e) {
+                didCheckSavedSelected = true;
+
                 if (e == null) {
-                    Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
+                    serverMoves.addAll(objects);
 
-                    UserLocation.clearCurrentTripLocation(getApplicationContext());
-                    saveTripMoves(trip);
+                    List<Move> moves = new ArrayList<>();
 
-                    onBackPressed();
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (objects.get(i).getString("moveType").equals("food")) {
+                            moves.add(Restaurant.fromParseObject(objects.get(i)));
+                        } else {
+                            moves.add(Event.fromParseObject(objects.get(i)));
+                        }
+                    }
+                    selectedMoves.addAll(moves);
                 } else {
-                    Toast.makeText(getApplicationContext(), "error saving trip", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, "Error getting selected moves");
                     e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Error getting selected moves", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-
     private void saveTripMoves(ParseObject trip) {
-        if (selectedMoves.size() > 0) {
-            for (Move selectedMove : selectedMoves) {
-                ParseObject move = new ParseObject("Move");
-
-                move.put("name", selectedMove.getName());
-                move.put("placeId", selectedMove.getId());
-                move.put("trip", trip);
-                move.put("moveType", (selectedMove.getMoveType() == Restaurant.RESTAURANT) ? "food" : "event");
-
-                move.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.getName(), Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
+        if (isEditingTrip && deleteFromServerMoves.size() > 0) {
+            for (int i = 0; i < deleteFromServerMoves.size(); i++) {
+                for (int a = 0; a < serverMoves.size(); a++) {
+                    if (serverMoves.get(a).getString("placeId").equals(deleteFromServerMoves.get(i).getId())) {
+                        serverMoves.get(a).deleteInBackground();
+                        break;
                     }
-                });
+                }
             }
         }
+
+        if (selectedMoves.size() > 0 && !isEditingTrip) {
+            for (Move selectedMove : selectedMoves) {
+                saveMoveToTrip(selectedMove, trip);
+            }
+        } else if (newSelectedMoves.size() > 0 && isEditingTrip) {
+            for (Move selectedMove : newSelectedMoves) {
+                saveMoveToTrip(selectedMove, trip);
+            }
+        }
+    }
+
+    private void saveMoveToTrip(Move selectedMove, ParseObject trip) {
+        ParseObject move = new ParseObject("Move");
+
+        move.put("name", selectedMove.getName());
+        move.put("placeId", selectedMove.getId());
+        move.put("trip", trip);
+        move.put("moveType", (selectedMove.getMoveType() == Restaurant.RESTAURANT) ? "food" : "event");
+
+        move.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.getName(), Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 
@@ -479,7 +586,7 @@ public class TripActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    movesAdapter.notifyDataSetChanged();
+                    updateMoves(eventMoves);
                 }
             }
 
@@ -562,21 +669,15 @@ public class TripActivity extends AppCompatActivity {
         }
     }
 
-    //character counter
+
     private final TextWatcher charTextWatcher= new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            isReadyToSave(false);
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) { isReadyToSave(false); }
 
         @Override
-        public void afterTextChanged(Editable s) {
-
-        }
+        public void afterTextChanged(Editable s) { }
     };
 
 }
