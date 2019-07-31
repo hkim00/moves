@@ -197,8 +197,11 @@ public class TripActivity extends AppCompatActivity {
             location = currentTrip.location;
             etTrip.setText(currentTrip.name);
 
+            dates.add(currentTrip.startDay);
+            dates.add(currentTrip.endDay);
+
             tvLocation.setText(currentTrip.location.name);
-            tvCalendar.setText(currentTrip.dateRange);
+            tvCalendar.setText(getDateRangeString());
 
             tvLocation.setTextColor(getResources().getColor(R.color.black));
             tvCalendar.setTextColor(getResources().getColor(R.color.black));
@@ -248,8 +251,7 @@ public class TripActivity extends AppCompatActivity {
         } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
                 tvCalendar.setTextColor(getResources().getColor(R.color.black));
-                String[] months = new DateFormatSymbols().getShortMonths();
-                tvCalendar.setText(months[dates.get(0).getMonth() - 1] + " " + dates.get(0).getDay() + " - " + months[dates.get(dates.size() - 1).getMonth() - 1] + " " + dates.get(dates.size() - 1).getDay());
+                tvCalendar.setText(getDateRangeString());
             } else {
                 tvCalendar.setText("When?");
                 tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
@@ -257,6 +259,11 @@ public class TripActivity extends AppCompatActivity {
 
             isReadyToSave(false);
         }
+    }
+
+    private String getDateRangeString() {
+        String[] months = new DateFormatSymbols().getShortMonths();
+        return months[dates.get(0).getMonth() - 1] + " " + dates.get(0).getDay() + " - " + months[dates.get(dates.size() - 1).getMonth() - 1] + " " + dates.get(dates.size() - 1).getDay();
     }
 
 
@@ -347,7 +354,13 @@ public class TripActivity extends AppCompatActivity {
             trip.put("lng", location.lng);
             trip.put("postalCode", location.postalCode);
             trip.put("owner", ParseUser.getCurrentUser());
-            trip.put("dateRange", tvCalendar.getText().toString().trim());
+
+            trip.put("startDay", dates.get(0).getDay());
+            trip.put("startMonth", dates.get(0).getMonth());
+            trip.put("startYear", dates.get(0).getYear());
+            trip.put("endDay", dates.get(dates.size() - 1).getDay());
+            trip.put("endMonth", dates.get(dates.size() - 1).getMonth());
+            trip.put("endYear", dates.get(dates.size() - 1).getYear());
 
             trip.saveInBackground(new SaveCallback() {
                 @Override
@@ -656,21 +669,15 @@ public class TripActivity extends AppCompatActivity {
         }
     }
 
-    //character counter
+
     private final TextWatcher charTextWatcher= new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            isReadyToSave(false);
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) { isReadyToSave(false); }
 
         @Override
-        public void afterTextChanged(Editable s) {
-
-        }
+        public void afterTextChanged(Editable s) { }
     };
 
 }
