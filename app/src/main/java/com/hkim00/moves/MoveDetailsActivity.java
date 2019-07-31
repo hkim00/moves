@@ -271,69 +271,48 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void setupButtons() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (restaurant != null) {
-                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("food", currUser, restaurant);
-                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                currUser.addAllUnique("restaurantsCompleted", Arrays.asList(restaurant.name));
-                                currUser.saveInBackground();
-                                if (objects.size() == 0) {
-                                    ParseObject currRestaurant = new ParseObject("Move");
-                                    currRestaurant.put("name", restaurant.name);
-                                    currRestaurant.put("placeId", restaurant.id);
-                                    currRestaurant.put("moveType", "food");
-                                    currRestaurant.put("user", currUser);
-                                    currRestaurant.put("didComplete", true);
-                                    currRestaurant.saveInBackground();
-                                } else {
-                                    for (int i = 0; i < objects.size(); i++) {
-                                        objects.get(i).put("didComplete", true);
-                                        objects.get(i).put("didSave", false); // user cannot save a move that has been done
-                                        ivSave.setImageResource(R.drawable.ufi_save);
-                                        objects.get(i).saveInBackground();
-                                    }
-                                }
-
-                                Log.d("Move", "Move Saved in History Successfully");
-                            } else {
-
-                                Log.d("Move", "Error: saving move to history");
-                            }
-                        }
-                    });
-                }
-
-                else if (event != null) {
-                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("event", currUser, event);
-                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                                if (e == null) {
-                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
-                                    currUser.saveInBackground();
-
-                                    ParseObject currEvent = new ParseObject("Move");
-                                    currEvent.put("name", event.name);
-                                    currEvent.put("placeId", event.id);
-                                    currEvent.put("moveType", "event");
-                                    currEvent.put("user", currUser);
-                                    currEvent.put("didComplete", true);
-                                    currEvent.saveInBackground();
-
-                                    Log.d("Move", "Move Saved in History Successfully");
-                                } else {
-                                    Log.d("Move", "Error: saving move to history");
-                                }
-                        }
-                    });
-                }
-                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
-            }
-        });
+             @Override
+             public void onClick(View view) {
+                 if (move != null) {
+                     // TODO:
+                     ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move")
+                             .whereEqualTo("placeId", move.getId())
+                             .whereEqualTo("user", currUser);
+                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                         @Override
+                         public void done(List<ParseObject> objects, ParseException e) {
+                             if (e == null) {
+                                 if (move.getMoveType() == 1) { // 1 means restaurant
+                                     currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.getName()));
+                                 } else {
+                                     currUser.addAllUnique("eventsCompleted", Arrays.asList(move.getName()));
+                                 }
+                                 currUser.saveInBackground();
+                                 if (objects.size() == 0) { // occurs if the user has not ever completed this move
+                                     ParseObject currObj = new ParseObject("Move");
+                                     currObj.put("name", move.getName());
+                                     currObj.put("placeId", move.getId());
+                                     currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
+                                     currObj.put("user", currUser);
+                                     currObj.put("didComplete", true);
+                                     currObj.saveInBackground();
+                                 } else { // the user has already completed the move
+                                     for (int i = 0; i < objects.size(); i++) {
+                                         objects.get(i).put("didComplete", true);
+                                         objects.get(i).put("didSave", false); // user cannot save a move that has been done
+                                         ivSave.setImageResource(R.drawable.ufi_save);
+                                         objects.get(i).saveInBackground();
+                                     }
+                                 }
+                                 Log.d("Move", "Move saved in History Successfully");
+                             } else {
+                                 Log.d("Move", "Error: saving move to history");
+                             }
+                         }
+                     });
+                 }
+             }
+         });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
