@@ -27,7 +27,6 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -66,11 +65,10 @@ public class TripActivity extends AppCompatActivity {
     private Trip currentTrip;
     private UserLocation location;
     public static List<CalendarDay> dates;
-    private List<Move> foodMoves;
-    private List<Move> eventMoves;
-    public static List<Move> selectedMoves;
-    public static List<Move> newSelectedMoves;
-    private List<Move> moves;
+    private List<Move> foodMoves, eventMoves, moves;
+    public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
+
+    private List<ParseObject> serverMoves;
 
     public static boolean isEditingTrip;
     private boolean didCheckSavedSelected;
@@ -128,9 +126,13 @@ public class TripActivity extends AppCompatActivity {
         dates = new ArrayList<>();
         foodMoves = new ArrayList<>();
         eventMoves = new ArrayList<>();
+        moves = new ArrayList<>();
+
         selectedMoves = new ArrayList<>();
         newSelectedMoves = new ArrayList<>();
-        moves = new ArrayList<>();
+        deleteFromServerMoves = new ArrayList<>();
+
+        serverMoves = new ArrayList<>();
 
         movesAdapter = new MoveAdapter(TripActivity.this, moves);
         rvMoves.setAdapter(movesAdapter);
@@ -378,6 +380,8 @@ public class TripActivity extends AppCompatActivity {
                 didCheckSavedSelected = true;
 
                 if (e == null) {
+                    serverMoves.addAll(objects);
+
                     List<Move> moves = new ArrayList<>();
 
                     for (int i = 0; i < objects.size(); i++) {
@@ -398,6 +402,17 @@ public class TripActivity extends AppCompatActivity {
     }
 
     private void saveTripMoves(ParseObject trip) {
+        if (isEditingTrip && deleteFromServerMoves.size() > 0) {
+            for (int i = 0; i < deleteFromServerMoves.size(); i++) {
+                for (int a = 0; a < serverMoves.size(); a++) {
+                    if (serverMoves.get(a).getString("placeId").equals(deleteFromServerMoves.get(i).getId())) {
+                        serverMoves.get(a).deleteInBackground();
+                        break;
+                    }
+                }
+            }
+        }
+
         if (selectedMoves.size() > 0 && !isEditingTrip) {
             for (Move selectedMove : selectedMoves) {
                 saveMoveToTrip(selectedMove, trip);
