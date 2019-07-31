@@ -331,23 +331,74 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (restaurant != null) {
-                    ivSave.setImageResource(R.drawable.ufi_save_active);
-                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("food", currUser, true, restaurant);
+                    String moveType = "food";
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery(moveType, currUser, false, restaurant);
                     didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUtil.getDidSave("food", objects, restaurant);
+                            ParseUser currUser = ParseUser.getCurrentUser();
+                            if (objects.size() > 0) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    if (objects.get(i).getBoolean("didSave") == true){
+                                        objects.get(i).put("didSave", false);
+                                        ivSave.setImageResource(R.drawable.ufi_save);
+                                        objects.get(i).saveInBackground();
+                                        Log.i("hello", "unlike");
+                                    } else {
+                                        objects.get(i).put("didSave", true);
+                                        ivSave.setImageResource(R.drawable.ufi_save_active);
+                                        objects.get(i).saveInBackground();
+                                        Log.i("hello", "like");
+                                    }
+
+                                }
+                            } else {
+                                ivSave.setImageResource(R.drawable.ufi_save_active);
+                                ParseObject currObj = new ParseObject("Move");
+                                currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
+                                currObj.put("user", currUser);
+                                currObj.put("didSave", true);
+                                currObj.put("didFavorite", false);
+                                currObj.put("moveType", moveType);
+                                currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+                                currObj.put("didComplete", false);
+                                currObj.saveInBackground();
+                            }
                         }
                     });
                 }
 
                 if (event != null) {
-                    ivSave.setImageResource(R.drawable.ufi_save_active);
-                    ParseQuery didSaveQuery = ParseUtil.getParseQuery("Event", currUser, true, event);
+                    String moveType = "event";
+                    ParseQuery didSaveQuery = ParseUtil.getParseQuery(moveType, currUser, false, event);
                     didSaveQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUtil.getDidSave("Event", objects, event);
+                            ParseUser currUser = ParseUser.getCurrentUser();
+                            if (objects.size() > 0) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    if (objects.get(i).getBoolean("didSave") == true){
+                                        objects.get(i).put("didSave", false);
+                                        ivSave.setImageResource(R.drawable.ufi_save);
+                                        objects.get(i).saveInBackground();
+                                    } else {
+                                        objects.get(i).put("didSave", true);
+                                        ivSave.setImageResource(R.drawable.ufi_save_active);
+                                        objects.get(i).saveInBackground();
+                                    }
+                                }
+                            } else {
+                                ivSave.setImageResource(R.drawable.ufi_save_active);
+                                ParseObject currObj = new ParseObject("Move");
+                                currObj.put("name", (moveType.equals("food")) ? ((Restaurant) move).name : ((Event) move).name);
+                                currObj.put("user", currUser);
+                                currObj.put("didSave", true);
+                                currObj.put("didFavorite", false);
+                                currObj.put("moveType", moveType);
+                                currObj.put("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+                                currObj.put("didComplete", false);
+                                currObj.saveInBackground();
+                            }
                         }
                     });
                 }
@@ -358,13 +409,26 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
                 if (restaurant != null) {
                     ParseQuery didFavoriteQuery = ParseUtil.getParseQuery("food", currUser, true, restaurant);
                     didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUtil.getDidFavorite("food", objects, restaurant);
+                            if (objects.size() > 0) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    if (objects.get(i).getBoolean("didFavorite") == true){
+                                        ivFavorite.setImageResource(R.drawable.ufi_heart);
+                                        objects.get(i).put("didFavorite", false);
+                                        objects.get(i).saveInBackground();
+                                    } else {
+                                        objects.get(i).put("didFavorite", true);
+                                        ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                                        objects.get(i).saveInBackground();
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                     });
@@ -374,7 +438,19 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     didFavoriteQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseUtil.getDidFavorite("event", objects, event);
+                            if (objects.size() > 0) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    if (objects.get(i).getBoolean("didFavorite") == true){
+                                        ivFavorite.setImageResource(R.drawable.ufi_heart);
+                                        objects.get(i).put("didFavorite", false);
+                                        objects.get(i).saveInBackground();
+                                    } else {
+                                        objects.get(i).put("didFavorite", true);
+                                        ivFavorite.setImageResource(R.drawable.ufi_heart);
+                                        objects.get(i).saveInBackground();
+                                    }
+                                }
+                            }
                         }
                     });
                 }
