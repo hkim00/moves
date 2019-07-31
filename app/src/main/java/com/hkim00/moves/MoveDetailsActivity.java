@@ -303,7 +303,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     });
                 }
                 Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
+
             }
+
+
         });
 
 

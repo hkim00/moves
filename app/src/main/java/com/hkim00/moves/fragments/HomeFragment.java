@@ -40,6 +40,7 @@ import com.loopj.android.http.RequestParams;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -98,7 +99,8 @@ public class HomeFragment extends Fragment {
 
     private Button btnMove, btnRiskyMove, btnAddFriends;
 
-
+    MoveCategoriesHelper helper = new MoveCategoriesHelper();
+    public JSONArray newResults;
 
     Restaurant restaurant;
 
@@ -641,29 +643,51 @@ public class HomeFragment extends Fragment {
                     }
 
 
-                    for (Move move: moveResults) {
-                        ParseQuery<ParseObject> completedResults = new ParseQuery<ParseObject>("Restaurant");
-                        completedResults.whereEqualTo("name", (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).name : ((Event) move).name);
-                        completedResults.whereEqualTo("didComplete", true);
-                        completedResults.whereEqualTo("user", currUser);
-                        completedResults.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> objects, ParseException e) {
-                                for (int i = 0; i < objects.size(); i++) {
+                    if (uniqueTotalPref.size() > 0) {
+                        for (Move move : moveResults) {
+                            ParseQuery<ParseObject> completedResults = ParseUtil.getdidComplete("Restaurant", move);
+                            completedResults.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> objects, ParseException e) {
+                                    for (int i = 0; i < objects.size(); i++) {
+                                        for (String pref : uniqueTotalPref) {
+                                            params.put("keyword", pref + "+" + objects.get(i).getString("name"));
+                                            if (results != null) {
+                                                objects.get(i).put("cuisine", pref);
+                                                objects.get(i).saveInBackground();
+                                                break;
+                                            }
+                                            else continue;
 
-                                    for (String pref: totalPref) {
-                                        if (getCuisine(params, pref,objects.get(i).getString("name")) != null) {
-                                            objects.get(i).put("cuisine", pref);
-                                            objects.get(i).saveInBackground();
-                                            Log.d("HomeFragment", "added the cuisine types");
                                         }
-                                        else continue;
-                                    }
 
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
+                    else {
+                        for (Move move : moveResults) {
+                            ParseQuery<ParseObject> completedResults = ParseUtil.getdidComplete("Restaurant", move);
+                            completedResults.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> objects, ParseException e) {
+                                    for (int i = 0; i < objects.size(); i++) {
+                                        for (String pref : uniqueTotalPref) {
+                                            params.put("keyword", pref + "+" + objects.get(i).getString("name"));
+                                            if (results != null) {
+                                                objects.get(i).put("cuisine", pref);
+                                                objects.get(i).saveInBackground();
+                                                break;
+                                            }
+                                            else continue;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+
 
                     goToMovesActivity(moveResults);
 
@@ -717,9 +741,7 @@ public class HomeFragment extends Fragment {
 
 
 
-    /*
-    public void CreateMoveList() {
-
+    private void CreateMoveList() {
         Map<String, Integer> PrefDict = new HashMap<String, Integer>();
         ArrayList<Map<String, Integer>> chooseMove = new ArrayList();
 
@@ -736,13 +758,26 @@ public class HomeFragment extends Fragment {
         //get user's history and create String list
         List<Move> pastMoves = HistoryFragment.getHistory();
 
-        
     }
-*/
+    
+    private JSONArray getResults(RequestParams params) {
+        String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
+        HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
 
-    public RequestParams getCuisine(RequestParams params, String pref, String name) {
-            params.put("keyword", pref);
-            params.put("name", name);
-        return params;
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                JSONArray newResults;
+                try {
+                    newResults = response.getJSONArray("results");
+
+                    } catch(JSONException e){
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
+            }
+        });
+        return newResults;
     }
+
 }
