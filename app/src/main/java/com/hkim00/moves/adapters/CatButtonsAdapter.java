@@ -65,11 +65,7 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
             foodPrefList = new ArrayList<>();
             if (position != RecyclerView.NO_POSITION) {
                 CategoryButton categoryButton = catButtons.get(position);
-                if (categoryButton.isPref == true) {
-                    categoryButton.isPref = false;
-                } else {
-                    categoryButton.isPref = true;
-                }
+                categoryButton.isPref = !categoryButton.isPref;
             }
         }
 

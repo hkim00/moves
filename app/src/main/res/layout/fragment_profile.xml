@@ -85,7 +85,7 @@
         app:layout_constraintStart_toStartOf="@+id/btnFavorite"
         app:layout_constraintTop_toTopOf="@+id/view"
         app:layout_constraintVertical_bias="0.388"
-        app:srcCompat="@drawable/ufi_heart" />
+        app:srcCompat="@drawable/ufi_heart_active" />
 
     <Button
         android:id="@+id/btnFavorite"
@@ -121,7 +121,7 @@
         app:layout_constraintTop_toTopOf="@+id/view" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFavorites"
+        android:id="@+id/rvMoves"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
