@@ -75,10 +75,10 @@ public class Move {
 
         else {
             move.id = jsonObject.getString("id");
-
             return move;
         }
     }
+
 
     public String distanceFromLocation(Context context) {
         UserLocation location = UserLocation.getCurrentLocation(context);
