@@ -684,34 +684,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-//    private void getRiskyMove() {
-//        if (moveType.equals("")) {
-//            return;
-//        }
-//        MoveCategoriesHelper helper = new MoveCategoriesHelper();
-//        List<String> nonPreferredList = new ArrayList<>();
-//
-//        if (moveType.equals("food")) {
-//            if (currUser.getJSONArray("foodPrefList") != null || currUser.getJSONArray("foodPrefList").length() != 0) {
-//
-//                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
-//                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
-//            }
-//        } else {
-//            if (currUser.getJSONArray("eventPrefList") != null || currUser.getJSONArray("eventPrefList").length() != 0) {
-//
-//                List<String> preferredList = helper.JSONArrayToList(currUser.getJSONArray("eventPrefList"));
-//                nonPreferredList = helper.getPreferenceDiff(moveType, preferredList);
-//            }
-//        }
-//
-//        if ((moveType.equals("food"))) {
-//            getNearbyRestaurants(nonPreferredList);
-//        } else {
-//            getNearbyEvents(nonPreferredList);
-//        }
-//    }
-
     private void goToMovesActivity(List<Move> moves) {
         Intent intent = new Intent(getContext(), MovesActivity.class);
         intent.putExtra("moves", Parcels.wrap(moves));

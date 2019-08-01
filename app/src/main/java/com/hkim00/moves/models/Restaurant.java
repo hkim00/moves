@@ -38,13 +38,13 @@ public class Restaurant implements Move {
     public String getId() { return id; }
 
     @Override
-    public Boolean getDidSave() {return didSave; }
+    public Boolean getDidSave() { return didSave; }
 
     @Override
-    public Boolean getDidFavorite() {return didFavorite; }
+    public Boolean getDidFavorite() { return didFavorite; }
 
     @Override
-    public Boolean getDidComplete() {return didComplete; }
+    public Boolean getDidComplete() { return didComplete; }
 
     @Override
     public boolean equals(Object obj) {
