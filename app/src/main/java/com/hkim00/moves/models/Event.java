@@ -61,7 +61,7 @@ public class Event extends Move {
         Event event = new Event();
 
         event.name = parseObject.getString("name");
-        event.id = parseObject.getString("id");
+        event.id = parseObject.getString("placeId");
 
         event.didSave = parseObject.getBoolean("didSave");
         event.didFavorite = parseObject.getBoolean("didFavorite");
