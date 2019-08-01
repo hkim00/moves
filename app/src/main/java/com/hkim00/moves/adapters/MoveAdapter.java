@@ -14,14 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
-import com.hkim00.moves.models.CategoryButton;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{

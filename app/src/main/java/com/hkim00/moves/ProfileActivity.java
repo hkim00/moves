@@ -31,9 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private final static String TAG = "ProfileActivity";
 
-    private Button btnSaved;
-    private Button btnFavorites;
-    private Button btnLogout;
+    private Button btnSaved, btnFavorites, btnLogout;
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
 
@@ -86,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnSaved = findViewById(R.id.btnSave);
         btnFavorites = findViewById(R.id.btnFavorite);
         btnLogout = findViewById(R.id.btnLogout);
-        rvFavorites = findViewById(R.id.rvFavorites);
+        rvFavorites = findViewById(R.id.rvMoves);
         rvSaved = findViewById(R.id.rvSaved);
 
         tvName = findViewById(R.id.tvName);
@@ -126,7 +124,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        //set grid view --> if bug, may be because of context retrieval method
         rvFavorites.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
         rvSaved.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
 
