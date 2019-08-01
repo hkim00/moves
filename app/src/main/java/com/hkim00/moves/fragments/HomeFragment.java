@@ -129,12 +129,7 @@ public class HomeFragment extends Fragment {
 
     private void checkForCurrentLocation() {
         location = UserLocation.getCurrentLocation(getContext());
-
-        if (location.lat.equals(null) && location.name.equals(null)) {
-            tvLocation.setText("Choose location");
-        } else {
-            tvLocation.setText(location.name);
-        }
+        tvLocation.setText((location.lat.equals(null) && location.name.equals(null)) ? "Choose location" : location.name);
     }
 
     private void checkForPostalCode() {
@@ -308,17 +303,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        btnAddFriends.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Fragment fragment = new SearchFragment();
-                ((SearchFragment) fragment).isAddFriend = true;
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.flContainer, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
+        btnAddFriends.setOnClickListener(view -> {
+            Fragment fragment = new SearchFragment();
+            ((SearchFragment) fragment).isAddFriend = true;
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.flContainer, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         });
 
         btnNextTrip.setOnClickListener(view -> getNextTrip());
@@ -349,26 +341,15 @@ public class HomeFragment extends Fragment {
             clPrice.setVisibility((clPrice.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
         }
 
-        if (type.equals("price")) {
-            tvRightPopupTitle.setText("Price");
+        tvRightPopupTitle.setText((type.equals("price")) ? "Price" : "Distance");
 
-            btnPriceLevel1.setVisibility(View.VISIBLE);
-            btnPriceLevel2.setVisibility(View.VISIBLE);
-            btnPriceLevel3.setVisibility(View.VISIBLE);
-            btnPriceLevel4.setVisibility(View.VISIBLE);
-            tvMiles.setVisibility(View.INVISIBLE);
-            etDistance.setVisibility(View.INVISIBLE);
+        btnPriceLevel1.setVisibility((type.equals("price")) ? View.VISIBLE : View.INVISIBLE);
+        btnPriceLevel2.setVisibility((type.equals("price")) ? View.VISIBLE : View.INVISIBLE);
+        btnPriceLevel3.setVisibility((type.equals("price")) ? View.VISIBLE : View.INVISIBLE);
+        btnPriceLevel4.setVisibility((type.equals("price")) ? View.VISIBLE : View.INVISIBLE);
+        tvMiles.setVisibility((type.equals("price")) ? View.INVISIBLE: View.VISIBLE);
+        etDistance.setVisibility((type.equals("price")) ? View.INVISIBLE: View.VISIBLE);
 
-        } else if (type.equals("distance")) {
-            tvRightPopupTitle.setText("Distance");
-
-            btnPriceLevel1.setVisibility(View.INVISIBLE);
-            btnPriceLevel2.setVisibility(View.INVISIBLE);
-            btnPriceLevel3.setVisibility(View.INVISIBLE);
-            btnPriceLevel4.setVisibility(View.INVISIBLE);
-            tvMiles.setVisibility(View.VISIBLE);
-            etDistance.setVisibility(View.VISIBLE);
-        }
     }
 
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -377,15 +358,9 @@ public class HomeFragment extends Fragment {
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String distanceString = etDistance.getText().toString().trim();
-
-            if (distanceString.equals("")) {
-                ivDistance.setVisibility(View.VISIBLE);
-                tvDistance.setVisibility(View.INVISIBLE);
-            } else {
-                ivDistance.setVisibility(View.INVISIBLE);
-                tvDistance.setVisibility(View.VISIBLE);
-                tvDistance.setText(distanceString + "mi");
-            }
+            ivDistance.setVisibility(distanceString.equals("") ? View.VISIBLE : View.INVISIBLE);
+            tvDistance.setVisibility((distanceString.equals("")) ? View.INVISIBLE : View.VISIBLE);
+            tvDistance.setText((distanceString.equals("")) ? "" : distanceString + "mi");
         }
 
         @Override
