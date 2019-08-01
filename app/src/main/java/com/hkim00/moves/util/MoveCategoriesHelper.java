@@ -89,6 +89,8 @@ public class MoveCategoriesHelper {
     }
 
 
+
+
     public static List<String> JSONArrayToList(Context context, JSONArray jsonArray) {
 
         List<String> stringList = new ArrayList<String>();
@@ -102,6 +104,10 @@ public class MoveCategoriesHelper {
             }
         }
         return stringList;
+    }
+
+    public static int milesToMeters(float miles) {
+        return (int) (miles/0.000621317);
     }
 
 }
