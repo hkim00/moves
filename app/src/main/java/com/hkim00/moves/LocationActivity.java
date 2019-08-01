@@ -83,12 +83,7 @@ public class LocationActivity extends AppCompatActivity implements
 
         isTrip = getIntent().getBooleanExtra("isTrip", false);
 
-        btnCurrentLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getCurrentLocation();
-            }
-        });
+        btnCurrentLocation.setOnClickListener(view -> getCurrentLocation());
     }
 
     @Override

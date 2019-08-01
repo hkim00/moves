@@ -40,22 +40,9 @@ public class Intro1Activity extends AppCompatActivity {
     }
 
 
-
-
     private void setupButtons() {
-        btnLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToLocation();
-            }
-        });
-
-        btnNext.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                goToCategories();
-            }
-        });
+        btnLocation.setOnClickListener(view -> goToLocation());
+        btnNext.setOnClickListener(v -> goToCategories());
     }
 
 
