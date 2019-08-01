@@ -331,16 +331,16 @@ public class TripActivity extends AppCompatActivity {
             for (Move selectedMove : selectedMoves) {
                 ParseObject move = new ParseObject("Move");
 
-                move.put("name", selectedMove.getName());
-                move.put("placeId", selectedMove.getId());
+                move.put("name", selectedMove.name);
+                move.put("placeId", selectedMove.id);
                 move.put("trip", trip);
-                move.put("moveType", (selectedMove.getMoveType() == Restaurant.RESTAURANT) ? "food" : "event");
+                move.put("moveType", selectedMove.moveType);
 
                 move.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e != null) {
-                            Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.getName(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.name, Toast.LENGTH_SHORT).show();
                             Log.e(TAG, e.getMessage());
                             e.printStackTrace();
                         }
@@ -378,7 +378,7 @@ public class TripActivity extends AppCompatActivity {
 
                 foodMoves.clear();
                 try {
-                    foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
+                    foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results"), "food"));
                     updateMoves(foodMoves);
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
