@@ -538,7 +538,7 @@ public class HomeFragment extends Fragment {
                 JSONArray events;
                 if (response.has("_embedded")) {
                     try {
-                        moveResults = Event.arrayFromJSONArray((response.getJSONObject("_embedded")).getJSONArray("events"));
+                        moveResults = Move.arrayFromJSONArray((response.getJSONObject("_embedded")).getJSONArray("events"), "event");
                         goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
@@ -655,7 +655,7 @@ public class HomeFragment extends Fragment {
                 moveResults.clear();
 
                 try {
-                    moveResults.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
+                    moveResults.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), moveType));
                     goToMovesActivity(moveResults);
 
                 } catch (JSONException e) {

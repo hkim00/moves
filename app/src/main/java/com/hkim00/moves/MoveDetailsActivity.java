@@ -94,9 +94,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (objects.size() == 0) {
                     ParseObject currObj = new ParseObject("Move");
-                    currObj.put("name", move.getName());
-                    currObj.put("placeId", move.getId());
-                    currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
+                    currObj.put("name", move.name);
+                    currObj.put("placeId", move.id);
+                    currObj.put("moveType", move.moveType);
                     currObj.put("user", currUser);
                     currObj.put("didComplete", false);
                     currObj.put("didSave", false);
@@ -107,11 +107,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
 
         // move details layout is different for a restaurant vs. event
-        if (move.getMoveType() == Move.RESTAURANT) {
-            restaurant = (Restaurant) move;
+        if (move.moveType.equals("food")) {
             getFoodView();
         } else {
-            event = (Event) move;
             getEventView();
         }
 
@@ -150,18 +148,18 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void getFoodView() {
-         tvMoveName.setText(restaurant.name);
+         tvMoveName.setText(move.name);
 
-         if (restaurant.lat == null) {
+         if (move.lat == null) {
              getFoodDetails();
              return;
          }
 
           String price = "";
-          if (restaurant.price_level < 0) {
+          if (move.price_level < 0) {
               price = "Unknown";
           } else {
-              for (int i = 0; i < restaurant.price_level; i++) {
+              for (int i = 0; i < move.price_level; i++) {
                   price += '$';
               }
           }
@@ -173,21 +171,20 @@ public class MoveDetailsActivity extends AppCompatActivity {
           ivTime.setVisibility(View.INVISIBLE);
           tvTime.setVisibility(View.INVISIBLE);
 
-          tvDistance.setText(restaurant.distanceFromLocation(getApplicationContext()) + " mi");
+          tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
 
-          if (restaurant.rating < 0) {
+          if (move.rating < 0) {
               moveRating.setVisibility(View.INVISIBLE);
           } else {
-              float moveRate = restaurant.rating.floatValue();
+              float moveRate = move.rating.floatValue();
               moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
           }
     }
 
     private void getFoodDetails() {
         String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
-
         RequestParams params = new RequestParams();
-        params.put("placeid", restaurant.id);
+        params.put("placeid", move.id);
         params.put("key", getString(R.string.api_key));
 
         HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
@@ -199,10 +196,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 try {
                     result = response.getJSONObject("result");
 
-                    Restaurant restaurantResult = Restaurant.fromJSON(result);
-                    restaurant = restaurantResult;
+                    Move moveResult = Move.fromJSON(result, "food");
+                    move = moveResult;
 
-                    if (restaurant.lat != null) {
+                    if (move.lat != null) {
                         getFoodView();
                     }
 
@@ -237,8 +234,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void getEventView() {
-        tvMoveName.setText(event.name);
-        String id = event.id;
+        tvMoveName.setText(move.name);
+        String id = move.id;
 
         //hide groupNum and Time tv & iv
         ivGroupNum.setVisibility(View.INVISIBLE);
@@ -291,43 +288,19 @@ public class MoveDetailsActivity extends AppCompatActivity {
             detailsQuery.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> objects, ParseException e) {
-                    try {
-                        currUser.fetch();
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject pObj = objects.get(i);
-                        if (pObj.getString("moveType").equals("food")) {
-                            Restaurant restaurant = Restaurant.fromParseObject(pObj);
-                            if (restaurant.didSave == false) {
-                                ivSave.setImageResource(R.drawable.ufi_save);
-                            } else {
-                                ivSave.setImageResource(R.drawable.ufi_save_active);
-                            }
+                        Move move = Move.fromParseObject(pObj);
+                        if (move.didFavorite == false) {
+                            ivFavorite.setImageResource(R.drawable.ufi_heart);
                         } else {
-                            Event event = Event.fromParseObject(pObj);
-                            if (event.didSave == false) {
-                                ivSave.setImageResource(R.drawable.ufi_save);
-                            } else {
-                                ivSave.setImageResource(R.drawable.ufi_save_active);
-                            }
+                            ivFavorite.setImageResource(R.drawable.ufi_heart_active);
                         }
 
-                        if (pObj.getString("moveType").equals("food")) {
-                            Restaurant restaurant = Restaurant.fromParseObject(pObj);
-                            if (restaurant.didFavorite == false) {
-                                ivFavorite.setImageResource(R.drawable.ufi_heart);
-                            } else {
-                                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
-                            }
+                        if (move.didSave == false) {
+                            ivSave.setImageResource(R.drawable.ufi_save);
                         } else {
-                            Event event = Event.fromParseObject(pObj);
-                            if (event.didSave == false) {
-                                ivFavorite.setImageResource(R.drawable.ufi_heart);
-                            } else {
-                                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
-                            }
+                            ivSave.setImageResource(R.drawable.ufi_save_active);
                         }
                     }
                 }
@@ -347,23 +320,23 @@ public class MoveDetailsActivity extends AppCompatActivity {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (e == null) {
-                                if (move.getMoveType() == 1) { // 1 means restaurant
-                                    currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.getName()));
+                                if (move.moveType.equals("food")) {
+                                    currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.name));
                                 } else {
-                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(move.getName()));
+                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(move.name));
                                 }
                                 currUser.saveInBackground();
                                 if (objects.size() == 0) { // occurs if the user has not ever completed this move
                                     ParseObject currObj = new ParseObject("Move");
-                                    currObj.put("name", move.getName());
-                                    currObj.put("placeId", move.getId());
-                                    currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
+                                    currObj.put("name", move.name);
+                                    currObj.put("placeId", move.id);
+                                    currObj.put("moveType", (move.moveType));
                                     currObj.put("user", currUser);
                                     currObj.put("didComplete", true);
+                                    currObj.put("count", 0);
                                     currObj.saveInBackground();
                                 } else { // the user has already completed the move
                                     for (int i = 0; i < objects.size(); i++) {
-                                        objects.get(i).put("didComplete", true);
                                         objects.get(i).put("didSave", false); // user cannot save a move that has been done
                                         ivSave.setImageResource(R.drawable.ufi_save);
                                         objects.get(i).saveInBackground();
@@ -409,12 +382,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
                             } else { // user is saving a move that has not been completed ever before
                                 ivSave.setImageResource(R.drawable.ufi_save_active);
                                 ParseObject currObj = new ParseObject("Move");
-                                currObj.put("name", move.getName());
+                                currObj.put("name", move.name);
                                 currObj.put("user", currUser);
                                 currObj.put("didSave", true);
                                 currObj.put("didFavorite", false);
-                                currObj.put("moveType", (move.getMoveType() == 1) ? "food" : "event");
-                                currObj.put("placeId", move.getId());
+                                currObj.put("moveType", (move.moveType));
+                                currObj.put("placeId", move.id);
                                 currObj.put("didComplete", false);
                                 currObj.saveInBackground();
                             }
@@ -458,7 +431,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 }
             }
         });
-
         btnAddToTrip.setOnClickListener(view -> saveToTrip());
     }
 

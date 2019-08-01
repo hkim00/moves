@@ -490,7 +490,7 @@ public class TripActivity extends AppCompatActivity {
 
                 foodMoves.clear();
                 try {
-                    foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
+                    foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results"), "food"));
                     updateMoves(foodMoves);
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
