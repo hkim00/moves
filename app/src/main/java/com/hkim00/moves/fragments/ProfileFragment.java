@@ -121,9 +121,9 @@ public class ProfileFragment extends Fragment {
 
                         for (int i = 0; i < objects.size(); i++) {
                             if (objects.get(i).getString("moveType").equals("food")) {
-                                results.add(Restaurant.fromParseObject(objects.get(i)));
+                                results.add(Move.fromParseObject(objects.get(i)));
                             } else {
-                                results.add(Event.fromParseObject(objects.get(i)));
+                                results.add(Move.fromParseObject(objects.get(i)));
                             }
                         }
 
