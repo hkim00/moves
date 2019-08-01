@@ -341,8 +341,7 @@ public class TripActivity extends AppCompatActivity {
         if (!isReadyToSave(true)) {
             return;
         } else if (isEditingTrip) {
-            saveTripMoves(currentTrip.parseObject);
-            onBackPressed();
+            saveUpdates();
         } else {
             btnSave.setEnabled(false);
 
@@ -370,6 +369,7 @@ public class TripActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
 
                         UserLocation.clearCurrentTripLocation(getApplicationContext());
+
                         saveTripMoves(trip);
 
                         onBackPressed();
@@ -381,6 +381,43 @@ public class TripActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void saveUpdates() {
+        btnSave.setEnabled(false);
+        ParseObject trip = currentTrip.parseObject;
+
+        trip.put("name", etTrip.getText().toString().trim());
+        trip.put("locationName", location.name);
+        trip.put("lat", location.lat);
+        trip.put("lng", location.lng);
+        trip.put("postalCode", location.postalCode);
+        trip.put("owner", ParseUser.getCurrentUser());
+
+        trip.put("startDay", dates.get(0).getDay());
+        trip.put("startMonth", dates.get(0).getMonth());
+        trip.put("startYear", dates.get(0).getYear());
+        trip.put("endDay", dates.get(dates.size() - 1).getDay());
+        trip.put("endMonth", dates.get(dates.size() - 1).getMonth());
+        trip.put("endYear", dates.get(dates.size() - 1).getYear());
+
+        trip.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                btnSave.setEnabled(true);
+                if (e == null) {
+                    UserLocation.clearCurrentTripLocation(getApplicationContext());
+                    saveTripMoves(trip);
+
+                    onBackPressed();
+                } else {
+                    Toast.makeText(getApplicationContext(), "error updating trip", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     private void getSavedTripMoves(Trip trip) {
