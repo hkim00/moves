@@ -61,12 +61,7 @@ public class SearchFragment extends Fragment {
         final Component component = SearchComponent.create(componentContext)
                 .hint("Search username")
                 .binder(recyclerBinder)
-                .listener(new SearchComponentSpec.OnQueryUpdateListener() {
-                    @Override
-                    public void onQueryUpdated(String username) {
-                        findUsers(username);
-                    }
-                })
+                .listener(username -> findUsers(username))
                 .build();
 
         return LithoView.create(componentContext, component);
@@ -83,25 +78,22 @@ public class SearchFragment extends Fragment {
         userQuery.whereContains("username", username.toLowerCase());
         userQuery.orderByDescending("createdAt");
 
-        userQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    List<ParseUser> users = new ArrayList<>();
+        userQuery.findInBackground((objects, e) -> {
+            if (e == null) {
+                List<ParseUser> users = new ArrayList<>();
 
-                    for (int i = 0; i < objects.size(); i++) {
-                        if (!objects.get(i).getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
-                            users.add((ParseUser) objects.get(i));
-                        }
+                for (int i = 0; i < objects.size(); i++) {
+                    if (!objects.get(i).getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                        users.add((ParseUser) objects.get(i));
                     }
-
-                    updateContent(users);
-
-                } else {
-                    Log.e(TAG, "Error finding users with usernames containing: " + username);
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error finding users", Toast.LENGTH_SHORT).show();
                 }
+
+                updateContent(users);
+
+            } else {
+                Log.e(TAG, "Error finding users with usernames containing: " + username);
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Error finding users", Toast.LENGTH_SHORT).show();
             }
         });
     }
