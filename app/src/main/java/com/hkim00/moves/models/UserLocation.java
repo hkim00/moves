@@ -2,15 +2,12 @@ package com.hkim00.moves.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.location.Location;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.location.LocationResult;
 import com.google.android.libraries.places.api.model.AddressComponent;
 import com.google.android.libraries.places.api.model.Place;
+import com.hkim00.moves.TripActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,44 +19,33 @@ import java.util.List;
 @Parcel
 public class UserLocation {
 
+    private static final String LOCATION = "location";
+    private static final String TRIP_LOCATION = "tripLocation";
+    private static final String NAME = "name";
+    private static final String TRIP_NAME = "tripName";
+    private static final String LAT = "lat";
+    private static final String TRIP_LAT = "tripLat";
+    private static final String LNG = "lng";
+    private static final String TRIP_LNG = "tripLng";
+    private static final String POSTAL_CODE = "postalCode";
+    private static final String TRIP_POSTAL_CODE = "tripPostalCode";
+
     public String name, lat, lng, postalCode;
 
     public UserLocation() {}
 
 
     public static UserLocation getCurrentLocation(Context context) {
+        boolean isTrip = (context instanceof TripActivity ) ? true : false;
+
         UserLocation location = new UserLocation();
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? TRIP_LOCATION : LOCATION, 0); //0 for private mode
 
-        String name = sharedPreferences.getString("name", "");
-        String lat = sharedPreferences.getString("lat", "0.0");
-        String lng = sharedPreferences.getString("lng", "0.0");
-        String postalCode = sharedPreferences.getString("postalCode", "");
-
-        location.name = name;
-        location.lat = lat;
-        location.lng = lng;
-        location.postalCode = postalCode;
-
-        return location;
-    }
-
-
-    public static UserLocation getCurrentTripLocation(Context context) {
-        UserLocation location = new UserLocation();
-
-        SharedPreferences sharedPreferences = context.getSharedPreferences("tripLocation", 0); //0 for private mode
-
-        String name = sharedPreferences.getString("tripName", null);
-        String lat = sharedPreferences.getString("tripLat", null);
-        String lng = sharedPreferences.getString("tripLng", null);
-        String postalCode = sharedPreferences.getString("tripPostalCode", null);
-
-        location.name = name;
-        location.lat = lat;
-        location.lng = lng;
-        location.postalCode = postalCode;
+        location.name = sharedPreferences.getString((isTrip) ? TRIP_NAME : NAME, null);
+        location.lat = sharedPreferences.getString((isTrip) ? TRIP_LAT : LAT, null);
+        location.lng = sharedPreferences.getString((isTrip) ? TRIP_LNG : LNG, null);
+        location.postalCode = sharedPreferences.getString((isTrip) ? TRIP_POSTAL_CODE : POSTAL_CODE, null);
 
         return location;
     }
@@ -68,13 +54,13 @@ public class UserLocation {
     public static UserLocation clearCurrentTripLocation(Context context) {
         UserLocation location = new UserLocation();
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("tripLocation", 0); //0 for private mode
+        SharedPreferences sharedPreferences = context.getSharedPreferences(TRIP_LOCATION, 0); //0 for private mode
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.remove("tripName");
-        editor.remove("tripLat");
-        editor.remove("tripLng");
-        editor.remove("tripPostalCode");
+        editor.remove(TRIP_NAME);
+        editor.remove(TRIP_LAT);
+        editor.remove(TRIP_LNG);
+        editor.remove(TRIP_POSTAL_CODE);
 
         location.name = null;
         location.lat = null;
@@ -171,13 +157,13 @@ public class UserLocation {
 
     private static void saveLocation(Context context, boolean isTrip, UserLocation location) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? "tripLocation" : "location", 0); //0 for private mode
+        SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? TRIP_LOCATION : LOCATION, 0); //0 for private mode
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putString((isTrip) ? "tripName" : "name", location.name);
-        editor.putString((isTrip) ? "tripLat" : "lat", location.lat);
-        editor.putString((isTrip) ? "tripLng" : "lng", location.lng);
-        editor.putString((isTrip) ? "tripPostalCode" : "postalCode", location.postalCode);
+        editor.putString((isTrip) ? TRIP_NAME : NAME, location.name);
+        editor.putString((isTrip) ? TRIP_LAT : LAT, location.lat);
+        editor.putString((isTrip) ? TRIP_LNG : LNG, location.lng);
+        editor.putString((isTrip) ? TRIP_POSTAL_CODE : POSTAL_CODE, location.postalCode);
 
         editor.commit();
     }

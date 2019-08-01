@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment {
     private void checkForCurrentLocation() {
         location = UserLocation.getCurrentLocation(getContext());
 
-        if (location.lat.equals("0.0") && location.name.equals("")) {
+        if (location.lat.equals(null) && location.name.equals(null)) {
             tvLocation.setText("Choose location");
         } else {
             tvLocation.setText(location.name);
@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment {
     private void checkForPostalCode() {
         if (location.postalCode.equals("")) {
 
-            if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+            if (location.lat.equals(null) && location.lng.equals(null)) {
                 Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
                 return;
 
@@ -393,7 +393,7 @@ public class HomeFragment extends Fragment {
     };
 
     private void typeMoveSelected() {
-        if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
+        if (location.lat.equals(null) && location.lng.equals(null)) {
             Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
             return;
         }

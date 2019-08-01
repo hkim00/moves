@@ -259,7 +259,7 @@ public class TripActivity extends AppCompatActivity {
 
 
     private void checkForCurrentLocation() {
-        location = UserLocation.getCurrentTripLocation(this);
+        location = UserLocation.getCurrentLocation(TripActivity.this);
 
         isReadyToSave(false);
 
