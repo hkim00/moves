@@ -408,9 +408,9 @@ public class TripActivity extends AppCompatActivity {
 
                 for (int i = 0; i < objects.size(); i++) {
                     if (objects.get(i).getString("moveType").equals("food")) {
-                        moves.add(Restaurant.fromParseObject(objects.get(i)));
+                        moves.add(Move.fromParseObject(objects.get(i)));
                     } else {
-                        moves.add(Event.fromParseObject(objects.get(i)));
+                        moves.add(Move.fromParseObject(objects.get(i)));
                     }
                 }
                 selectedMoves.addAll(moves);
