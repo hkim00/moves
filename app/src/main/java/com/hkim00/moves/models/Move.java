@@ -7,4 +7,8 @@ public interface Move {
     int getMoveType();
     String getName();
     String getId();
+    Boolean getDidComplete();
+    Boolean getDidSave();
+    Boolean getDidFavorite();
+
 }
