@@ -426,7 +426,7 @@ public class TripActivity extends AppCompatActivity {
         if (isEditingTrip && deleteFromServerMoves.size() > 0) {
             for (int i = 0; i < deleteFromServerMoves.size(); i++) {
                 for (int a = 0; a < serverMoves.size(); a++) {
-                    if (serverMoves.get(a).getString("placeId").equals(deleteFromServerMoves.get(i).getId())) {
+                    if (serverMoves.get(a).getString("placeId").equals(deleteFromServerMoves.get(i).id)) {
                         serverMoves.get(a).deleteInBackground();
                         break;
                     }
@@ -448,14 +448,14 @@ public class TripActivity extends AppCompatActivity {
     private void saveMoveToTrip(Move selectedMove, ParseObject trip) {
         ParseObject move = new ParseObject("Move");
 
-        move.put("name", selectedMove.getName());
-        move.put("placeId", selectedMove.getId());
+        move.put("name", selectedMove.name);
+        move.put("placeId", selectedMove.id);
         move.put("trip", trip);
-        move.put("moveType", (selectedMove.getMoveType() == Restaurant.RESTAURANT) ? "food" : "event");
+        move.put("moveType", (selectedMove.moveType));
 
         move.saveInBackground((e) -> {
             if (e != null) {
-                Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.name, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();
             }
