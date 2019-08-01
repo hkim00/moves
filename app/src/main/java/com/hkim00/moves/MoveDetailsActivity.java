@@ -18,7 +18,6 @@ import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
-import com.hkim00.moves.util.ParseUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -55,7 +54,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private RatingBar moveRating;
     private Button btnChooseMove, btnFavorite, btnSave, btnAddToTrip;
 
-    private ParseUser currUser;
+    private ParseUser currUser = ParseUser.getCurrentUser();
     private Move move;
     private Restaurant restaurant;
     private Event event;
@@ -72,8 +71,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getMove();
 
         setupButtons();
-        
+
+        displayButtonStatus();
+
         lyftButton();
+
     }
 
     @Override
@@ -84,8 +86,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getMove() {
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
-        ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+        detailsQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (objects.size() == 0) {
@@ -138,7 +140,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
         btnFavorite = findViewById(R.id.btnFavorite);
         ivFavorite = findViewById(R.id.ivFavorite);
         btnSave = findViewById(R.id.btnSave);
-        currUser = ParseUser.getCurrentUser();
         ivSave = findViewById(R.id.ivSave);
 
         btnAddToTrip = findViewById(R.id.btnAddToTrip);
@@ -280,13 +281,65 @@ public class MoveDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void displayButtonStatus() {
+        if (move != null) {
+            ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+            detailsQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    try {
+                        currUser.fetch();
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                    for (int i = 0; i < objects.size(); i++) {
+                        ParseObject pObj = objects.get(i);
+                        if (pObj.getString("moveType").equals("food")) {
+                            Restaurant restaurant = Restaurant.fromParseObject(pObj);
+                            if (restaurant.didSave == false) {
+                                ivSave.setImageResource(R.drawable.ufi_save);
+                            } else {
+                                ivSave.setImageResource(R.drawable.ufi_save_active);
+                            }
+                        } else {
+                            Event event = Event.fromParseObject(pObj);
+                            if (event.didSave == false) {
+                                ivSave.setImageResource(R.drawable.ufi_save);
+                            } else {
+                                ivSave.setImageResource(R.drawable.ufi_save_active);
+                            }
+                        }
+
+                        if (pObj.getString("moveType").equals("food")) {
+                            Restaurant restaurant = Restaurant.fromParseObject(pObj);
+                            if (restaurant.didFavorite == false) {
+                                ivFavorite.setImageResource(R.drawable.ufi_heart);
+                            } else {
+                                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                            }
+                        } else {
+                            Event event = Event.fromParseObject(pObj);
+                            if (event.didSave == false) {
+                                ivFavorite.setImageResource(R.drawable.ufi_heart);
+                            } else {
+                                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            Log.i(TAG, "Error finding current move.");
+        }
+    }
+
     private void setupButtons() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (move != null) {
-                    ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
-                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                    ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+                    detailsQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (e == null) {
@@ -313,6 +366,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                     }
                                 }
                                 Log.d("Move", "Move saved in History Successfully");
+                                Toast.makeText(MoveDetailsActivity.this, "Saved to History!", Toast.LENGTH_SHORT).show();
                             } else {
                                 Log.d("Move", "Error: saving move to history");
                             }
@@ -326,8 +380,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (move != null) {
-                    ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
-                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                    ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+                    detailsQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (objects.size() > 0) {
@@ -370,8 +424,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (move != null) {
-                    ParseQuery<ParseObject> parseQuery = getParseQuery(currUser, move);
-                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                    ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+                    detailsQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if (objects.size() > 0) {
