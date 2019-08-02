@@ -23,24 +23,38 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
-
         setContentView(R.layout.activity_signup);
 
+        getViewIds();
+
+        setupButtons();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, LogInActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    private void getViewIds() {
         btnGetSarted = findViewById(R.id.btnGetStarted);
         etUsername = findViewById(R.id.etUsername2);
         etPassword = findViewById(R.id.etPassword2);
+    }
 
+
+    private void setupButtons() {
         btnGetSarted.setOnClickListener(view -> {
             user.setUsername(etUsername.getText().toString().toLowerCase());
             user.setPassword(etPassword.getText().toString());
 
             user.signUpInBackground(e -> {
                 if (e == null) {
-                    Log.i("SignUpActivity", "Sign Up Worked!");
+                    Log.i(TAG, "Sign Up Worked!");
                     Intent intent = new Intent(SignUpActivity.this, Intro2Activity.class);
-                    intent.putExtra("user", user);
                     startActivity(intent);
                     finish();
                 } else {
