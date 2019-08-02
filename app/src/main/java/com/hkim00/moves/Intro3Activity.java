@@ -2,25 +2,21 @@ package com.hkim00.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.CatButtonsAdapter;
-import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.CategoryButton;
+import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Intro3Activity extends AppCompatActivity {
-
-    private TextView tvInstructions;
     private Button btnDone;
 
     List<CategoryButton> mCatButtons;
@@ -33,11 +29,22 @@ public class Intro3Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro3);
 
-        MoveCategoriesHelper helper = new MoveCategoriesHelper();
+        getViewIds();
 
-        tvInstructions = findViewById(R.id.instructions_tv) ;
+        setupRecyclerView();
+
+        setupButtons();
+    }
+
+
+    private void getViewIds() {
         rvCategories = findViewById(R.id.cat_rv);
         btnDone = findViewById(R.id.done_btn);
+    }
+
+
+    private void setupRecyclerView() {
+        MoveCategoriesHelper helper = new MoveCategoriesHelper();
 
         mCatButtons = new ArrayList<>();
         adapter = new CatButtonsAdapter(getApplicationContext(), mCatButtons);
@@ -52,26 +59,26 @@ public class Intro3Activity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         mCategories = new ArrayList<>();
+    }
 
-        btnDone.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                // loop through catButtons, put all "preferred" cuisines, add to foodPrefList array in Parse
-                for (int i = 0; i < mCatButtons.size(); i++) {
-                    CategoryButton catButton = mCatButtons.get(i);
-                    if (catButton.isPref == true) {
-                        mCategories.add(catButton.type);
-                    }
+    private void setupButtons() {
+        btnDone.setOnClickListener(v -> {
+            // loop through catButtons, put all "preferred" cuisines, add to foodPrefList array in Parse
+            for (int i = 0; i < mCatButtons.size(); i++) {
+                CategoryButton catButton = mCatButtons.get(i);
+                if (catButton.isPref == true) {
+                    mCategories.add(catButton.type);
                 }
-
-                ParseUser currUser = ParseUser.getCurrentUser();
-                currUser.put("eventPrefList", mCategories);
-                currUser.saveInBackground();
-
-                Intent intent = new Intent(Intro3Activity.this, HomeActivity.class);
-                startActivity(intent);
-                finish();
             }
+
+            ParseUser currUser = ParseUser.getCurrentUser();
+            currUser.put("eventPrefList", mCategories);
+            currUser.saveInBackground();
+
+            Intent intent = new Intent(Intro3Activity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+            overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
     }
 }

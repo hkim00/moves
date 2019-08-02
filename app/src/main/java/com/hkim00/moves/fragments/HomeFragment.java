@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
 
     private void checkForCurrentLocation() {
         location = UserLocation.getCurrentLocation(getContext());
-        tvLocation.setText((location.lat.equals(null) && location.name.equals(null)) ? "Choose location" : location.name);
+        tvLocation.setText((location.lat == null && location.name == null) ? "Choose location" : location.name);
     }
 
     private void checkForPostalCode() {
@@ -154,9 +154,7 @@ public class HomeFragment extends Fragment {
                         UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), false, location, response);
                         location.postalCode = newLocation.postalCode;
 
-                        if (!newLocation.equals("")) {
-                            return;
-                        } else {
+                        if (newLocation.equals("")) {
                             Log.e(TAG, "No postal code found.");
                         }
                     }

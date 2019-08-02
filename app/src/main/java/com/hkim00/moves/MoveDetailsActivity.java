@@ -65,8 +65,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
     private ParseUser currUser = ParseUser.getCurrentUser();
     private Move move;
-    private Restaurant restaurant;
-    private Event event;
     private boolean isTrip;
 
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
@@ -100,24 +98,20 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     private void getMove() {
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
         ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
-        detailsQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (objects.size() == 0) {
-                    ParseObject currObj = new ParseObject("Move");
-                    currObj.put("name", move.name);
-                    currObj.put("placeId", move.id);
-                    currObj.put("moveType", move.moveType);
-                    currObj.put("user", currUser);
-                    currObj.put("didComplete", false);
-                    currObj.put("didSave", false);
-                    currObj.put("didFavorite", false);
-                    currObj.saveInBackground();
-                }
+        detailsQuery.findInBackground((objects, e) -> {
+            if (objects.size() == 0) {
+                ParseObject currObj = new ParseObject("Move");
+                currObj.put("name", move.name);
+                currObj.put("placeId", move.id);
+                currObj.put("moveType", move.moveType);
+                currObj.put("user", currUser);
+                currObj.put("didComplete", false);
+                currObj.put("didSave", false);
+                currObj.put("didFavorite", false);
+                currObj.saveInBackground();
             }
         });
 
-        // move details layout is different for a restaurant vs. event
         if (move.moveType.equals("food")) {
             getFoodView();
         } else {
@@ -325,23 +319,20 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     private void displayButtonStatus() {
         if (move != null) {
             ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
-            detailsQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> objects, ParseException e) {
-                    for (int i = 0; i < objects.size(); i++) {
-                        ParseObject pObj = objects.get(i);
-                        Move move = Move.fromParseObject(pObj);
-                        if (move.didFavorite == false) {
-                            ivFavorite.setImageResource(R.drawable.ufi_heart);
-                        } else {
-                            ivFavorite.setImageResource(R.drawable.ufi_heart_active);
-                        }
+            detailsQuery.findInBackground((objects, e) -> {
+                for (int i = 0; i < objects.size(); i++) {
+                    ParseObject pObj = objects.get(i);
+                    Move move = Move.fromParseObject(pObj);
+                    if (move.didFavorite == false) {
+                        ivFavorite.setImageResource(R.drawable.ufi_heart);
+                    } else {
+                        ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                    }
 
-                        if (move.didSave == false) {
-                            ivSave.setImageResource(R.drawable.ufi_save);
-                        } else {
-                            ivSave.setImageResource(R.drawable.ufi_save_active);
-                        }
+                    if (move.didSave == false) {
+                        ivSave.setImageResource(R.drawable.ufi_save);
+                    } else {
+                        ivSave.setImageResource(R.drawable.ufi_save_active);
                     }
                 }
             });
@@ -374,8 +365,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                     currObj.put("user", currUser);
                                     currObj.put("didComplete", true);
                                     currObj.put("count", 0);
-                                    currObj.put("lat", move.lat);
-                                    currObj.put("lng", move.lng);
                                     currObj.saveInBackground();
                                 } else { // the user has already completed the move
                                     for (int i = 0; i < objects.size(); i++) {
@@ -396,82 +385,70 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (move != null) {
-                    ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
-                    detailsQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (objects.size() > 0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    if (objects.get(i).getBoolean("didComplete") == true) { // user cannot save an already completed move
-                                        Toast.makeText(MoveDetailsActivity.this, "You cannot save a move you have already completed!",
-                                                Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    if (objects.get(i).getBoolean("didSave") == true) {
-                                        objects.get(i).put("didSave", false);
-                                        ivSave.setImageResource(R.drawable.ufi_save);
-                                        objects.get(i).saveInBackground();
-                                    } else {
-                                        objects.get(i).put("didSave", true);
-                                        ivSave.setImageResource(R.drawable.ufi_save_active);
-                                        objects.get(i).saveInBackground();
-                                    }
-
-                                }
-                            } else { // user is saving a move that has not been completed ever before
-                                ivSave.setImageResource(R.drawable.ufi_save_active);
-                                ParseObject currObj = new ParseObject("Move");
-                                currObj.put("name", move.name);
-                                currObj.put("user", currUser);
-                                currObj.put("didSave", true);
-                                currObj.put("didFavorite", false);
-                                currObj.put("moveType", (move.moveType));
-                                currObj.put("placeId", move.id);
-                                currObj.put("didComplete", false);
-                                currObj.saveInBackground();
+        btnSave.setOnClickListener(view -> {
+            if (move != null) {
+                ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+                detailsQuery.findInBackground((objects, e) -> {
+                    if (objects.size() > 0) {
+                        for (int i = 0; i < objects.size(); i++) {
+                            if (objects.get(i).getBoolean("didComplete") == true) { // user cannot save an already completed move
+                                Toast.makeText(MoveDetailsActivity.this, "You cannot save a move you have already completed!",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
                             }
+                            if (objects.get(i).getBoolean("didSave") == true) {
+                                objects.get(i).put("didSave", false);
+                                ivSave.setImageResource(R.drawable.ufi_save);
+                                objects.get(i).saveInBackground();
+                            } else {
+                                objects.get(i).put("didSave", true);
+                                ivSave.setImageResource(R.drawable.ufi_save_active);
+                                objects.get(i).saveInBackground();
+                            }
+
                         }
-                    });
-                }
+                    } else { // user is saving a move that has not been completed ever before
+                        ivSave.setImageResource(R.drawable.ufi_save_active);
+                        ParseObject currObj = new ParseObject("Move");
+                        currObj.put("name", move.name);
+                        currObj.put("user", currUser);
+                        currObj.put("didSave", true);
+                        currObj.put("didFavorite", false);
+                        currObj.put("moveType", (move.moveType));
+                        currObj.put("placeId", move.id);
+                        currObj.put("didComplete", false);
+                        currObj.saveInBackground();
+                    }
+                });
             }
         });
 
-        btnFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (move != null) {
-                    ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
-                    detailsQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (objects.size() > 0) {
-                                for (int i = 0; i < objects.size(); i++) {
-                                    if (objects.get(i).getBoolean("didComplete") == false) { // user cannot like move if it has not been completed
-                                        Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!",
-                                                Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    if (objects.get(i).getBoolean("didFavorite") == true) {
-                                        ivFavorite.setImageResource(R.drawable.ufi_heart);
-                                        objects.get(i).put("didFavorite", false);
-                                        objects.get(i).saveInBackground();
-                                    } else {
-                                        objects.get(i).put("didFavorite", true);
-                                        ivFavorite.setImageResource(R.drawable.ufi_heart_active);
-                                        objects.get(i).saveInBackground();
-                                    }
-                                }
-                            } else { // we enter this part of code when the user has not completed any moves
+        btnFavorite.setOnClickListener(view -> {
+            if (move != null) {
+                ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+                detailsQuery.findInBackground((objects, e) -> {
+                    if (objects.size() > 0) {
+                        for (int i = 0; i < objects.size(); i++) {
+                            if (objects.get(i).getBoolean("didComplete") == false) { // user cannot like move if it has not been completed
                                 Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!",
                                         Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            if (objects.get(i).getBoolean("didFavorite") == true) {
+                                ivFavorite.setImageResource(R.drawable.ufi_heart);
+                                objects.get(i).put("didFavorite", false);
+                                objects.get(i).saveInBackground();
+                            } else {
+                                objects.get(i).put("didFavorite", true);
+                                ivFavorite.setImageResource(R.drawable.ufi_heart_active);
+                                objects.get(i).saveInBackground();
                             }
                         }
-                    });
-                }
+                    } else { // we enter this part of code when the user has not completed any moves
+                        Toast.makeText(MoveDetailsActivity.this, "You must complete the move before liking it!",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         btnAddToTrip.setOnClickListener(view -> saveToTrip());
@@ -508,7 +485,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     }
                                
     private void lyftButton() {
-        // add feature to call Lyft to event/restaurant
         ApiConfig apiConfig = new ApiConfig.Builder()
                 .setClientId(getString(R.string.client_id_lyft))
                 //waiting for Lyft to approve developer signup request

@@ -23,21 +23,23 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
-
         setContentView(R.layout.activity_login);
 
         checkForCurrentUser();
 
-        etUsername = findViewById(R.id.etUsername);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogIn = findViewById(R.id.btnlogIn);
-        btnSignUp = findViewById(R.id.btnSignUp);
+        getViewIds();
 
         setupButtons();
     }
 
+
+    private void getViewIds() {
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
+        btnLogIn = findViewById(R.id.btnlogIn);
+        btnSignUp = findViewById(R.id.btnSignUp);
+    }
 
     private void checkForCurrentUser() {
         ParseUser currentUser = ParseUser.getCurrentUser();
@@ -50,7 +52,7 @@ public class LogInActivity extends AppCompatActivity {
 
     private void setupButtons() {
         btnLogIn.setOnClickListener(view -> {
-            final String username = etUsername.getText().toString();
+            final String username = etUsername.getText().toString().toLowerCase();
             final String password = etPassword.getText().toString();
 
             login(username, password);
@@ -60,6 +62,7 @@ public class LogInActivity extends AppCompatActivity {
             Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
             startActivity(intent);
             finish();
+            overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
     }
 
@@ -70,7 +73,7 @@ public class LogInActivity extends AppCompatActivity {
                 final Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
-
+                overridePendingTransition(R.anim.right_in, R.anim.left_out);
             } else {
                 Log.e(TAG, e.getMessage());
             }

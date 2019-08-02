@@ -20,11 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hkim00.moves.LogInActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -37,7 +33,7 @@ public class ProfileFragment extends Fragment {
     ParseUser currUser;
 
     private Button btnSaved, btnFavorites, btnLogout;
-    private TextView tvName, tvLocation, tvGender, tvAge;
+    private TextView tvName;
     private ImageView ivSaved, ivFavorites;
 
     private RecyclerView rvMoves;
@@ -68,9 +64,6 @@ public class ProfileFragment extends Fragment {
 
     private void getViewIds(View view) {
         tvName = view.findViewById(R.id.tvName);
-        tvLocation = view.findViewById(R.id.tvLocation);
-        tvGender = view.findViewById(R.id.tvGender);
-        tvAge = view.findViewById(R.id.tvAge);
         ivSaved = view.findViewById(R.id.ivSaved);
         ivFavorites = view.findViewById(R.id.ivFavorites);
 
@@ -82,14 +75,9 @@ public class ProfileFragment extends Fragment {
 
     private void fillUserInfo() {
         currUser = ParseUser.getCurrentUser();
-
         tvName.setText(currUser.getUsername());
-        tvLocation.setText("Your location: " + currUser.getString("location"));
-        tvGender.setText("Gender: " + currUser.getString("gender"));
-        tvAge.setText("Age: " + currUser.getInt("age"));
 
         getMoveLists("favorites");
-
     }
 
     private void setupRecyclerView() {
@@ -113,32 +101,29 @@ public class ProfileFragment extends Fragment {
         } else {
             moveQuery.whereEqualTo("didFavorite", true);
         }
-            moveQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> objects, ParseException e) {
-                    if (e == null) {
-                        List<Move> results = new ArrayList<>();
+            moveQuery.findInBackground((objects, e) -> {
+                if (e == null) {
+                    List<Move> results = new ArrayList<>();
 
-                        for (int i = 0; i < objects.size(); i++) {
-                            if (objects.get(i).getString("moveType").equals("food")) {
-                                results.add(Move.fromParseObject(objects.get(i)));
-                            } else {
-                                results.add(Move.fromParseObject(objects.get(i)));
-                            }
-                        }
-
-                        if (listType.equals("saved")) {
-                            saveMoves = results;
-                            didCheckSave = true;
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (objects.get(i).getString("moveType").equals("food")) {
+                            results.add(Move.fromParseObject(objects.get(i)));
                         } else {
-                            favMoves = results;
+                            results.add(Move.fromParseObject(objects.get(i)));
                         }
-
-                        updateMoves(results);
-                    } else {
-                        Log.e(TAG, "Error finding saved list.");
-                        e.printStackTrace();
                     }
+
+                    if (listType.equals("saved")) {
+                        saveMoves = results;
+                        didCheckSave = true;
+                    } else {
+                        favMoves = results;
+                    }
+
+                    updateMoves(results);
+                } else {
+                    Log.e(TAG, "Error finding saved list.");
+                    e.printStackTrace();
                 }
             });
         }

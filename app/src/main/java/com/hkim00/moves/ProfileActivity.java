@@ -36,9 +36,6 @@ public class ProfileActivity extends AppCompatActivity {
     private RecyclerView rvSaved;
 
     private TextView tvName;
-    private TextView tvLocation;
-    private TextView tvGender;
-    private TextView tvAge;
 
     private MoveAdapter Faveadapter;
     private MoveAdapter Saveadapter;
@@ -73,11 +70,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void fillUserInfo() {
         user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
-
         tvName.setText(user.getUsername());
-        tvLocation.setText("Your location: " + user.getString("location"));
-        tvGender.setText("Gender: " + user.getString("gender"));
-        tvAge.setText("Age: " + user.getInt("age"));
     }
 
     private void findViewIds() {
@@ -88,37 +81,21 @@ public class ProfileActivity extends AppCompatActivity {
         rvSaved = findViewById(R.id.rvSaved);
 
         tvName = findViewById(R.id.tvName);
-        tvLocation = findViewById(R.id.tvLocation);
-        tvGender = findViewById(R.id.tvGender);
-        tvAge = findViewById(R.id.tvAge);
 
         btnLogout.setEnabled(false);
         btnLogout.setText("Loading");
     }
 
     private void setupButtons() {
-        btnFavorites.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleTabs(true);
-            }
-        });
+        btnFavorites.setOnClickListener(view -> toggleTabs(true));
 
-        btnSaved.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleTabs(false);
-            }
-        });
+        btnSaved.setOnClickListener(view -> toggleTabs(false));
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isFriend) {
-                    unFriendUser();
-                } else {
-                    friendUser();
-                }
+        btnLogout.setOnClickListener(view -> {
+            if (isFriend) {
+                unFriendUser();
+            } else {
+                friendUser();
             }
         });
     }
@@ -144,22 +121,19 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void checkStatus() {
         ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
-        friendQuery.countInBackground(new CountCallback() {
-            @Override
-            public void done(int count, ParseException e) {
-                if (e == null) {
-                    btnLogout.setEnabled(true);
+        friendQuery.countInBackground((count, e) -> {
+            if (e == null) {
+                btnLogout.setEnabled(true);
 
-                    if (count > 0) {
-                        showIsFriendButton();
-                    } else {
-                        showIsNotFriendButton();
-                    }
+                if (count > 0) {
+                    showIsFriendButton();
                 } else {
-                    Log.e(TAG, "Error checking if user follows");
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Error checking follow status", Toast.LENGTH_SHORT).show();
+                    showIsNotFriendButton();
                 }
+            } else {
+                Log.e(TAG, "Error checking if user follows");
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error checking follow status", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -171,16 +145,13 @@ public class ProfileActivity extends AppCompatActivity {
         friendObject.put("isPending", false); //have pending option if we want to send friend request and not just make automatic friends
         friendObject.put("sender", ParseUser.getCurrentUser());
         friendObject.put("receiver", user);
-        friendObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Error friending user");
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Error friending user", Toast.LENGTH_SHORT).show();
+        friendObject.saveInBackground(e -> {
+            if (e != null) {
+                Log.e(TAG, "Error friending user");
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error friending user", Toast.LENGTH_SHORT).show();
 
-                    showIsNotFriendButton();
-                }
+                showIsNotFriendButton();
             }
         });
     }
@@ -189,31 +160,25 @@ public class ProfileActivity extends AppCompatActivity {
         showIsNotFriendButton();
 
         ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
-        friendQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    for (ParseObject object : objects) {
-                        object.deleteInBackground(new DeleteCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e != null) {
-                                    Log.e(TAG, "Error unfriending user");
-                                    e.printStackTrace();
-                                    Toast.makeText(getApplicationContext(), "Error unfriending user", Toast.LENGTH_SHORT).show();
+        friendQuery.findInBackground((objects, e) -> {
+            if (e == null) {
+                for (ParseObject object : objects) {
+                    object.deleteInBackground(e1 -> {
+                        if (e1 != null) {
+                            Log.e(TAG, "Error unfriending user");
+                            e1.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "Error unfriending user", Toast.LENGTH_SHORT).show();
 
-                                    showIsFriendButton();
-                                }
-                            }
-                        });
-                    }
-                } else {
-                    Log.e(TAG, "Error unfriending user");
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Error unfriending user", Toast.LENGTH_SHORT).show();
-
-                    showIsFriendButton();
+                            showIsFriendButton();
+                        }
+                    });
                 }
+            } else {
+                Log.e(TAG, "Error unfriending user");
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error unfriending user", Toast.LENGTH_SHORT).show();
+
+                showIsFriendButton();
             }
         });
     }
