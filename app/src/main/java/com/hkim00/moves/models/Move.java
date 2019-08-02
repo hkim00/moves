@@ -59,7 +59,7 @@ public class Move {
         move.name = jsonObject.getString("name");
 
         move.moveType = moveType;
-        if (moveType == "food") {
+        if (moveType.equals("food")) {
             move.id = jsonObject.getString("place_id");
             move.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
 
