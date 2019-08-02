@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,16 +34,16 @@ import java.io.IOException;
 public class SignUpActivity extends AppCompatActivity {
 
     private String TAG = "SignUpActivity";
+    private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
+    private final static int PICK_PHOTO_CODE = 1046;
 
-    public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
-
-    public String photoFileName = "photo.jpg";
+    private String photoFileName = "photo.jpg";
     private File photoFile;
 
     private ImageView ivProfilePic;
     private Button btnGetSarted, btnAddPhoto, btnProfilePic;
     private EditText etUsername, etPassword;
-    public ParseUser user = new ParseUser();
+    private ParseUser user = new ParseUser();
 
 
     @Override
@@ -77,7 +78,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void setupButtons() {
         btnGetSarted.setOnClickListener(view -> signup());
         btnAddPhoto.setOnClickListener(view -> launchCamera());
-        btnProfilePic.setOnClickListener(view -> launchCamera());
+        btnProfilePic.setOnClickListener(view -> onPickPhoto());
     }
 
     private void signup() {
@@ -127,6 +128,19 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
+    private void onPickPhoto() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        photoFile = getPhotoFileUri(photoFileName);
+
+        Uri fileProvider = FileProvider.getUriForFile(SignUpActivity.this, "com.codepath.fileprovider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, PICK_PHOTO_CODE);
+        }
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -161,6 +175,18 @@ public class SignUpActivity extends AppCompatActivity {
                     btnAddPhoto.setText("Add photo");
                 }
 
+            }
+        } else if (requestCode == PICK_PHOTO_CODE) {
+            if (data != null) {
+                Uri photoUri = data.getData();
+                Bitmap selectedImage = null;
+                try {
+                    selectedImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ivProfilePic.setImageBitmap(selectedImage);
             }
         }
     }
