@@ -437,7 +437,19 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // TODO: depending on move hierarchy, we may need the getNearby... methods to return set/list
+    // helper method for getting prefs from user and adding them as params and to the list of total pref
+    private void addToPref(List<String> totalPref, JSONArray prefList, RequestParams params) {
+        try {
+            for (int i = 0; i < prefList.length(); i++) {
+                String pref = prefList.get(i).toString();
+                params.put("keyword", pref);
+                totalPref.add(pref);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     private void getNearbyEvents(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
         checkForPostalCode();
@@ -455,16 +467,7 @@ public class HomeFragment extends Fragment {
                 if (totalPref.size() == 0) {
                     JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
                     if (currUserPrefList != null) {
-                        try {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                String pref = currUserPrefList.get(i).toString();
-                                params.put("keyword", pref);
-                                totalPref.add(pref);
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
+                        addToPref(totalPref, currUserPrefList, params);
                     }
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
@@ -476,21 +479,8 @@ public class HomeFragment extends Fragment {
                     JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
                     JSONArray friendPrefList = friend.getJSONArray("eventPrefList");
                     if (currUserPrefList != null || friendPrefList != null) {
-                        // TODO: modify this based on our workaround for single keyword problem
-                        try {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                String pref = currUserPrefList.get(i).toString();
-                                params.put("keyword", pref);
-                                totalPref.add(pref);
-                            }
-                            for (int i = 0; i < friendPrefList.length(); i++) {
-                                String pref = friendPrefList.get(i).toString();
-                                totalPref.add(pref);
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
+                        addToPref(totalPref, currUserPrefList, params);
+                        addToPref(totalPref, friendPrefList, params);
                     }
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
@@ -563,28 +553,17 @@ public class HomeFragment extends Fragment {
 
         params.put("key", getString(R.string.api_key));
 
-
         if (!isRisky) {
             if (!isFriendMove) {
                 if (totalPref.size() == 0) {
                     JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
                     if (currUserPrefList != null) {
-                        try {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                String pref = currUserPrefList.get(i).toString();
-                                params.put("keyword", pref);
-                                totalPref.add(pref);
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
+                        addToPref(totalPref, currUserPrefList, params);
                     }
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
                         String pref = totalPref.get(i);
                         params.put("keyword", pref);
-                        totalPref.add(pref);
                     }
                 }
             } else {
@@ -592,28 +571,17 @@ public class HomeFragment extends Fragment {
                     JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
                     JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
                     if (currUserPrefList != null || friendPrefList != null) {
-                        try {
                             for (int i = 0; i < currUserPrefList.length(); i++) {
-                                String pref = currUserPrefList.get(i).toString();
-                                params.put("keyword", pref);
-                                totalPref.add(pref);
+                                addToPref(totalPref, currUserPrefList, params);
                             }
                             for (int i = 0; i < friendPrefList.length(); i++) {
-                                String pref = friendPrefList.get(i).toString();
-                                params.put("keyword", pref);
-                                totalPref.add(pref);
-
+                                addToPref(totalPref, friendPrefList, params);
                             }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
                     }
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
                         String pref = totalPref.get(i);
                         params.put("keyword", pref);
-                        totalPref.add(pref);
                     }
                 }
             }
