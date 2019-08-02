@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,6 +14,12 @@ import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -45,7 +52,7 @@ import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
 import static com.hkim00.moves.util.ParseUtil.getParseQuery;
 
-public class MoveDetailsActivity extends AppCompatActivity {
+public class MoveDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final static String TAG = "MoveDetailsActivity";
 
@@ -53,6 +60,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private ImageView ivGroupNum, ivTime, ivPrice, ivSave, ivFavorite;
     private RatingBar moveRating;
     private Button btnChooseMove, btnFavorite, btnSave, btnAddToTrip;
+
+    private LinearLayout llButtons;
 
     private ParseUser currUser = ParseUser.getCurrentUser();
     private Move move;
@@ -75,6 +84,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         setupButtons();
 
         displayButtonStatus();
+
+
 
         lyftButton();
 
@@ -143,9 +154,26 @@ public class MoveDetailsActivity extends AppCompatActivity {
         ivFavorite = findViewById(R.id.ivFavorite);
         btnSave = findViewById(R.id.btnSave);
         ivSave = findViewById(R.id.ivSave);
-
         btnAddToTrip = findViewById(R.id.btnAddToTrip);
+        llButtons = findViewById(R.id.llButtons);
     }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        LatLng moveLatLng = new LatLng(move.lat, move.lng);
+        map.addMarker(new MarkerOptions().position(moveLatLng).title(move.name));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(moveLatLng, 15)); // second argument is controls how zoomed in map is
+    }
+
+    // map container is a frameLayout in activity_move
+    private void addMapFragment() {
+        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+        mapFragment.getMapAsync(this);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.map_container, mapFragment)
+                .commit();
+    }
+
 
     private void getFoodView() {
          tvMoveName.setText(move.name);
@@ -154,6 +182,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
              getFoodDetails();
              return;
          }
+
+        addMapFragment();
 
           String price = "";
           if (move.price_level < 0) {
@@ -235,14 +265,17 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getEventView() {
         tvMoveName.setText(move.name);
-        String id = move.id;
-
         //hide groupNum and Time tv & iv
         ivGroupNum.setVisibility(View.INVISIBLE);
         tvGroupNum.setVisibility(View.INVISIBLE);
 
-        // make call to Ticketmaster's event detail API
-        getEventDetails(id);
+        String id = move.id;
+
+        if (move.lat == null) {
+            getEventDetails(id);
+            return;
+        }
+
     }
 
     private void getEventDetails(String id) {
@@ -260,6 +293,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
                  String priceRange = getPriceRange(response);
                  tvTime.setText(startTime);
                  tvPrice.setText(priceRange);
+                try {
+                    move.lat = response.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
+                    move.lng = response.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
+                    addMapFragment();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -334,6 +374,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                     currObj.put("user", currUser);
                                     currObj.put("didComplete", true);
                                     currObj.put("count", 0);
+                                    currObj.put("lat", move.lat);
+                                    currObj.put("lng", move.lng);
                                     currObj.saveInBackground();
                                 } else { // the user has already completed the move
                                     for (int i = 0; i < objects.size(); i++) {
