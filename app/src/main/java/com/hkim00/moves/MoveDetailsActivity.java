@@ -13,12 +13,6 @@ import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -51,7 +45,7 @@ import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
 import static com.hkim00.moves.util.ParseUtil.getParseQuery;
 
-public class MoveDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MoveDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "MoveDetailsActivity";
 
@@ -81,8 +75,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         setupButtons();
 
         displayButtonStatus();
-
-        addMapFragment();
 
         lyftButton();
 
@@ -153,22 +145,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         ivSave = findViewById(R.id.ivSave);
 
         btnAddToTrip = findViewById(R.id.btnAddToTrip);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap map) {
-        LatLng moveLatLng = new LatLng(move.lat, move.lng);
-        map.addMarker(new MarkerOptions().position(moveLatLng).title(move.name));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(moveLatLng, 15)); // second argument is controls how zoomed in map is
-    }
-
-    // map container is a frameLayout in activity_move
-    private void addMapFragment() {
-        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
-        mapFragment.getMapAsync(this);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.map_container, mapFragment)
-                .commit();
     }
 
     private void getFoodView() {
