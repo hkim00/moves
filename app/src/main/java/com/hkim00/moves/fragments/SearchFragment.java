@@ -1,6 +1,7 @@
 package com.hkim00.moves.fragments;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +18,28 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.hkim00.moves.HomeActivity;
+import com.hkim00.moves.R;
+import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.UserLocation;
+import com.hkim00.moves.specs.MoveItem;
 import com.hkim00.moves.specs.SearchComponent;
-import com.hkim00.moves.specs.SearchComponentSpec;
 import com.hkim00.moves.specs.UserItem;
-import com.parse.FindCallback;
-import com.parse.ParseException;
+import com.hkim00.moves.util.StatusCodeHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class SearchFragment extends Fragment {
     private final static String TAG = "SearchFragment";
@@ -36,6 +48,12 @@ public class SearchFragment extends Fragment {
 
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
+
+    private String searchText;
+    private boolean isTimerRunning;
+    private UserLocation location;
+
+    String type;
 
 
     @Nullable
@@ -48,6 +66,11 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        searchText = "";
+        isTimerRunning = false;
+        type = "food";
+
+        location = UserLocation.getCurrentLocation(getContext());
     }
 
 
@@ -61,10 +84,37 @@ public class SearchFragment extends Fragment {
         final Component component = SearchComponent.create(componentContext)
                 .hint("Search username")
                 .binder(recyclerBinder)
-                .listener(username -> findUsers(username))
+                .listener(text -> searchTextUpdated(text))
                 .build();
 
         return LithoView.create(componentContext, component);
+    }
+
+    private void searchTextUpdated(String text) {
+        searchText = text.toLowerCase().trim();
+
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            startTimer();
+        }
+    }
+
+    private void startTimer() {
+        new CountDownTimer(500, 500) { //0.5 seconds
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                if (type.equals("food")) {
+                    findRestaurants(searchText);
+                } else {
+                    findUsers(searchText);
+                }
+                isTimerRunning = false;
+            }
+        }.start();
     }
 
 
@@ -88,10 +138,10 @@ public class SearchFragment extends Fragment {
                     }
                 }
 
-                updateContent(users);
+                updateUsers(users);
 
             } else {
-                Log.e(TAG, "Error finding users with usernames containing: " + username);
+                Log.e(TAG, "Error finding users with usernames' containing: " + username);
                 e.printStackTrace();
                 Toast.makeText(getContext(), "Error finding users", Toast.LENGTH_SHORT).show();
             }
@@ -99,11 +149,75 @@ public class SearchFragment extends Fragment {
     }
 
 
-    private void updateContent(List<ParseUser> users) {
+    private void findRestaurants(String restaurant) {
+        if (restaurant.equals("")) {
+            recyclerBinder.removeRangeAt(0, recyclerBinder.getItemCount());
+            return;
+        }
+
+        //final String API_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
+        final String API_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
+
+        RequestParams params = new RequestParams();
+        params.put("key", getString(R.string.api_key));
+        params.put("query", searchText);
+        params.put("radius", 20000);
+        params.put("location", location.lat + "," + location.lng);
+
+
+        HomeActivity.client.get(API_URL, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                List<Move> moveResults = new ArrayList<>();
+                try {
+                     moveResults = Move.arrayFromJSONArray(response.getJSONArray("results"), "food");
+                } catch (
+                    JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+
+                updateMoves(moveResults);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                new StatusCodeHandler(TAG, statusCode);
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                new StatusCodeHandler(TAG, statusCode);
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                new StatusCodeHandler(TAG, statusCode);
+                throwable.printStackTrace();
+            }
+        });
+
+    }
+
+
+    private void updateUsers(List<ParseUser> users) {
         recyclerBinder.removeRangeAt(0, recyclerBinder.getItemCount());
 
         for (ParseUser user : users) {
             Component component = UserItem.create(componentContext).context(getContext()).user(user).isAddFriend(isAddFriend).build();
+            recyclerBinder.appendItem(component);
+        }
+    }
+
+    private void updateMoves(List<Move> moves) {
+        recyclerBinder.removeRangeAt(0, recyclerBinder.getItemCount());
+
+        for (Move move: moves) {
+            Component component = MoveItem.create(componentContext).move(move).build();
             recyclerBinder.appendItem(component);
         }
     }
