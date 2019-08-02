@@ -39,7 +39,7 @@ public class SignUpActivity extends AppCompatActivity {
             user.signUpInBackground(e -> {
                 if (e == null) {
                     Log.i("SignUpActivity", "Sign Up Worked!");
-                    Intent intent = new Intent(SignUpActivity.this, Intro1Activity.class);
+                    Intent intent = new Intent(SignUpActivity.this, Intro2Activity.class);
                     intent.putExtra("user", user);
                     startActivity(intent);
                     finish();
