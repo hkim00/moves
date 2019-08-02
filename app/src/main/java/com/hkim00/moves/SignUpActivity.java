@@ -21,6 +21,7 @@ import androidx.core.content.FileProvider;
 
 import com.hkim00.moves.util.BitmapScaler;
 import com.hkim00.moves.util.UncaughtExceptionHandler;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
@@ -85,6 +86,11 @@ public class SignUpActivity extends AppCompatActivity {
 
         user.signUpInBackground(e -> {
             if (e == null) {
+                if (photoFile != null || ivProfilePic.getDrawable() != null) {
+                    user.put("profilePhoto", new ParseFile(photoFile));
+                    user.saveInBackground();
+                }
+
                 Log.i(TAG, "Sign Up Worked!");
                 Intent intent = new Intent(SignUpActivity.this, Intro2Activity.class);
                 startActivity(intent);
@@ -108,7 +114,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public File getPhotoFileUri(String fileName) {
+    private File getPhotoFileUri(String fileName) {
         File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
@@ -152,11 +158,9 @@ public class SignUpActivity extends AppCompatActivity {
                 if (photoFile != null || ivProfilePic.getDrawable() != null) {
                     btnAddPhoto.setText("Replace Image");
                 } else {
-                    btnAddPhoto.setText("Camera");
+                    btnAddPhoto.setText("Add photo");
                 }
 
-            } else {
-                Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -165,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
     /*
      * Code rotate from CodePath
      */
-    public Bitmap rotateBitmapOrientation(String photoFilePath) {
+    private Bitmap rotateBitmapOrientation(String photoFilePath) {
         BitmapFactory.Options bounds = new BitmapFactory.Options();
         bounds.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(photoFilePath, bounds);
