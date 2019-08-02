@@ -1,10 +1,12 @@
 package com.hkim00.moves.fragments;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,10 +20,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.hkim00.moves.specs.SearchComponent;
-import com.hkim00.moves.specs.SearchComponentSpec;
 import com.hkim00.moves.specs.UserItem;
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -37,6 +36,9 @@ public class SearchFragment extends Fragment {
     private ComponentContext componentContext;
     private RecyclerBinder recyclerBinder;
 
+    private String searchText;
+    private boolean isTimerRunning;
+
 
     @Nullable
     @Override
@@ -48,6 +50,9 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        searchText = "";
+        isTimerRunning = false;
     }
 
 
@@ -61,10 +66,33 @@ public class SearchFragment extends Fragment {
         final Component component = SearchComponent.create(componentContext)
                 .hint("Search username")
                 .binder(recyclerBinder)
-                .listener(username -> findUsers(username))
+                .listener(text -> searchTextUpdated(text))
                 .build();
 
         return LithoView.create(componentContext, component);
+    }
+
+    private void searchTextUpdated(String text) {
+        searchText = text;
+
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            startTimer();
+        }
+    }
+
+    private void startTimer() {
+        new CountDownTimer(500, 500) { //0.5 seconds
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                findUsers(searchText);
+                isTimerRunning = false;
+            }
+        }.start();
     }
 
 
@@ -91,7 +119,7 @@ public class SearchFragment extends Fragment {
                 updateContent(users);
 
             } else {
-                Log.e(TAG, "Error finding users with usernames containing: " + username);
+                Log.e(TAG, "Error finding users with usernames' containing: " + username);
                 e.printStackTrace();
                 Toast.makeText(getContext(), "Error finding users", Toast.LENGTH_SHORT).show();
             }
