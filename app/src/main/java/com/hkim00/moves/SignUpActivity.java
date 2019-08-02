@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,10 +16,11 @@ public class SignUpActivity extends AppCompatActivity {
 
     private String TAG = "SignUpActivity";
 
+    private ImageView ivProfilePic;
     private Button btnGetSarted;
-    private EditText etUsername;
-    private EditText etPassword;
+    private EditText etUsername, etPassword;
     public ParseUser user = new ParseUser();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
