@@ -303,7 +303,12 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                  } else { // the user has already completed the move
                                      for (int i = 0; i < objects.size(); i++) {
                                          objects.get(i).put("didComplete", true);
-                                         objects.get(i).put("didSave", false); // user cannot save a move that has been done
+                                         objects.get(i).put("didSave", false);// user cannot save a move that has been done
+                                         Number count = objects.get(i).getNumber("count");
+                                         if (count != null) {
+                                             objects.get(i).put("count" , (count.intValue() + 1));
+                                         } else objects.get(i).put("count" , 1);
+
                                          ivSave.setImageResource(R.drawable.ufi_save);
                                          objects.get(i).saveInBackground();
                                      }
@@ -315,6 +320,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                          }
                      });
                  }
+
              }
          });
 
