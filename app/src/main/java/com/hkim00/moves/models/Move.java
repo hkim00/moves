@@ -57,8 +57,8 @@ public class Move {
     public static Move fromJSON(JSONObject jsonObject, String moveType) throws JSONException {
         Move move = new Move();
         move.name = jsonObject.getString("name");
-
         move.moveType = moveType;
+
         if (moveType.equals("food")) {
             move.id = jsonObject.getString("place_id");
             move.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
@@ -75,6 +75,7 @@ public class Move {
 
         else {
             move.id = jsonObject.getString("id");
+
             return move;
         }
     }
