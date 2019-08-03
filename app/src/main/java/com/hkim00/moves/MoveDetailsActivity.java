@@ -259,9 +259,9 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
     private void getEventView() {
         tvMoveName.setText(move.name);
-        //hide groupNum and Time tv & iv
         ivGroupNum.setVisibility(View.INVISIBLE);
         tvGroupNum.setVisibility(View.INVISIBLE);
+        moveRating.setVisibility(View.INVISIBLE);
 
         String id = move.id;
 
@@ -270,6 +270,8 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
             return;
         }
 
+        tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
+        addMapFragment();
     }
 
     private void getEventDetails(String id) {
@@ -290,9 +292,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                 try {
                     move.lat = response.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
                     move.lng = response.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
-                    addMapFragment();
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+
+                if (move.lat != null) {
+                    getEventView();
                 }
             }
 
