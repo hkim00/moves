@@ -19,7 +19,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
 
+import com.hkim00.moves.fragments.PhotoAlertDialogFragment;
 import com.hkim00.moves.util.BitmapScaler;
 import com.hkim00.moves.util.UncaughtExceptionHandler;
 import com.parse.ParseFile;
@@ -31,7 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialogFragment.PhotoDialogListener {
 
     private String TAG = "SignUpActivity";
     private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
@@ -77,8 +79,8 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void setupButtons() {
         btnGetSarted.setOnClickListener(view -> signup());
-        btnAddPhoto.setOnClickListener(view -> launchCamera());
-        btnProfilePic.setOnClickListener(view -> onPickPhoto());
+        btnAddPhoto.setOnClickListener(view -> showAlertDialog());
+        btnProfilePic.setOnClickListener(view -> showAlertDialog());
     }
 
     private void signup() {
@@ -101,6 +103,25 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void showAlertDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        PhotoAlertDialogFragment alertDialog = PhotoAlertDialogFragment.newInstance("Get photo from photo library or camera");
+        alertDialog.show(fm, "fragment_alert");
+    }
+
+
+    @Override
+    public void onFinishDialog(boolean fromCamera) {
+        if (fromCamera) {
+            launchCamera();
+        } else {
+            launchPhotoPicker();
+        }
+    }
+
+
 
     private void launchCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -128,7 +149,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    private void onPickPhoto() {
+    private void launchPhotoPicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoFile = getPhotoFileUri(photoFileName);
 
