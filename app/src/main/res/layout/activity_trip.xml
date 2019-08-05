@@ -38,7 +38,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvLocation"
         app:layout_constraintEnd_toEndOf="@+id/tvLocation"
-        app:layout_constraintStart_toStartOf="@+id/textView10"
+        app:layout_constraintStart_toStartOf="@+id/tvLocation"
         app:layout_constraintTop_toTopOf="@+id/tvLocation" />
 
     <TextView
@@ -71,7 +71,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvCalendar"
         app:layout_constraintEnd_toEndOf="@+id/tvCalendar"
-        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintStart_toStartOf="@+id/tvCalendar"
         app:layout_constraintTop_toTopOf="@+id/tvCalendar" />
 
     <EditText
@@ -94,13 +94,14 @@
         android:id="@+id/tvFood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Food"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/btnCalendar"
-        app:layout_constraintTop_toBottomOf="@+id/tvCalendar" />
+        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <Button
         android:id="@+id/btnFood"
@@ -113,16 +114,25 @@
         app:layout_constraintStart_toStartOf="@+id/tvFood"
         app:layout_constraintTop_toTopOf="@+id/tvFood" />
 
+    <View
+        android:id="@+id/vFoodView"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="#2196F3"
+        app:layout_constraintEnd_toEndOf="@+id/tvFood"
+        app:layout_constraintStart_toStartOf="@+id/tvFood"
+        app:layout_constraintTop_toBottomOf="@+id/tvFood" />
+
     <TextView
         android:id="@+id/tvEvents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:text="Events"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnFood"
         app:layout_constraintTop_toTopOf="@+id/tvFood" />
 
     <Button
@@ -135,15 +145,25 @@
         app:layout_constraintStart_toStartOf="@+id/tvEvents"
         app:layout_constraintTop_toTopOf="@+id/tvEvents" />
 
+    <View
+        android:id="@+id/vEventsView"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:background="#2196F3"
+        app:layout_constraintEnd_toEndOf="@+id/tvEvents"
+        app:layout_constraintStart_toStartOf="@+id/tvEvents"
+        app:layout_constraintTop_toBottomOf="@+id/tvEvents" />
+
     <TextView
         android:id="@+id/tvSelected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:text="Selected"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/btnCalendar"
+        app:layout_constraintStart_toEndOf="@+id/tvEvents"
         app:layout_constraintTop_toTopOf="@+id/tvEvents" />
 
     <Button
@@ -155,24 +175,6 @@
         app:layout_constraintEnd_toEndOf="@+id/tvSelected"
         app:layout_constraintStart_toStartOf="@+id/tvSelected"
         app:layout_constraintTop_toTopOf="@+id/tvSelected" />
-
-    <View
-        android:id="@+id/vFoodView"
-        android:layout_width="0dp"
-        android:layout_height="3dp"
-        android:background="#2196F3"
-        app:layout_constraintEnd_toEndOf="@+id/tvFood"
-        app:layout_constraintStart_toStartOf="@+id/tvFood"
-        app:layout_constraintTop_toBottomOf="@+id/tvFood" />
-
-    <View
-        android:id="@+id/vEventsView"
-        android:layout_width="0dp"
-        android:layout_height="4dp"
-        android:background="#2196F3"
-        app:layout_constraintEnd_toEndOf="@+id/tvEvents"
-        app:layout_constraintStart_toStartOf="@+id/tvEvents"
-        app:layout_constraintTop_toBottomOf="@+id/tvEvents" />
 
     <View
         android:id="@+id/vSelectedView"
@@ -217,5 +219,35 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/etTripName"
         app:layout_constraintStart_toStartOf="@+id/etTripName" />
+
+    <TextView
+        android:id="@+id/tvFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Friends"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/btnCalendar"
+        app:layout_constraintTop_toTopOf="@+id/tvSelected" />
+
+    <Button
+        android:id="@+id/btnFriends"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/vFriendsView"
+        app:layout_constraintEnd_toEndOf="@+id/tvFriends"
+        app:layout_constraintStart_toStartOf="@+id/tvFriends"
+        app:layout_constraintTop_toTopOf="@+id/tvFriends" />
+
+    <View
+        android:id="@+id/vFriendsView"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:background="#2196F3"
+        app:layout_constraintEnd_toEndOf="@+id/tvFriends"
+        app:layout_constraintStart_toStartOf="@+id/tvFriends"
+        app:layout_constraintTop_toBottomOf="@+id/tvFriends" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
