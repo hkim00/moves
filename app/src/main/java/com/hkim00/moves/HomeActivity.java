@@ -53,69 +53,66 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupNavBar() {
-        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
-                Fragment fragment = new HomeFragment();
+        bottomNavigation.setOnNavigationItemSelectedListener(menuItem -> {
+            FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
+            Fragment fragment = new HomeFragment();
 
 
-                switch (menuItem.getItemId()) {
-                    case R.id.action_history:
-                        fragment = new HistoryFragment();
+            switch (menuItem.getItemId()) {
+                case R.id.action_history:
+                    fragment = new HistoryFragment();
 
-                        if (currentFrag != HISTORY_TAG) {
+                    if (currentFrag != HISTORY_TAG) {
+                        fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                    }
+
+                    currentFrag = HISTORY_TAG;
+                    break;
+
+                case R.id.action_search:
+                    fragment = new SearchFragment();
+                    ((SearchFragment) fragment).isAddFriend = false;
+                    if (currentFrag != SEARCH_TAG) {
+                        if (currentFrag < SEARCH_TAG) {
+                            fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        } else {
                             fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
                         }
+                    }
 
-                        currentFrag = HISTORY_TAG;
-                        break;
+                    currentFrag = SEARCH_TAG;
+                    break;
 
-                    case R.id.action_search:
-                        fragment = new SearchFragment();
-                        ((SearchFragment) fragment).isAddFriend = false;
-                        if (currentFrag != SEARCH_TAG) {
-                            if (currentFrag < SEARCH_TAG) {
-                                fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-                            } else {
-                                fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-                            }
-                        }
+                case R.id.action_home:
+                    fragment = new HomeFragment();
 
-                        currentFrag = SEARCH_TAG;
-                        break;
-
-                    case R.id.action_home:
-                        fragment = new HomeFragment();
-
-                        if (currentFrag != HOME_TAG) {
-                            if (currentFrag < HOME_TAG) {
-                                fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-                            } else {
-                                fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-                            }
-                        }
-
-                        currentFrag = HOME_TAG;
-                        break;
-
-                    case R.id.action_profile:
-                        fragment = new ProfileFragment();
-
-                        if (currentFrag != PROFILE_TAG) {
+                    if (currentFrag != HOME_TAG) {
+                        if (currentFrag < HOME_TAG) {
                             fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                        } else {
+                            fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
                         }
+                    }
 
-                        currentFrag = PROFILE_TAG;
-                    default:
-                        break;
-                }
+                    currentFrag = HOME_TAG;
+                    break;
 
-                fts.replace(R.id.flContainer, fragment, "fragment");
-                fts.commit();
+                case R.id.action_profile:
+                    fragment = new ProfileFragment();
 
-                return true;
+                    if (currentFrag != PROFILE_TAG) {
+                        fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
+
+                    currentFrag = PROFILE_TAG;
+                default:
+                    break;
             }
+
+            fts.replace(R.id.flContainer, fragment, "fragment");
+            fts.commit();
+
+            return true;
         });
 
         bottomNavigation.setSelectedItemId(R.id.action_home);

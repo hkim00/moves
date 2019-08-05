@@ -26,9 +26,11 @@
         android:layout_height="107dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/profilepic"
         app:layout_constraintStart_toStartOf="@id/ivOutline"
-        app:layout_constraintTop_toTopOf="@id/ivOutline" />
+        app:layout_constraintTop_toTopOf="@id/ivOutline"
+        tools:srcCompat="@drawable/profilepic" />
 
     <TextView
         android:id="@+id/tvName"

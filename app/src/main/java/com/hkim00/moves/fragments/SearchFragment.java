@@ -68,7 +68,7 @@ public class SearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         searchText = "";
         isTimerRunning = false;
-        type = "events";
+        type = "users";
 
         location = UserLocation.getCurrentLocation(getContext());
     }
