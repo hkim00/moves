@@ -24,6 +24,12 @@ public class Move {
 
     public Move() {}
 
+    @Override
+    public boolean equals(Object obj) {
+        return (((Move) obj).id.equals(this.id)) ? true : false;
+    }
+
+
     public static Move fromParseObject(ParseObject parseObject) {
         Move move = new Move();
 
