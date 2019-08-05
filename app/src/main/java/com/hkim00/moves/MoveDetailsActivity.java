@@ -68,6 +68,9 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     private Move move;
     private boolean isTrip;
 
+    GoogleMap mMap;
+    UiSettings mUiSettings;
+
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
 
 
@@ -152,6 +155,10 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onMapReady(GoogleMap map) {
+        mMap = map;
+        mUiSettings = mMap.getUiSettings();
+        mUiSettings.setZoomControlsEnabled(true);
+
         LatLng moveLatLng = new LatLng(move.lat, move.lng);
         map.addMarker(new MarkerOptions().position(moveLatLng).title(move.name));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(moveLatLng, 15)); // second argument controls how zoomed in map is
