@@ -366,7 +366,7 @@ public class HomeFragment extends Fragment {
     };
 
     private void typeMoveSelected() {
-        if (location.lat.equals(null) && location.lng.equals(null)) {
+        if (location.lat == null && location.lng == null) {
             Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
             return;
         }
