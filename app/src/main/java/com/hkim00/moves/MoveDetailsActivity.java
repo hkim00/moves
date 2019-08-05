@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hkim00.moves.models.Event;
@@ -83,10 +84,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
         displayButtonStatus();
 
-
-
         lyftButton();
-
     }
 
     @Override
@@ -156,10 +154,10 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     public void onMapReady(GoogleMap map) {
         LatLng moveLatLng = new LatLng(move.lat, move.lng);
         map.addMarker(new MarkerOptions().position(moveLatLng).title(move.name));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(moveLatLng, 15)); // second argument is controls how zoomed in map is
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(moveLatLng, 15)); // second argument controls how zoomed in map is
     }
 
-    // map container is a frameLayout in activity_move
+    // map container is a frameLayout in activity_move_details
     private void addMapFragment() {
         SupportMapFragment mapFragment = SupportMapFragment.newInstance();
         mapFragment.getMapAsync(this);
@@ -167,7 +165,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                 .replace(R.id.map_container, mapFragment)
                 .commit();
     }
-
 
     private void getFoodView() {
          tvMoveName.setText(move.name);
@@ -177,6 +174,8 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
              return;
          }
 
+        // add map fragment only after necessary information obtained from getFoodDetails,
+        // since map fragment requires lat and long
         addMapFragment();
 
           String price = "";
@@ -271,6 +270,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         }
 
         tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
+        // add map fragment only after necessary information obtained from getEventDetails(id)
         addMapFragment();
     }
 
