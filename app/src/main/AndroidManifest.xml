@@ -21,12 +21,15 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".CalendarActivity"></activity>
         <activity android:name=".TripActivity" />
+
         <activity android:name=".LocationActivity" />
         <activity android:name=".MovesActivity" />
         <activity android:name=".MoveDetailsActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".SignUpActivity" />
+
+        <activity android:name=".Intro1Activity" />
         <activity android:name=".Intro2Activity" />
         <activity android:name=".Intro3Activity" />
 

@@ -21,6 +21,7 @@ import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
@@ -32,7 +33,9 @@ public class MoveItemSpec {
     static Component onCreateLayout(ComponentContext c,
                                     @Prop Move move) {
 
+
         String name = move.name;
+
 
         return Column.create(c)
                 .paddingDip(YogaEdge.ALL, 15)

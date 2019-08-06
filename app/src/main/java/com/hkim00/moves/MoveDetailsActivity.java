@@ -14,6 +14,8 @@ import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import com.hkim00.moves.models.Cuisine;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,8 +23,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
@@ -74,6 +78,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
 
 
+    ParseUser currUser;
+    Restaurant restaurant;
+    Event event;
+    MoveText prefCuisine;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +98,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         displayButtonStatus();
 
         lyftButton();
+
     }
 
     @Override
@@ -115,8 +126,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
         if (move.moveType.equals("food")) {
             getFoodView();
-        } else {
+        } else if(move.getMoveType() == Move.EVENT) {
             getEventView();
+        } else {
+            prefCuisine = (MoveText) move;
+            Toast.makeText(getApplicationContext(), prefCuisine.Cuisine, Toast.LENGTH_SHORT).show();
+            return;
         }
 
         isTrip = getIntent().getBooleanExtra("isTrip", false);
@@ -281,6 +296,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         addMapFragment();
     }
 
+
     private void getEventDetails(String id) {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
         String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
@@ -328,6 +344,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
+
     private void displayButtonStatus() {
         if (move != null) {
             ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
@@ -354,6 +371,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void setupButtons() {
+
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -369,6 +387,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                     currUser.addAllUnique("eventsCompleted", Arrays.asList(move.name));
                                 }
                                 currUser.saveInBackground();
+
                                 if (objects.size() == 0) { // occurs if the user has not ever completed this move
                                     ParseObject currObj = new ParseObject("Move");
                                     currObj.put("name", move.name);
@@ -376,6 +395,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                     currObj.put("moveType", (move.moveType));
                                     currObj.put("user", currUser);
                                     currObj.put("didComplete", true);
+                                    currObj.put("cuisine", Cuisine.moveToType.get(restaurant.name));
                                     currObj.put("count", 0);
                                     currObj.saveInBackground();
                                 } else { // the user has already completed the move
@@ -388,13 +408,45 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                 }
                                 Log.d("Move", "Move saved in History Successfully");
                                 Toast.makeText(MoveDetailsActivity.this, "Saved to History!", Toast.LENGTH_SHORT).show();
+
                             } else {
                                 Log.d("Move", "Error: saving move to history");
                             }
                         }
                     });
                 }
+
+
+                else if (event != null) {
+                    ParseQuery didCompleteQuery = ParseUtil.getParseQuery("Event", event);
+                    didCompleteQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+
+                                if (e == null) {
+                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(event.name));
+                                    currUser.saveInBackground();
+
+                                    ParseObject currEvent = new ParseObject("Event");
+                                    currEvent.put("name", event.name);
+                                    currEvent.put("user", currUser);
+                                    currEvent.put("didComplete", true);
+                                    currEvent.saveInBackground();
+
+                                    Log.d("Move", "Move Saved in History Successfully");
+                                } else {
+                                    Log.d("Move", "Error: saving move to history");
+                                }
+
+                        }
+                    });
+                }
+                Toast.makeText(getApplicationContext(), "Added to History", Toast.LENGTH_SHORT).show();
+
+
             }
+
+
         });
 
         btnSave.setOnClickListener(view -> {
@@ -417,6 +469,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                 ivSave.setImageResource(R.drawable.ufi_save_active);
                                 objects.get(i).saveInBackground();
                             }
+
 
                         }
                     } else { // user is saving a move that has not been completed ever before

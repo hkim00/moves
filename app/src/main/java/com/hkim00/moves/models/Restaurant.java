@@ -19,8 +19,10 @@ import java.util.List;
 @Parcel
 public class Restaurant extends Move {
 
-    public String name, id, text;
+
+    public String name, id, text, cuisine;
     public Integer price_level, count;
+
     public Double lat, lng, rating;
     public Boolean didSave, didFavorite, didComplete;
 
@@ -60,6 +62,7 @@ public class Restaurant extends Move {
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("place_id");
 
+
         restaurant.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
 
         JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
@@ -69,6 +72,8 @@ public class Restaurant extends Move {
 
         restaurant.rating = (jsonObject.has("rating")) ? jsonObject.getDouble("rating") : -1;
 
+
+
         return restaurant;
     }
 
@@ -77,6 +82,7 @@ public class Restaurant extends Move {
 
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("placeId");
+        restaurant.cuisine = parseObject.getString("cuisine");
 
         restaurant.didSave = parseObject.getBoolean("didSave");
         restaurant.didFavorite = parseObject.getBoolean("didFavorite");

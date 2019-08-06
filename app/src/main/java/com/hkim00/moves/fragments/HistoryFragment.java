@@ -1,5 +1,10 @@
 package com.hkim00.moves.fragments;
 
+
+import android.content.Context;
+import android.content.pm.ComponentInfo;
+import android.database.Cursor;
+
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -22,6 +27,14 @@ import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
+
+import com.hkim00.moves.HomeActivity;
+import com.hkim00.moves.R;
+import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.models.Cuisine;
+import com.hkim00.moves.models.Event;
+
+
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.specs.MoveItem;
 import com.parse.FindCallback;
@@ -38,9 +51,10 @@ public class HistoryFragment extends Fragment {
 
     public final static String TAG = "HistoryFragment";
 
-    private List<Move> pastMoves;
-    private ComponentContext componentContext;
-    private RecyclerBinder recyclerBinder;
+    private static List<Move> pastMoves;
+    private static ComponentContext componentContext;
+    private static RecyclerBinder recyclerBinder;
+    private static Context context;
 
 
     @Nullable
@@ -54,6 +68,7 @@ public class HistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getHistory();
+
     }
 
 
@@ -86,6 +101,7 @@ public class HistoryFragment extends Fragment {
 
         return LithoView.create(componentContext, component);
     }
+
 
 
     private void getHistory() {

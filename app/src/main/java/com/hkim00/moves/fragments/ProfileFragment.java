@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.hkim00.moves.LogInActivity;
+
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Move;
@@ -101,8 +102,9 @@ public class ProfileFragment extends Fragment {
         favMoves = new ArrayList<>();
         moves = new ArrayList<>();
 
-        movesAdapter = new MoveAdapter(getContext(), moves);
+        MovesAdapter = new MoveAdapter(getContext(), moves);
         rvMoves.setAdapter(movesAdapter);
+
     }
 
     private void getMoveLists(String listType) {

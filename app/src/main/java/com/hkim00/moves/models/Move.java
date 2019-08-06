@@ -2,7 +2,9 @@ package com.hkim00.moves.models;
 
 import android.content.Context;
 
+
 import com.parse.ParseObject;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;

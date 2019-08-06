@@ -90,6 +90,7 @@ public class MoveCategoriesHelper {
     }
 
 
+
     public static List<String> JSONArrayToList(JSONArray jsonArray) {
 
         List<String> stringList = new ArrayList<String>();
@@ -132,5 +133,5 @@ public class MoveCategoriesHelper {
 
     public static int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
-    }
+
 }
