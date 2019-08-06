@@ -37,6 +37,7 @@ import com.facebook.yoga.YogaEdge;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -73,6 +74,7 @@ public class HistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         getHistory();
+
     }
 
 
@@ -117,6 +119,9 @@ public class HistoryFragment extends Fragment {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
+                    for(int i =0; i<objects.size(); i++){
+                        Cuisine.getMostPref(objects.get(i).getString("cuisine"));
+                    }
                     List<Move> moves = Restaurant.arrayFromParseObjects(objects);
                     pastMoves.addAll(moves);
 

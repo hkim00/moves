@@ -3,12 +3,14 @@ package com.hkim00.moves;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.specs.MoveSection;
 
@@ -21,10 +23,13 @@ public class MovesActivity extends AppCompatActivity {
 
     List<Move> moves;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moves);
+
 
         moves = new ArrayList<>();
         moves.addAll(Parcels.unwrap(getIntent().getParcelableExtra("moves")));

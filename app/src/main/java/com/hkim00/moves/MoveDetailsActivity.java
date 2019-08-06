@@ -13,6 +13,7 @@ import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -268,6 +269,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                                 currRestaurant.put("moveType", "food");
                                 currRestaurant.put("user", ParseUser.getCurrentUser());
                                 currRestaurant.put("didComplete", true);
+                                currRestaurant.put("cuisine", Cuisine.moveToType.get(restaurant.name));
                                 currRestaurant.saveInBackground();
 
                                 Log.d("Move", "Move Saved in History Successfully");

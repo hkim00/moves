@@ -26,13 +26,13 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 
+import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
-import com.hkim00.moves.util.ParseUtil;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -40,11 +40,8 @@ import com.loopj.android.http.RequestParams;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-
-import com.parse.Parse;
 
 import com.parse.ParseUser;
 
@@ -54,10 +51,8 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
@@ -79,6 +74,7 @@ public class HomeFragment extends Fragment {
     private int priceLevel;
     private List<Move> moveResults;
     private UserLocation location;
+    private int count;
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
@@ -517,14 +513,14 @@ public class HomeFragment extends Fragment {
                             Event event = Event.fromJSON(events.getJSONObject(i));
                             moveResults.add(event);
                         }
-                        goToMovesActivity(moveResults);
+                        gotToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
                         Log.e(TAG, "Error getting events");
                         e.printStackTrace();
                     }
                 } else {
-                    goToMovesActivity(moveResults);
+                    gotToMovesActivity(moveResults);
                 }
             }
 
@@ -549,6 +545,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+
+        moveResults.clear();
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
@@ -567,14 +565,13 @@ public class HomeFragment extends Fragment {
         params.put("key", getString(R.string.api_key));
 
         List<String> foodPrefList =  currUser.getList("foodPrefList");
+
         for (String pref : foodPrefList) {
             params.put("keyword", pref);
             HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
-
-                    moveResults.clear();
 
                     JSONArray results;
                     try {
@@ -583,6 +580,9 @@ public class HomeFragment extends Fragment {
 
                         for (int i = 0; i < results.length(); i++) {
                             Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
+
+
+
                             ParseQuery<ParseObject> getResults = ParseQuery.getQuery("Move");
                             getResults.whereEqualTo("name", restaurant.name);
                             getResults.whereEqualTo("moveType", moveType);
@@ -591,22 +591,22 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void done(List<ParseObject> objects, ParseException e) {
                                     for (int i = 0; i < objects.size(); i++) {
-                                        if (moveType == "Restaurant") {
+                                        if (moveType == "food") {
                                             objects.get(i).put("cuisine", pref);
                                             objects.get(i).saveInBackground();
+
                                         }
-                                        else {
-                                            objects.get(i).put("eventType", pref);
-                                            objects.get(i).saveInBackground();
-                                        }
+
                                     }
                                 }
                             });
+
                             moveResults.add(restaurant);
+
                         }
 
+                        gotToMovesActivity(moveResults);
 
-                        goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
                         Log.e(TAG, e.getMessage());
@@ -635,84 +635,13 @@ public class HomeFragment extends Fragment {
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
+
             });
 
 
         }
+
     }
-        /*
-        if (!isRisky) {
-            if (!isFriendMove) {
-                if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
-                    if (currUserPrefList != null) {
-                        try {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                String pref = currUserPrefList.get(i).toString();
-                                params.put("keyword", pref);
-                                totalPref.add(pref);
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        String pref = totalPref.get(i);
-                        params.put("keyword", pref);
-                        totalPref.add(pref);
-                    }
-                }
-            } else {
-                if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
-                    JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
-                    if (currUserPrefList != null || friendPrefList != null) {
-                        try {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                String pref = currUserPrefList.get(i).toString();
-                                params.put("keyword", pref);
-
-                                ParseQuery<ParseObject> getResults = ParseQuery.getQuery("Move");
-                                getResults.whereEqualTo("moveType", moveType);
-                                getResults.whereEqualTo("user", currUser);
-                                getResults.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(List<ParseObject> objects, ParseException e) {
-                                        for (int i = 0; i < objects.size(); i++) {
-                                            objects.get(i).put("cuisine", pref);
-                                            objects.get(i).saveInBackground();
-                                        }
-                                    }
-                                });
-
-                                totalPref.add(pref);
-                            }
-                            for (int i = 0; i < friendPrefList.length(); i++) {
-                                String pref = friendPrefList.get(i).toString();
-                                params.put("keyword", pref);
-
-                                totalPref.add(pref);
-
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        String pref = totalPref.get(i);
-                        params.put("keyword", pref);
-                        totalPref.add(pref);
-                    }
-                }
-            }
-        }
-        */
-
-
 
 
 
@@ -720,11 +649,12 @@ public class HomeFragment extends Fragment {
         return (int) (miles/0.000621317);
     }
 
-    private void goToMovesActivity(List<Move> moves) {
-        Intent intent = new Intent(getContext(), MovesActivity.class);
-        intent.putExtra("moves", Parcels.wrap(moves));
-        startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    private void gotToMovesActivity(List<Move> moves) {
+            Intent intent = new Intent(getContext(), MovesActivity.class);
+            intent.putExtra("moves", Parcels.wrap(moves));
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+
     }
 
     @Override
@@ -738,27 +668,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-/*
-    private void CreateMoveList() {
-        Map<String, Integer> PrefDict = new HashMap<String, Integer>();
-        ArrayList<Map<String, Integer>> chooseMove = new ArrayList();
-
-        //get user's pref list
-        MoveCategoriesHelper helper = new MoveCategoriesHelper();
-        List<String> foodPrefList =  MoveCategoriesHelper.JSONArrayToList(currUser.getJSONArray("foodPrefList"));
-        if (foodPrefList != null) {
-            for (String pref: foodPrefList) {
-                if (!PrefDict.containsKey(pref)) {
-                    PrefDict.put(pref, 0);
-                }
-            }
-       }
-        //get user's history and create String list
-        List<Move> pastMoves = HistoryFragment.getHistory();
-
-    }
-    */
 
     private JSONArray getResults(RequestParams params) {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
@@ -779,8 +688,4 @@ public class HomeFragment extends Fragment {
         });
         return newResults;
     }
-
-    //make a cuisine model (holds cuisine name, list of moves (results), int for cuisine count)
-
-
 }
