@@ -49,8 +49,8 @@ public class TripActivity extends AppCompatActivity {
 
 
     private EditText etTrip;
-    private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected, tvFriends;
-    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave, btnFriends;
+    private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected, tvFriends, tvSelectFriends;
+    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave, btnFriends, btnSelectFriends;
     private View vFoodView, vEventsView, vSelectedView, vFriendsView;
 
     private ProgressBar pb;
@@ -98,6 +98,8 @@ public class TripActivity extends AppCompatActivity {
         btnLocation = findViewById(R.id.btnLocation);
         tvCalendar = findViewById(R.id.tvCalendar);
         btnCalendar = findViewById(R.id.btnCalendar);
+        tvSelectFriends = findViewById(R.id.tvSelectFriends);
+        btnSelectFriends = findViewById(R.id.btnSelectFriends);
 
         tvFood = findViewById(R.id.tvFood);
         tvEvents = findViewById(R.id.tvEvents);
@@ -143,8 +145,8 @@ public class TripActivity extends AppCompatActivity {
 
     private void setupButtons() {
         btnLocation.setOnClickListener(view -> goToLocationActivity());
-
         btnCalendar.setOnClickListener(view -> goToCalendarActivity());
+        btnSelectFriends.setOnClickListener(view -> goToSelectUsersActivity());
 
         btnFood.setOnClickListener(view -> toggleSection("food"));
         btnEvents.setOnClickListener(view -> toggleSection("events"));
@@ -197,6 +199,8 @@ public class TripActivity extends AppCompatActivity {
         vFriendsView.setVisibility(View.INVISIBLE);
 
         didCheckSavedSelected = false;
+
+        tvSelectFriends.setTextColor(getResources().getColor(R.color.selected_blue));
 
         if (getIntent().hasExtra("trip")) {
             currentTrip = Parcels.unwrap(getIntent().getParcelableExtra("trip"));
@@ -284,6 +288,12 @@ public class TripActivity extends AppCompatActivity {
             toggleMovesView(true);
             getNearbyRestaurants();
         }
+    }
+
+    private void goToSelectUsersActivity() {
+        Intent intent = new Intent(this, SelectUsersActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 
 
@@ -474,36 +484,6 @@ public class TripActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
-    }
-
-
-    private void getFriends() {
-        ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
-        friendQuery.findInBackground(((objects, e) -> {
-            if (e == null) {
-
-            } else {
-                Toast.makeText(getApplicationContext(), "error getting friends", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, e.getMessage());
-                e.printStackTrace();
-            }
-        }));
-    }
-
-    private List<ParseQuery<ParseObject>> getSenderOrReceiverQueries() {
-        ParseQuery<ParseObject> senderQuery = ParseQuery.getQuery("Friend");
-        senderQuery.whereEqualTo("sender", ParseUser.getCurrentUser());
-        senderQuery.whereEqualTo("isPending", false);
-
-        ParseQuery<ParseObject> receiverQuery = ParseQuery.getQuery("Friend");
-        receiverQuery.whereEqualTo("receiver", ParseUser.getCurrentUser());
-        receiverQuery.whereEqualTo("isPending", false);
-
-        List<ParseQuery<ParseObject>> friendQueries = new ArrayList<>();
-        friendQueries.add(senderQuery);
-        friendQueries.add(receiverQuery);
-
-        return friendQueries;
     }
 
 

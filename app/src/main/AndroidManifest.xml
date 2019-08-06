@@ -19,7 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CalendarActivity"></activity>
+        <activity android:name=".SelectUsersActivity"></activity>
+        <activity android:name=".CalendarActivity" />
         <activity android:name=".TripActivity" />
         <activity android:name=".LocationActivity" />
         <activity android:name=".MovesActivity" />
