@@ -62,7 +62,8 @@ public class TripActivity extends AppCompatActivity {
     public static List<CalendarDay> dates;
     private List<Move> foodMoves, eventMoves, moves;
     public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
-    private List<ParseUser> friends, selectedFriends;
+
+    public static List<ParseUser> selectedFriends;
     private List<String> selectedFriendIds;
 
     private List<ParseObject> serverMoves;
@@ -133,7 +134,6 @@ public class TripActivity extends AppCompatActivity {
         selectedMoves = new ArrayList<>();
         newSelectedMoves = new ArrayList<>();
         deleteFromServerMoves = new ArrayList<>();
-        friends = new ArrayList<>();
         selectedFriends = new ArrayList<>();
 
         serverMoves = new ArrayList<>();

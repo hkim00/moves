@@ -58,15 +58,16 @@ public class SelectUsersActivity extends AppCompatActivity {
         ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
         friendQuery.include("receiver");
         friendQuery.include("sender");
+        friendQuery.addDescendingOrder("createdAt");
         friendQuery.findInBackground(((objects, e) -> {
             if (e == null) {
                 for (int i = 0; i < objects.size(); i++) {
                     ParseUser sender = objects.get(i).getParseUser("sender");
                     ParseUser receiver = objects.get(i).getParseUser("receiver");
 
-                    if (receiver.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                    if (receiver == ParseUser.getCurrentUser() && !checkIfInSelectedFriends(sender)) {
                         users.add(sender);
-                    } else {
+                    } else if (!checkIfInSelectedFriends(receiver)) {
                         users.add(receiver);
                     }
                 }
@@ -96,4 +97,16 @@ public class SelectUsersActivity extends AppCompatActivity {
         return friendQueries;
     }
 
+    private boolean checkIfInSelectedFriends(ParseUser user) {
+        List<ParseUser> selectedFriends = TripActivity.selectedFriends;
+
+        for (int i = 0; i < selectedFriends.size(); i++) {
+            ParseUser friend = selectedFriends.get(i);
+            if (friend.getObjectId().equals(user.getObjectId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

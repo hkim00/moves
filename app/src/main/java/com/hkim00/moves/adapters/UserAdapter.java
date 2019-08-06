@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.hkim00.moves.R;
+import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.models.Trip;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -41,8 +43,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull UserAdapter.ViewHolder holder, int position) {
         ParseUser user = users.get(position);
-        holder.bind(user);
         holder.user = user;
+        holder.bind(user);
     }
 
 
@@ -52,8 +54,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView ivProfilePic;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView ivProfilePic, ivCheckmark;
         private TextView tvUsername;
         public ParseUser user;
 
@@ -61,11 +63,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             super(itemView);
 
             ivProfilePic = itemView.findViewById(R.id.ivProfilePic);
+            ivCheckmark = itemView.findViewById(R.id.ivCheckmark);
             tvUsername = itemView.findViewById(R.id.tvUsername);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            toggleCheckmark();
         }
 
         public void bind(ParseUser user) {
             tvUsername.setText(user.getUsername());
+
+            ivCheckmark.setVisibility(View.INVISIBLE);
 
             if (user.has("profilePhoto")) {
                 ParseFile profileImage = user.getParseFile("profilePhoto");
@@ -76,6 +88,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                             .apply(RequestOptions.circleCropTransform())
                             .into(ivProfilePic);
                 }
+            }
+        }
+
+        private void toggleCheckmark() {
+            if (ivCheckmark.getVisibility() == View.VISIBLE) {
+                ivCheckmark.setVisibility(View.INVISIBLE);
+                TripActivity.selectedFriends.remove(user);
+            } else {
+                ivCheckmark.setVisibility(View.VISIBLE);
+                TripActivity.selectedFriends.add(user);
             }
         }
     }
