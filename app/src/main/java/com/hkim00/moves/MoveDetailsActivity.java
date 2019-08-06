@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
@@ -68,6 +69,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     ParseUser currUser;
     Restaurant restaurant;
     Event event;
+    MoveText prefCuisine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +84,13 @@ public class MoveDetailsActivity extends AppCompatActivity {
         if (move.getMoveType() == Move.RESTAURANT) {
             restaurant = (Restaurant) move;
             getFoodView();
-        } else {
+        } else if(move.getMoveType() == Move.EVENT) {
             event = (Event) move;
             getEventView();
+        } else {
+            prefCuisine = (MoveText) move;
+            Toast.makeText(getApplicationContext(), prefCuisine.Cuisine, Toast.LENGTH_SHORT).show();
+            return;
         }
 
     }
@@ -212,6 +218,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         getEventDetails(id);
     }
 
+
     private void getEventDetails(String id) {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
         String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
@@ -248,6 +255,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void ButtonsSetUp() {
         btnChooseMove.setOnClickListener(new View.OnClickListener() {

@@ -50,6 +50,9 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
                         .from(context)
                         .inflate(R.layout.item_move, parent, false);
                 return new eventViewHolder(view);
+            //Create a case for blank text
+            case Move.TEXT:
+
         }
         return null;
     }

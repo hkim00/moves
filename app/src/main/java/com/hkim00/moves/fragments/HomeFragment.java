@@ -26,7 +26,9 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 
+import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Cuisine;
+import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 
@@ -602,6 +604,7 @@ public class HomeFragment extends Fragment {
                             });
 
                             moveResults.add(restaurant);
+                            moveResults.add(new MoveText("Hi"));
 
                         }
 

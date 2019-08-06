@@ -17,10 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Cuisine {
-    
+
 
     public static String currCuisine;
-    public static int count;
     public static List<Move> results;
     public static HashMap<String, String> moveToType;
 
