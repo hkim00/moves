@@ -604,11 +604,11 @@ public class HomeFragment extends Fragment {
                                 }
                             });
 
-                            moveResults.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), moveType));
+                            
                             moveResults.add(new MoveText("Hi"));
 
                         }
-
+                            moveResults.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), moveType));
                             goToMovesActivity(moveResults);
 
                         } catch (JSONException e) {
