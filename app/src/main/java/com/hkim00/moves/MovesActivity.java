@@ -3,6 +3,9 @@ package com.hkim00.moves;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import android.view.View;
+
 import android.widget.TextView;
 
 import com.facebook.litho.Component;
@@ -22,6 +25,7 @@ import java.util.List;
 public class MovesActivity extends AppCompatActivity {
 
     List<Move> moves;
+    TextView tvNoResults;
 
 
 
@@ -31,10 +35,18 @@ public class MovesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_moves);
 
 
+        tvNoResults = findViewById(R.id.tvNoResults);
+        tvNoResults.setVisibility(View.INVISIBLE);
+
+
         moves = new ArrayList<>();
         moves.addAll(Parcels.unwrap(getIntent().getParcelableExtra("moves")));
 
-        setupRecycler();
+        if (moves.size() == 0) {
+            tvNoResults.setVisibility(View.VISIBLE);
+        } else {
+            setupRecycler();
+        }
     }
 
 

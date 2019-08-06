@@ -11,38 +11,39 @@
         android:id="@+id/tvMoves2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="8dp"
         android:text="MOVES"
         android:textColor="#FDD835"
         android:textSize="45dp"
         android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/etPassword2"
-        android:layout_width="376dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:cursorVisible="false"
         android:hint="Password"
         android:inputType="textPassword|textWebPassword"
-        android:cursorVisible="false"
+        app:layout_constraintEnd_toEndOf="@+id/etUsername2"
         app:layout_constraintStart_toStartOf="@id/etUsername2"
         app:layout_constraintTop_toBottomOf="@id/etUsername2" />
 
     <EditText
         android:id="@+id/etUsername2"
-        android:layout_width="376dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:hint="Username"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView4" />
+        app:layout_constraintStart_toStartOf="@+id/ivProfilePic"
+        app:layout_constraintTop_toBottomOf="@+id/ivProfilePic" />
 
     <TextView
         android:id="@+id/textView2"
@@ -59,12 +60,14 @@
         android:id="@+id/btnGetStarted"
         android:layout_width="106dp"
         android:layout_height="47dp"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:background="#FDD835"
         android:text="Get Started!"
         android:textColor="#F4F4F4"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etPassword2" />
 
@@ -78,11 +81,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView2" />
 
-    <FrameLayout
-        android:id="@+id/flContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="0dp"/>
+    <ImageView
+        android:id="@+id/ivProfilePic"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:srcCompat="@color/black" />
+
+    <Button
+        android:id="@+id/btnAddPhoto"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="add photo"
+        android:textColor="#2196F3"
+        app:layout_constraintBottom_toBottomOf="@+id/ivProfilePic"
+        app:layout_constraintStart_toEndOf="@+id/ivProfilePic"
+        app:layout_constraintTop_toTopOf="@+id/ivProfilePic" />
+
+    <Button
+        android:id="@+id/btnProfilePic"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivProfilePic"
+        app:layout_constraintEnd_toEndOf="@+id/ivProfilePic"
+        app:layout_constraintStart_toStartOf="@+id/ivProfilePic"
+        app:layout_constraintTop_toTopOf="@+id/ivProfilePic" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

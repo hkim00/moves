@@ -32,8 +32,8 @@ public class JSONResponseHelper {
             Double priceMax = response.getJSONArray("priceRanges").getJSONObject(0).getDouble("max");
             formattedPriceRange = "$" + String.format("%.2f", priceMin) + " ~ " + "$" + String.format("%.2f", priceMax);
         } catch (JSONException e)  {
-            Log.e(TAG, "Error getting price range!" + " Error msg from JSON: " + e.getMessage());
-            e.printStackTrace();
+            Log.i(TAG, e.getMessage());
+            return formattedPriceRange;
         }
         return formattedPriceRange;
     }

@@ -2,15 +2,12 @@ package com.hkim00.moves.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.location.Location;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.location.LocationResult;
 import com.google.android.libraries.places.api.model.AddressComponent;
 import com.google.android.libraries.places.api.model.Place;
+import com.hkim00.moves.TripActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,33 +19,61 @@ import java.util.List;
 @Parcel
 public class UserLocation {
 
-    public String name;
-    public String lat;
-    public String lng;
-    public String postalCode;
+    private static final String LOCATION = "location";
+    private static final String TRIP_LOCATION = "tripLocation";
+    private static final String NAME = "name";
+    private static final String TRIP_NAME = "tripName";
+    private static final String LAT = "lat";
+    private static final String TRIP_LAT = "tripLat";
+    private static final String LNG = "lng";
+    private static final String TRIP_LNG = "tripLng";
+    private static final String POSTAL_CODE = "postalCode";
+    private static final String TRIP_POSTAL_CODE = "tripPostalCode";
+
+    public String name, lat, lng, postalCode;
 
     public UserLocation() {}
 
+
     public static UserLocation getCurrentLocation(Context context) {
+        boolean isTrip = (context instanceof TripActivity ) ? true : false;
+
         UserLocation location = new UserLocation();
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? TRIP_LOCATION : LOCATION, 0); //0 for private mode
 
-        String name = sharedPreferences.getString("name", "");
-        String lat = sharedPreferences.getString("lat", "0.0");
-        String lng = sharedPreferences.getString("lng", "0.0");
-        String postalCode = sharedPreferences.getString("postalCode", "");
-
-        location.name = name;
-        location.lat = lat;
-        location.lng = lng;
-        location.postalCode = postalCode;
+        location.name = sharedPreferences.getString((isTrip) ? TRIP_NAME : NAME, null);
+        location.lat = sharedPreferences.getString((isTrip) ? TRIP_LAT : LAT, null);
+        location.lng = sharedPreferences.getString((isTrip) ? TRIP_LNG : LNG, null);
+        location.postalCode = sharedPreferences.getString((isTrip) ? TRIP_POSTAL_CODE : POSTAL_CODE, null);
 
         return location;
     }
 
 
-    public static UserLocation fromPlace(Context context, Place place) {
+    public static UserLocation clearCurrentTripLocation(Context context) {
+        UserLocation location = new UserLocation();
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(TRIP_LOCATION, 0); //0 for private mode
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.remove(TRIP_NAME);
+        editor.remove(TRIP_LAT);
+        editor.remove(TRIP_LNG);
+        editor.remove(TRIP_POSTAL_CODE);
+
+        location.name = null;
+        location.lat = null;
+        location.lng = null;
+        location.postalCode = null;
+
+        editor.commit();
+
+        return location;
+    }
+
+
+    public static UserLocation fromPlace(Context context, boolean isTrip, Place place) {
         UserLocation location = new UserLocation();
 
         location.name = place.getName();
@@ -67,13 +92,13 @@ public class UserLocation {
 
         location.postalCode = postalCode;
 
-        saveLocation(context, location);
+        saveLocation(context, isTrip, location);
 
         return location;
     }
 
 
-    public static UserLocation fromLocationResult(Context context, LocationResult locationResult) {
+    public static UserLocation fromLocationResult(Context context, boolean isTrip, LocationResult locationResult) {
         UserLocation location = new UserLocation();
 
         location.name = "Current location";
@@ -81,12 +106,13 @@ public class UserLocation {
         location.lng = String.valueOf(locationResult.getLastLocation().getLongitude());
         location.postalCode = "";
 
-        saveLocation(context, location);
+        saveLocation(context, isTrip, location);
 
         return location;
     }
 
-    public static UserLocation addingPostalCodeFromJSON(Context context, UserLocation location, JSONObject response) {
+
+    public static UserLocation addingPostalCodeFromJSON(Context context, boolean isTrip, UserLocation location, JSONObject response) {
 
         try {
             JSONArray results = response.getJSONArray("results");
@@ -115,7 +141,7 @@ public class UserLocation {
 
                 location.postalCode = postalCode;
 
-                saveLocation(context, location);
+                saveLocation(context, isTrip, location);
 
                 return location;
             } else {
@@ -129,15 +155,15 @@ public class UserLocation {
     }
 
 
-    private static void saveLocation(Context context, UserLocation location) {
+    private static void saveLocation(Context context, boolean isTrip, UserLocation location) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? TRIP_LOCATION : LOCATION, 0); //0 for private mode
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putString("name", location.name);
-        editor.putString("lat", location.lat);
-        editor.putString("lng", location.lng);
-        editor.putString("postalCode", location.postalCode);
+        editor.putString((isTrip) ? TRIP_NAME : NAME, location.name);
+        editor.putString((isTrip) ? TRIP_LAT : LAT, location.lat);
+        editor.putString((isTrip) ? TRIP_LNG : LNG, location.lng);
+        editor.putString((isTrip) ? TRIP_POSTAL_CODE : POSTAL_CODE, location.postalCode);
 
         editor.commit();
     }

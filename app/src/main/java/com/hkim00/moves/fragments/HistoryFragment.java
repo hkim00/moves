@@ -1,46 +1,41 @@
 package com.hkim00.moves.fragments;
 
+
 import android.content.Context;
 import android.content.pm.ComponentInfo;
 import android.database.Cursor;
+
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.KeyEventDispatcher;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.widget.Card;
 import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.Progress;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
+
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
+
+
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.specs.MoveItem;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -72,7 +67,6 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         getHistory();
 
     }
@@ -109,40 +103,39 @@ public class HistoryFragment extends Fragment {
     }
 
 
-    public static List<Move> getHistory() {
-        ParseQuery<ParseObject> restaurantQuery = ParseQuery.getQuery("Move");
-        restaurantQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        restaurantQuery.whereEqualTo("didComplete", true);
-        restaurantQuery.orderByDescending("createdAt");
 
-        restaurantQuery.findInBackground(new FindCallback<ParseObject>() {
+    private void getHistory() {
+        ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
+        moveQuery.whereEqualTo("user", ParseUser.getCurrentUser());
+        moveQuery.whereEqualTo("didComplete", true);
+        moveQuery.orderByDescending("createdAt");
+
+        moveQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    for(int i =0; i<objects.size(); i++){
-                        Cuisine.getMostPref(objects.get(i).getString("cuisine"));
-                    }
-                    List<Move> moves = Restaurant.arrayFromParseObjects(objects);
-                    pastMoves.addAll(moves);
+                    List<Move> moves = new ArrayList<>();
 
+                    for (int i = 0; i < objects.size(); i++) {
+                        if (objects.get(i).getString("moveType").equals("food")) {
+                            moves.add(Move.fromParseObject(objects.get(i)));
+                        } else {
+                            moves.add(Move.fromParseObject(objects.get(i)));
+                        }
+                    }
+                    pastMoves.addAll(moves);
                     addContents(moves);
                 } else {
-                    Log.e(TAG, "Error finding past restaurants.");
+                    Log.e(TAG, "Error finding past moves.");
                     e.printStackTrace();
-                    Toast.makeText(context, "Error past restaurants", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error past moves", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-        return pastMoves;
     }
 
 
-    private static void addContents(List<Move> moves) {
-        if (moves.size() == 0) {
-            return;
-        }
-
+    private void addContents(List<Move> moves) {
         for (int i = 0; i < moves.size(); i++) {
             Component component = MoveItem.create(componentContext).move(moves.get(i)).build();
             recyclerBinder.appendItem(component);

@@ -2,6 +2,7 @@ package com.hkim00.moves.models;
 
 import com.parse.ParseObject;
 
+import org.json.JSONArray;
 import org.parceler.Parcel;
 
 import org.json.JSONException;
@@ -11,16 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
-public class Event implements Move {
+public class Event extends Move {
+    public int count;
     public String name, id, text;
+    public Boolean didSave, didFavorite, didComplete;
+
+    public String moveType = "event";
 
     public Event() {}
-
-    @Override
-    public int getMoveType() {
-        return Move.EVENT;
-    }
-
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> events = new ArrayList<>();
@@ -29,8 +28,22 @@ public class Event implements Move {
             Event event = Event.fromParseObject(objects.get(i));
             events.add(event);
         }
-
         return events;
+    }
+
+    public static List<Move> arrayFromJSONArray(JSONArray objects) {
+        List<Move> eventMoves = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < objects.length(); i++) {
+                Event event = Event.fromJSON(objects.getJSONObject(i));
+                eventMoves.add(event);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return eventMoves;
     }
 
 
@@ -48,7 +61,11 @@ public class Event implements Move {
         Event event = new Event();
 
         event.name = parseObject.getString("name");
-        event.id = parseObject.getString("id");
+        event.id = parseObject.getString("placeId");
+
+        event.didSave = parseObject.getBoolean("didSave");
+        event.didFavorite = parseObject.getBoolean("didFavorite");
+        event.didComplete = parseObject.getBoolean("didComplete");
 
         return event;
     }

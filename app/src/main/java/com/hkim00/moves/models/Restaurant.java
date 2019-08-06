@@ -17,19 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
-public class Restaurant implements Move {
+public class Restaurant extends Move {
+
 
     public String name, id, text, cuisine;
-    public Integer price_level;
+    public Integer price_level, count;
+
     public Double lat, lng, rating;
+    public Boolean didSave, didFavorite, didComplete;
+
+    public String moveType = "food";
 
     public Restaurant() {}
-
-    @Override
-    public int getMoveType() {
-        return Move.RESTAURANT;
-    }
-
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> restaurants = new ArrayList<>();
@@ -58,10 +57,8 @@ public class Restaurant implements Move {
         return restaurants;
     }
 
-
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
-
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("place_id");
 
@@ -86,6 +83,12 @@ public class Restaurant implements Move {
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("placeId");
         restaurant.cuisine = parseObject.getString("cuisine");
+
+        restaurant.didSave = parseObject.getBoolean("didSave");
+        restaurant.didFavorite = parseObject.getBoolean("didFavorite");
+        restaurant.didComplete = parseObject.getBoolean("didComplete");
+
+        restaurant.count = parseObject.getInt("count");
 
         restaurant.lat = null;
 

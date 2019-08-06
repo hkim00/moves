@@ -33,8 +33,9 @@ public class MoveItemSpec {
     static Component onCreateLayout(ComponentContext c,
                                     @Prop Move move) {
 
-        String name = (move.getMoveType() == Move.RESTAURANT) ? ((Restaurant) move).name :
-                (move.getMoveType() == Move.EVENT) ? ((Event) move).name : ((MoveText) move).Cuisine;
+
+        String name = move.name;
+
 
         return Column.create(c)
                 .paddingDip(YogaEdge.ALL, 15)

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.hkim00.moves.models.CategoryButton;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,8 +91,7 @@ public class MoveCategoriesHelper {
 
 
 
-
-    public static List<String> JSONArrayToList(Context context, JSONArray jsonArray) {
+    public static List<String> JSONArrayToList(JSONArray jsonArray) {
 
         List<String> stringList = new ArrayList<String>();
 
@@ -99,15 +99,39 @@ public class MoveCategoriesHelper {
             try {
                 stringList.add((String) jsonArray.get(i));
             } catch (JSONException e) {
-                Log.e(context.toString(), e.getMessage());
+                Log.e("MoveCategoriesHelper", e.getMessage());
                 e.printStackTrace();
             }
         }
         return stringList;
     }
 
+
+    public static String getUserFoodPreferenceString(List<String> nonPreferredList) {
+        if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() == 0) {
+            return "";
+        }
+
+        List<String> preferredList;
+
+        if (nonPreferredList.size() == 0) {
+            preferredList = MoveCategoriesHelper.JSONArrayToList(ParseUser.getCurrentUser().getJSONArray("foodPrefList"));
+        } else {
+            preferredList = nonPreferredList;
+        }
+
+        String userFoodPref = "";
+        for (int i = 0; i < preferredList.size(); i++) {
+            userFoodPref += preferredList.get(i);
+            userFoodPref += "+";
+        }
+
+        userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
+
+        return userFoodPref;
+    }
+
     public static int milesToMeters(float miles) {
         return (int) (miles/0.000621317);
-    }
 
 }
