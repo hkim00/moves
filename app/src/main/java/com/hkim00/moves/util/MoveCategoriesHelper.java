@@ -94,7 +94,7 @@ public class MoveCategoriesHelper {
 
         List<String> stringList = new ArrayList<String>();
 
-        for(int i = 0; i < jsonArray.length(); i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 stringList.add((String) jsonArray.get(i));
             } catch (JSONException e) {
@@ -125,12 +125,13 @@ public class MoveCategoriesHelper {
             userFoodPref += "+";
         }
 
-        userFoodPref = userFoodPref.substring(0, userFoodPref.length() -1);
+        userFoodPref = userFoodPref.substring(0, userFoodPref.length() - 1);
 
         return userFoodPref;
     }
 
     public static int milesToMeters(float miles) {
-        return (int) (miles/0.000621317);
+        return (int) (miles / 0.000621317);
+
     }
 }

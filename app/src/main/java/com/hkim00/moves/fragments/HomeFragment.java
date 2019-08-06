@@ -26,8 +26,14 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 
+
+import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.models.Cuisine;
+import com.hkim00.moves.models.MoveText;
+
 import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.models.Trip;
+
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
 
@@ -38,12 +44,15 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+
+
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -52,10 +61,8 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
@@ -77,6 +84,7 @@ public class HomeFragment extends Fragment {
     private int priceLevel;
     private List<Move> moveResults;
     private UserLocation location;
+    private int count;
 
     private TextView tvLocation, tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
@@ -96,6 +104,11 @@ public class HomeFragment extends Fragment {
     private Boolean isFriendMove = false;
 
     private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnNextTrip;
+
+    MoveCategoriesHelper helper = new MoveCategoriesHelper();
+    public JSONArray newResults;
+
+    Restaurant restaurant;
 
     @Nullable
     @Override
@@ -448,7 +461,6 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
     private void getNearbyEvents(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
         checkForPostalCode();
 
@@ -534,6 +546,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+
+        moveResults.clear();
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
@@ -541,95 +555,106 @@ public class HomeFragment extends Fragment {
 
         RequestParams params = new RequestParams();
         params.put("key", getString(R.string.api_key));
-        params.put("location",location.lat + "," + location.lng);
+        params.put("location", location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
+
         params.put("type","restaurant");
-      
+
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
         }
 
         params.put("key", getString(R.string.api_key));
 
-        if (!isRisky) {
-            if (!isFriendMove) {
-                if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
-                    if (currUserPrefList != null) {
-                        addToPref(totalPref, currUserPrefList, params);
+
+        List<String> foodPrefList =  currUser.getList("foodPrefList");
+
+        for (String pref : foodPrefList) {
+            params.put("keyword", pref);
+            HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+
+                    JSONArray results;
+                    try {
+                        results = response.getJSONArray("results");
+
+                        for (int i = 0; i < results.length(); i++) {
+                            Restaurant restaurant = Restaurant.fromJSON(results.getJSONObject(i));
+
+
+
+
+                            ParseQuery<ParseObject> getResults = ParseQuery.getQuery("Move");
+                            getResults.whereEqualTo("name", restaurant.name);
+                            getResults.whereEqualTo("moveType", moveType);
+                            getResults.whereEqualTo("user", currUser);
+                            getResults.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> objects, ParseException e) {
+                                    for (int i = 0; i < objects.size(); i++) {
+                                        if (moveType == "food") {
+                                            objects.get(i).put("cuisine", pref);
+                                            objects.get(i).saveInBackground();
+
+                                        }
+
+                                    }
+                                }
+                            });
+
+                            moveResults.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), moveType));
+                            moveResults.add(new MoveText("Hi"));
+
+                        }
+
+                            goToMovesActivity(moveResults);
+
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        String pref = totalPref.get(i);
-                        params.put("keyword", pref);
+
+                    Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
+                    //Log.i("HomeFragment", uniqueTotalPref.toString());
+
+
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        new StatusCodeHandler(TAG, statusCode);
+                        throwable.printStackTrace();
                     }
-                }
-            } else {
-                if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
-                    JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
-                    if (currUserPrefList != null || friendPrefList != null) {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                addToPref(totalPref, currUserPrefList, params);
-                            }
-                            for (int i = 0; i < friendPrefList.length(); i++) {
-                                addToPref(totalPref, friendPrefList, params);
-                            }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        new StatusCodeHandler(TAG, statusCode);
+                        throwable.printStackTrace();
                     }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        String pref = totalPref.get(i);
-                        params.put("keyword", pref);
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        new StatusCodeHandler(TAG, statusCode);
+                        throwable.printStackTrace();
                     }
-                }
+
+                });
+
+
             }
+
         }
 
-        Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
-        Log.i("HomeFragment", uniqueTotalPref.toString());
 
-        HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
 
-                moveResults.clear();
 
-                try {
-                    moveResults.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), moveType));
-                    goToMovesActivity(moveResults);
-
-                } catch (JSONException e) {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                new StatusCodeHandler(TAG, statusCode);
-                throwable.printStackTrace();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                new StatusCodeHandler(TAG, statusCode);
-                throwable.printStackTrace();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                new StatusCodeHandler(TAG, statusCode);
-                throwable.printStackTrace();
-            }
-        });
-    }
-
-    private void goToMovesActivity(List<Move> moves) {
+        private void goToMovesActivity(List<Move> moves) {
         Intent intent = new Intent(getContext(), MovesActivity.class);
         intent.putExtra("moves", Parcels.wrap(moves));
         startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+
     }
 
     @Override
@@ -643,20 +668,25 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void UpdateMoveList() {
-        Map<String, Integer> PrefDict = new HashMap<String, Integer>();
-        ArrayList<Map<String, Integer>> al = new ArrayList();
 
-        PrefDict.put ("key1", 1);
-        PrefDict.put ("key2", 2);
-        PrefDict.put ("key3", 3);
-        PrefDict.put ("key4", 4);
+    private JSONArray getResults(RequestParams params) {
+        String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
+        HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
 
-        al.add(PrefDict);
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                JSONArray newResults;
+                try {
+                    newResults = response.getJSONArray("results");
 
-        ParseUser currUser = ParseUser.getCurrentUser();
-        currUser.put("tester", al);
-        currUser.saveInBackground();
+                    } catch(JSONException e){
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
+            }
+        });
+        return newResults;
     }
 }
 
