@@ -17,39 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
-public class Restaurant implements Move {
+public class Restaurant extends Move {
 
-    public String name, id, text;
-    public Integer price_level;
+
+    public String name, id, text, cuisine;
+    public Integer price_level, count;
+
     public Double lat, lng, rating;
     public Boolean didSave, didFavorite, didComplete;
 
+    public String moveType = "food";
+
     public Restaurant() {}
-
-    @Override
-    public int getMoveType() {
-        return Move.RESTAURANT;
-    }
-
-    @Override
-    public String getName() { return name; }
-
-    @Override
-    public String getId() { return id; }
-
-    @Override
-    public Boolean getDidSave() {return didSave; }
-
-    @Override
-    public Boolean getDidFavorite() {return didFavorite; }
-
-    @Override
-    public Boolean getDidComplete() {return didComplete; }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (((Move) obj).getId().equals(this.id)) ? true : false;
-    }
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> restaurants = new ArrayList<>();
@@ -78,12 +57,11 @@ public class Restaurant implements Move {
         return restaurants;
     }
 
-
     public static Restaurant fromJSON(JSONObject jsonObject) throws JSONException {
         Restaurant restaurant = new Restaurant();
-
         restaurant.name = jsonObject.getString("name");
         restaurant.id = jsonObject.getString("place_id");
+
 
         restaurant.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
 
@@ -94,6 +72,8 @@ public class Restaurant implements Move {
 
         restaurant.rating = (jsonObject.has("rating")) ? jsonObject.getDouble("rating") : -1;
 
+
+
         return restaurant;
     }
 
@@ -102,10 +82,13 @@ public class Restaurant implements Move {
 
         restaurant.name = parseObject.getString("name");
         restaurant.id = parseObject.getString("placeId");
+        restaurant.cuisine = parseObject.getString("cuisine");
 
         restaurant.didSave = parseObject.getBoolean("didSave");
         restaurant.didFavorite = parseObject.getBoolean("didFavorite");
         restaurant.didComplete = parseObject.getBoolean("didComplete");
+
+        restaurant.count = parseObject.getInt("count");
 
         restaurant.lat = null;
 

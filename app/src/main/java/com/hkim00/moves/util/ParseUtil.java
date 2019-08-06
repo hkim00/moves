@@ -6,6 +6,7 @@ import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -16,15 +17,20 @@ import java.util.List;
 public class ParseUtil {
 
     // searches in Parse for a specific move (by id) that were done by current user
-    public static ParseQuery getParseQuery(String moveType, ParseUser currUser, Move move) {
+    public static ParseQuery getParseQuery(ParseUser currUser, Move move) {
         ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Move");
-        parseQuery.whereEqualTo("placeId", (moveType.equals("food")) ? ((Restaurant) move).id : ((Event) move).id);
+        parseQuery.whereEqualTo("placeId", move.id);
         parseQuery.whereEqualTo("user", currUser);
         return parseQuery;
     }
 
+
+
+
+
     // if the move has not been done by current user, this method will save a new move
     // if it has been done before, then it will save/unsave the move
+
     public static void getDidSave(String moveType, List<ParseObject> objects, Move move) {
         ParseUser currUser = ParseUser.getCurrentUser();
         if (objects.size() > 0) {

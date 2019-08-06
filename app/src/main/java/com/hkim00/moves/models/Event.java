@@ -12,37 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
-public class Event implements Move {
+public class Event extends Move {
+    public int count;
     public String name, id, text;
     public Boolean didSave, didFavorite, didComplete;
 
+    public String moveType = "event";
+
     public Event() {}
-
-    @Override
-    public int getMoveType() {
-        return Move.EVENT;
-    }
-
-    @Override
-    public String getName() { return name; }
-
-    @Override
-    public String getId() { return id; }
-
-    @Override
-    public Boolean getDidSave() {return didSave; }
-
-    @Override
-    public Boolean getDidFavorite() {return didFavorite; }
-
-    @Override
-    public Boolean getDidComplete() {return didComplete; }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (((Move) obj).getId().equals(this.id)) ? true : false;
-    }
-
 
     public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
         List<Move> events = new ArrayList<>();
@@ -51,7 +28,6 @@ public class Event implements Move {
             Event event = Event.fromParseObject(objects.get(i));
             events.add(event);
         }
-
         return events;
     }
 

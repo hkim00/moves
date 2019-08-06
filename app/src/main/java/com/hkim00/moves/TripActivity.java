@@ -1,9 +1,5 @@
 package com.hkim00.moves;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,6 +12,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
@@ -26,12 +26,9 @@ import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import org.json.JSONArray;
@@ -39,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,8 +180,8 @@ public class TripActivity extends AppCompatActivity {
 
     private void setupView() {
         etTrip.addTextChangedListener(charTextWatcher);
-        pb.setVisibility(View.INVISIBLE);
 
+        pb.setVisibility(View.INVISIBLE);
         vEventsView.setVisibility(View.INVISIBLE);
         vSelectedView.setVisibility(View.INVISIBLE);
 
@@ -201,7 +197,7 @@ public class TripActivity extends AppCompatActivity {
             dates.add(currentTrip.endDay);
 
             tvLocation.setText(currentTrip.location.name);
-            tvCalendar.setText(getDateRangeString());
+            tvCalendar.setText(Trip.getDateRangeString(dates.get(0), dates.get(dates.size() - 1)));
 
             tvLocation.setTextColor(getResources().getColor(R.color.black));
             tvCalendar.setTextColor(getResources().getColor(R.color.black));
@@ -251,7 +247,7 @@ public class TripActivity extends AppCompatActivity {
         } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
                 tvCalendar.setTextColor(getResources().getColor(R.color.black));
-                tvCalendar.setText(getDateRangeString());
+                tvCalendar.setText(Trip.getDateRangeString(dates.get(0), dates.get(dates.size() - 1)));
             } else {
                 tvCalendar.setText("When?");
                 tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
@@ -261,24 +257,16 @@ public class TripActivity extends AppCompatActivity {
         }
     }
 
-    private String getDateRangeString() {
-        String[] months = new DateFormatSymbols().getShortMonths();
-        return months[dates.get(0).getMonth() - 1] + " " + dates.get(0).getDay() + " - " + months[dates.get(dates.size() - 1).getMonth() - 1] + " " + dates.get(dates.size() - 1).getDay();
-    }
-
 
     private void checkForCurrentLocation() {
-        location = UserLocation.getCurrentTripLocation(this);
+        location = UserLocation.getCurrentLocation(TripActivity.this);
 
         isReadyToSave(false);
 
-        if (location.lat == null) {
-            tvLocation.setText("Where?");
-            tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
-        } else {
-            tvLocation.setText(location.name);
-            tvLocation.setTextColor(getResources().getColor(R.color.black));
+        tvLocation.setText((location.lat == null) ? "Where?" : location.name);
+        tvLocation.setTextColor(getResources().getColor((location.lat == null) ? R.color.selected_blue : R.color.black));
 
+        if (location.lat != null) {
             toggleMovesView(true);
             getNearbyRestaurants();
         }
@@ -302,34 +290,27 @@ public class TripActivity extends AppCompatActivity {
     private void updateMoves(List<Move> replacementArray) {
         moves.clear();
         moves.addAll(replacementArray);
-
         movesAdapter.notifyDataSetChanged();
     }
 
 
     private boolean isReadyToSave(boolean needsToast) {
-        if (etTrip.getText().toString().trim().equals("")) {
-            if (needsToast) {
-                Toast.makeText(getApplicationContext(), "Name this trip", Toast.LENGTH_LONG).show();
-            }
+        if (etTrip.getText().toString().trim().equals("") || location.lat == null || dates.size() == 0) {
             btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
-            return false;
-        }
-
-        if (location.lat == null) {
             if (needsToast) {
-                Toast.makeText(getApplicationContext(), "Set a location for this trip", Toast.LENGTH_LONG).show();
-            }
-            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
-            return false;
-        }
+                String toastTitle = "";
 
-        if (dates.size() == 0) {
-            if (needsToast) {
-                Toast.makeText(getApplicationContext(), "Set trip dates", Toast.LENGTH_LONG).show();
+                if (etTrip.getText().toString().trim().equals("")) {
+                    toastTitle = "Name this trip";
+                } else if (location.lat == null) {
+                    toastTitle = "Set a location for this trip";
+                } else {
+                    toastTitle = "Set trip dates";
+                }
+
+                Toast.makeText(getApplicationContext(), toastTitle, Toast.LENGTH_LONG).show();
             }
 
-            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
             return false;
         }
 
@@ -361,23 +342,20 @@ public class TripActivity extends AppCompatActivity {
             trip.put("endMonth", dates.get(dates.size() - 1).getMonth());
             trip.put("endYear", dates.get(dates.size() - 1).getYear());
 
-            trip.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    btnSave.setEnabled(true);
-                    if (e == null) {
-                        Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
+            trip.saveInBackground((e) -> {
+                btnSave.setEnabled(true);
+                if (e == null) {
+                    Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
 
-                        UserLocation.clearCurrentTripLocation(getApplicationContext());
+                    UserLocation.clearCurrentTripLocation(getApplicationContext());
 
-                        saveTripMoves(trip);
+                    saveTripMoves(trip);
 
-                        onBackPressed();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "error saving trip", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, e.getMessage());
-                        e.printStackTrace();
-                    }
+                    onBackPressed();
+                } else {
+                    Toast.makeText(getApplicationContext(), "error saving trip", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
                 }
             });
         }
@@ -401,52 +379,45 @@ public class TripActivity extends AppCompatActivity {
         trip.put("endMonth", dates.get(dates.size() - 1).getMonth());
         trip.put("endYear", dates.get(dates.size() - 1).getYear());
 
-        trip.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                btnSave.setEnabled(true);
-                if (e == null) {
-                    UserLocation.clearCurrentTripLocation(getApplicationContext());
-                    saveTripMoves(trip);
+        trip.saveInBackground((e) -> {
+            btnSave.setEnabled(true);
+            if (e == null) {
+                UserLocation.clearCurrentTripLocation(getApplicationContext());
+                saveTripMoves(trip);
 
-                    onBackPressed();
-                } else {
-                    Toast.makeText(getApplicationContext(), "error updating trip", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
-                }
+                onBackPressed();
+            } else {
+                Toast.makeText(getApplicationContext(), "error updating trip", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.getMessage());
+                e.printStackTrace();
             }
         });
-
     }
 
     private void getSavedTripMoves(Trip trip) {
         ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
         moveQuery.whereEqualTo("trip", trip.parseObject);
         moveQuery.orderByDescending("createdAt");
-        moveQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                didCheckSavedSelected = true;
+        moveQuery.findInBackground((objects, e) -> {
+            didCheckSavedSelected = true;
 
-                if (e == null) {
-                    serverMoves.addAll(objects);
+            if (e == null) {
+                serverMoves.addAll(objects);
 
-                    List<Move> moves = new ArrayList<>();
+                List<Move> moves = new ArrayList<>();
 
-                    for (int i = 0; i < objects.size(); i++) {
-                        if (objects.get(i).getString("moveType").equals("food")) {
-                            moves.add(Restaurant.fromParseObject(objects.get(i)));
-                        } else {
-                            moves.add(Event.fromParseObject(objects.get(i)));
-                        }
+                for (int i = 0; i < objects.size(); i++) {
+                    if (objects.get(i).getString("moveType").equals("food")) {
+                        moves.add(Move.fromParseObject(objects.get(i)));
+                    } else {
+                        moves.add(Move.fromParseObject(objects.get(i)));
                     }
-                    selectedMoves.addAll(moves);
-                } else {
-                    Log.e(TAG, "Error getting selected moves");
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Error getting selected moves", Toast.LENGTH_SHORT).show();
                 }
+                selectedMoves.addAll(moves);
+            } else {
+                Log.e(TAG, "Error getting selected moves");
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error getting selected moves", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -455,7 +426,7 @@ public class TripActivity extends AppCompatActivity {
         if (isEditingTrip && deleteFromServerMoves.size() > 0) {
             for (int i = 0; i < deleteFromServerMoves.size(); i++) {
                 for (int a = 0; a < serverMoves.size(); a++) {
-                    if (serverMoves.get(a).getString("placeId").equals(deleteFromServerMoves.get(i).getId())) {
+                    if (serverMoves.get(a).getString("placeId").equals(deleteFromServerMoves.get(i).id)) {
                         serverMoves.get(a).deleteInBackground();
                         break;
                     }
@@ -477,19 +448,16 @@ public class TripActivity extends AppCompatActivity {
     private void saveMoveToTrip(Move selectedMove, ParseObject trip) {
         ParseObject move = new ParseObject("Move");
 
-        move.put("name", selectedMove.getName());
-        move.put("placeId", selectedMove.getId());
+        move.put("name", selectedMove.name);
+        move.put("placeId", selectedMove.id);
         move.put("trip", trip);
-        move.put("moveType", (selectedMove.getMoveType() == Restaurant.RESTAURANT) ? "food" : "event");
+        move.put("moveType", (selectedMove.moveType));
 
-        move.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.getName(), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
-                }
+        move.saveInBackground((e) -> {
+            if (e != null) {
+                Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.name, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.getMessage());
+                e.printStackTrace();
             }
         });
     }
@@ -522,7 +490,7 @@ public class TripActivity extends AppCompatActivity {
 
                 foodMoves.clear();
                 try {
-                    foodMoves.addAll(Restaurant.arrayFromJSONArray(response.getJSONArray("results")));
+                    foodMoves.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), "food"));
                     updateMoves(foodMoves);
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
@@ -554,27 +522,7 @@ public class TripActivity extends AppCompatActivity {
     }
 
 
-    private String getDateFormat() {
-        if (dates.size() == 0) {
-            return "";
-        }
 
-        CalendarDay beginDate = dates.get(0);
-        CalendarDay endDate = dates.get(dates.size() - 1);
-
-        String beginDateString = beginDate.getYear() + "-" +
-                ((beginDate.getMonth() < 10) ? "0" + beginDate.getMonth() : beginDate.getMonth())
-                + "-" +
-                ((beginDate.getDay() < 10) ? "0" + beginDate.getDay() : beginDate.getDay())
-                + "T00:00:00,";
-        String endDateString = endDate.getYear() + "-" +
-                ((endDate.getMonth() < 10) ? "0" + endDate.getMonth() : endDate.getMonth())
-                + "-" +
-                ((endDate.getDay() < 10) ? "0" + endDate.getDay() : endDate.getDay())
-                + "T00:00:00";
-
-        return beginDateString + endDateString;
-    }
 
     private void getNearbyEvents() {
         pb.setVisibility(View.VISIBLE);
@@ -588,7 +536,7 @@ public class TripActivity extends AppCompatActivity {
         params.put("apikey", getString(R.string.api_key_tm));
         params.put("postalCode", location.postalCode);
         if (dates.size() != 0) {
-            params.put("localStartDateTime", getDateFormat());
+            params.put("localStartDateTime", Trip.getAPIDateFormat(dates.get(0), dates.get(dates.size() - 1)));
         }
         params.put("sort", "date,asc");
 

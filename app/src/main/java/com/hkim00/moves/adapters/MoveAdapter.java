@@ -14,14 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
-import com.hkim00.moves.models.CategoryButton;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
@@ -39,11 +35,16 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     @Override
     public int getItemViewType(int position) {
-        return moves.get(position).getMoveType();
+        if (moves.get(position).moveType == "food") {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 
     @NonNull
     @Override
+
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_move, parent, false);
         return new ViewHolder(view);
@@ -74,7 +75,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
         }
 
         public void bind(Move move) {
-            tvTitle.setText(move.getName());
+            tvTitle.setText(move.name);
         }
 
         @Override
