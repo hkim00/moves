@@ -18,11 +18,15 @@ public class Move {
     public String name, id, moveType;
     public Boolean didSave, didFavorite, didComplete;
 
-    public String text;
-    public Integer price_level;
-    public Double lat, lng, rating;
+    public Double lat, lng;
 
     public Move() {}
+
+
+    @Override
+    public boolean equals(Object obj) {
+        return (((Move) obj).id.equals(this.id)) ? true : false;
+    }
 
     public static Move fromParseObject(ParseObject parseObject) {
         Move move = new Move();
@@ -38,46 +42,22 @@ public class Move {
         return move;
     }
 
-    public static List<Move> arrayFromJSONArray(JSONArray objects, String moveType) {
-        List<Move> moves = new ArrayList<>();
-
+    public static void arrayFromJSONArray(List<Move> moveList, JSONArray objects, String moveType) {
         for (int i = 0; i < objects.length(); i++) {
-            Move move;
             try {
-                move = Move.fromJSON(objects.getJSONObject(i), moveType);
-                moves.add(move);
+                Move move = new Move();
+                move.fromJSON(objects.getJSONObject(i), moveType);
+                moveList.add(move);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
-        return moves;
     }
 
-    public static Move fromJSON(JSONObject jsonObject, String moveType) throws JSONException {
-        Move move = new Move();
-        move.name = jsonObject.getString("name");
-        move.moveType = moveType;
-
-        if (moveType.equals("food")) {
-            move.id = jsonObject.getString("place_id");
-            move.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
-
-            JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
-
-            move.lat = location.getDouble("lat");
-            move.lng = location.getDouble("lng");
-
-            move.rating = (jsonObject.has("rating")) ? jsonObject.getDouble("rating") : -1;
-
-            return move;
-        }
-
-        else {
-            move.id = jsonObject.getString("id");
-
-            return move;
-        }
+    public void fromJSON(JSONObject jsonObject, String moveType) throws JSONException {
+        this.name = jsonObject.getString("name");
+        this.moveType = moveType;
+        this.id = jsonObject.getString((moveType.equals("food")) ? "place_id" : "id");
     }
 
 

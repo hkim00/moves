@@ -490,7 +490,8 @@ public class TripActivity extends AppCompatActivity {
 
                 foodMoves.clear();
                 try {
-                    foodMoves.addAll(Move.arrayFromJSONArray(response.getJSONArray("results"), "food"));
+                    foodMoves = new ArrayList<>();
+                    Move.arrayFromJSONArray(foodMoves, response.getJSONArray("results"), "food");
                     updateMoves(foodMoves);
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
@@ -561,10 +562,10 @@ public class TripActivity extends AppCompatActivity {
 
                 eventMoves.clear();
 
-                JSONArray events;
                 if (response.has("_embedded")) {
                     try {
-                        eventMoves = Event.arrayFromJSONArray((response.getJSONObject("_embedded")).getJSONArray("events"));
+                        eventMoves = new ArrayList<>();
+                        Move.arrayFromJSONArray(eventMoves, response.getJSONObject("_embedded").getJSONArray("events"), "event");
                         updateMoves(eventMoves);
                     } catch (JSONException e) {
                         Log.e(TAG, "Error getting events");

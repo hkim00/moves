@@ -193,9 +193,8 @@ public class SearchFragment extends Fragment {
 
                 List<Move> moveResults = new ArrayList<>();
                 try {
-                    moveResults = (type.equals("food")) ? Move.arrayFromJSONArray(response.getJSONArray("results"), "food") : Move.arrayFromJSONArray((response.getJSONObject("_embedded")).getJSONArray("events"), "event");;
-                } catch (
-                    JSONException e) {
+                    Move.arrayFromJSONArray(moveResults, response.getJSONArray("results"), type);
+                } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();
                 }
