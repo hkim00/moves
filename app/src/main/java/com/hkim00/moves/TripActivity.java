@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.adapters.UserAdapter;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
@@ -48,26 +48,29 @@ public class TripActivity extends AppCompatActivity {
     private static final int LOCATION_REQUEST_CODE = 20;
     public static final int CALENDAR_REQUEST_CODE = 30;
 
-
     private EditText etTrip;
-    private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected;
-    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave;
-    private View vFoodView, vEventsView, vSelectedView;
+    private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected, tvFriends, tvSelectFriends;
+    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave, btnFriends, btnSelectFriends;
+    private View vFoodView, vEventsView, vSelectedView, vFriendsView;
 
     private ProgressBar pb;
     private RecyclerView rvMoves;
     private MoveAdapter movesAdapter;
+    private UserAdapter userAdapter;
 
     private Trip currentTrip;
     private UserLocation location;
-    public static List<CalendarDay> dates;
     private List<Move> foodMoves, eventMoves, moves;
+
+    public static List<CalendarDay> dates;
     public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
+    public static List<ParseUser> selectedFriends;
 
     private List<ParseObject> serverMoves;
 
     public static boolean isEditingTrip;
     private boolean didCheckSavedSelected;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,18 +100,23 @@ public class TripActivity extends AppCompatActivity {
         btnLocation = findViewById(R.id.btnLocation);
         tvCalendar = findViewById(R.id.tvCalendar);
         btnCalendar = findViewById(R.id.btnCalendar);
+        tvSelectFriends = findViewById(R.id.tvSelectFriends);
+        btnSelectFriends = findViewById(R.id.btnSelectFriends);
 
         tvFood = findViewById(R.id.tvFood);
         tvEvents = findViewById(R.id.tvEvents);
         tvSelected = findViewById(R.id.tvSelected);
+        tvFriends = findViewById(R.id.tvFriends);
 
         btnFood = findViewById(R.id.btnFood);
         btnEvents = findViewById(R.id.btnEvents);
         btnSelected = findViewById(R.id.btnSelected);
+        btnFriends = findViewById(R.id.btnFriends);
 
         vFoodView = findViewById(R.id.vFoodView);
         vEventsView = findViewById(R.id.vEventsView);
         vSelectedView = findViewById(R.id.vSelectedView);
+        vFriendsView = findViewById(R.id.vFriendsView);
 
         pb = findViewById(R.id.pb);
         rvMoves = findViewById(R.id.rvMoves);
@@ -127,22 +135,26 @@ public class TripActivity extends AppCompatActivity {
         selectedMoves = new ArrayList<>();
         newSelectedMoves = new ArrayList<>();
         deleteFromServerMoves = new ArrayList<>();
+        selectedFriends = new ArrayList<>();
 
         serverMoves = new ArrayList<>();
 
         movesAdapter = new MoveAdapter(TripActivity.this, moves);
+        userAdapter = new UserAdapter(TripActivity.this, selectedFriends);
+
         rvMoves.setAdapter(movesAdapter);
     }
 
 
     private void setupButtons() {
         btnLocation.setOnClickListener(view -> goToLocationActivity());
-
         btnCalendar.setOnClickListener(view -> goToCalendarActivity());
+        btnSelectFriends.setOnClickListener(view -> goToSelectUsersActivity());
 
         btnFood.setOnClickListener(view -> toggleSection("food"));
         btnEvents.setOnClickListener(view -> toggleSection("events"));
         btnSelected.setOnClickListener(view -> toggleSection("selected"));
+        btnFriends.setOnClickListener(view -> toggleSection("friends"));
 
         btnSave.setOnClickListener(view -> saveTrip());
     }
@@ -151,6 +163,7 @@ public class TripActivity extends AppCompatActivity {
         vFoodView.setVisibility((type.equals("food")) ? View.VISIBLE : View.INVISIBLE);
         vEventsView.setVisibility((type.equals("events")) ? View.VISIBLE : View.INVISIBLE);
         vSelectedView.setVisibility((type.equals("selected")) ? View.VISIBLE : View.INVISIBLE);
+        vFriendsView.setVisibility((type.equals("friends")) ? View.VISIBLE : View.INVISIBLE);
 
         if (location.lat == null) {
             return;
@@ -168,6 +181,9 @@ public class TripActivity extends AppCompatActivity {
             } else {
                 updateMoves(eventMoves);
             }
+        } else if (type.equals("friends")) {
+            rvMoves.setAdapter(userAdapter);
+            userAdapter.notifyDataSetChanged();
         } else {
             if (selectedMoves.size() == 0 && !didCheckSavedSelected && isEditingTrip) {
                 getSavedTripMoves(currentTrip);
@@ -184,8 +200,11 @@ public class TripActivity extends AppCompatActivity {
         pb.setVisibility(View.INVISIBLE);
         vEventsView.setVisibility(View.INVISIBLE);
         vSelectedView.setVisibility(View.INVISIBLE);
+        vFriendsView.setVisibility(View.INVISIBLE);
 
         didCheckSavedSelected = false;
+
+        tvSelectFriends.setTextColor(getResources().getColor(R.color.selected_blue));
 
         if (getIntent().hasExtra("trip")) {
             currentTrip = Parcels.unwrap(getIntent().getParcelableExtra("trip"));
@@ -234,6 +253,9 @@ public class TripActivity extends AppCompatActivity {
         tvSelected.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
         btnSelected.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
 
+        tvFriends.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+        btnFriends.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
+
         rvMoves.setVisibility(isShowing ? View.VISIBLE : View.INVISIBLE);
     }
 
@@ -272,6 +294,12 @@ public class TripActivity extends AppCompatActivity {
         }
     }
 
+    private void goToSelectUsersActivity() {
+        Intent intent = new Intent(this, SelectUsersActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    }
+
 
     private void goToLocationActivity() {
         Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
@@ -288,6 +316,8 @@ public class TripActivity extends AppCompatActivity {
 
 
     private void updateMoves(List<Move> replacementArray) {
+        rvMoves.setAdapter(movesAdapter);
+
         moves.clear();
         moves.addAll(replacementArray);
         movesAdapter.notifyDataSetChanged();

@@ -372,7 +372,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void setupButtons() {
-
         btnChooseMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -411,8 +410,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                 Log.d("Move", "Error: saving move to history");
                             }
                         }
-                    });
-                }
+                        Log.d("Move", "Move saved in History Successfully");
+                        Toast.makeText(MoveDetailsActivity.this, "Saved to History!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("Move", "Error: saving move to history");
+                    }
+                });
             }
         });
 
