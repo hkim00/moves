@@ -177,6 +177,7 @@ public class TripActivity extends AppCompatActivity {
                 updateMoves(eventMoves);
             }
         } else if (type.equals("friends")) {
+            updateMoves(new ArrayList<>());
         } else {
             if (selectedMoves.size() == 0 && !didCheckSavedSelected && isEditingTrip) {
                 getSavedTripMoves(currentTrip);
