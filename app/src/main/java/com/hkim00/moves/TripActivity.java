@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.adapters.UserAdapter;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Trip;
@@ -47,7 +48,6 @@ public class TripActivity extends AppCompatActivity {
     private static final int LOCATION_REQUEST_CODE = 20;
     public static final int CALENDAR_REQUEST_CODE = 30;
 
-
     private EditText etTrip;
     private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected, tvFriends, tvSelectFriends;
     private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave, btnFriends, btnSelectFriends;
@@ -56,20 +56,21 @@ public class TripActivity extends AppCompatActivity {
     private ProgressBar pb;
     private RecyclerView rvMoves;
     private MoveAdapter movesAdapter;
+    private UserAdapter userAdapter;
 
     private Trip currentTrip;
     private UserLocation location;
-    public static List<CalendarDay> dates;
     private List<Move> foodMoves, eventMoves, moves;
-    public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
 
+    public static List<CalendarDay> dates;
+    public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
     public static List<ParseUser> selectedFriends;
-    private List<String> selectedFriendIds;
 
     private List<ParseObject> serverMoves;
 
     public static boolean isEditingTrip;
     private boolean didCheckSavedSelected;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +140,8 @@ public class TripActivity extends AppCompatActivity {
         serverMoves = new ArrayList<>();
 
         movesAdapter = new MoveAdapter(TripActivity.this, moves);
+        userAdapter = new UserAdapter(TripActivity.this, selectedFriends);
+
         rvMoves.setAdapter(movesAdapter);
     }
 
@@ -179,7 +182,8 @@ public class TripActivity extends AppCompatActivity {
                 updateMoves(eventMoves);
             }
         } else if (type.equals("friends")) {
-            updateMoves(new ArrayList<>());
+            rvMoves.setAdapter(userAdapter);
+            userAdapter.notifyDataSetChanged();
         } else {
             if (selectedMoves.size() == 0 && !didCheckSavedSelected && isEditingTrip) {
                 getSavedTripMoves(currentTrip);
@@ -312,6 +316,8 @@ public class TripActivity extends AppCompatActivity {
 
 
     private void updateMoves(List<Move> replacementArray) {
+        rvMoves.setAdapter(movesAdapter);
+
         moves.clear();
         moves.addAll(replacementArray);
         movesAdapter.notifyDataSetChanged();

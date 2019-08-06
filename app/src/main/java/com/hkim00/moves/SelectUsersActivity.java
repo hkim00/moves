@@ -97,6 +97,10 @@ public class SelectUsersActivity extends AppCompatActivity {
         return friendQueries;
     }
 
+
+    /*
+     * function to see if user is already selected. Need this because .contains on a list of ParseUsers does not work
+     */
     private boolean checkIfInSelectedFriends(ParseUser user) {
         List<ParseUser> selectedFriends = TripActivity.selectedFriends;
 
