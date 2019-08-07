@@ -69,7 +69,7 @@ public class TripActivity extends AppCompatActivity {
     private List<ParseObject> serverMoves;
 
     public static boolean isEditingTrip;
-    private boolean didCheckSavedSelected;
+    private boolean didCheckSavedSelected, didCheckForFriends;
 
 
     @Override
@@ -182,8 +182,12 @@ public class TripActivity extends AppCompatActivity {
                 updateMoves(eventMoves);
             }
         } else if (type.equals("friends")) {
-            rvMoves.setAdapter(userAdapter);
-            userAdapter.notifyDataSetChanged();
+            if (isEditingTrip && selectedFriends.size() == 0 && !didCheckForFriends) {
+                getTripFriends();
+            } else {
+                rvMoves.setAdapter(userAdapter);
+                userAdapter.notifyDataSetChanged();
+            }
         } else {
             if (selectedMoves.size() == 0 && !didCheckSavedSelected && isEditingTrip) {
                 getSavedTripMoves(currentTrip);
@@ -203,6 +207,7 @@ public class TripActivity extends AppCompatActivity {
         vFriendsView.setVisibility(View.INVISIBLE);
 
         didCheckSavedSelected = false;
+        didCheckForFriends = false;
 
         tvSelectFriends.setTextColor(getResources().getColor(R.color.selected_blue));
 
@@ -321,6 +326,35 @@ public class TripActivity extends AppCompatActivity {
         moves.clear();
         moves.addAll(replacementArray);
         movesAdapter.notifyDataSetChanged();
+    }
+
+
+    private void getTripFriends() {
+        pb.setVisibility(View.VISIBLE);
+        ParseQuery<ParseObject> friendQuery = ParseQuery.getQuery("Friend");
+        friendQuery.whereEqualTo("trip", currentTrip.parseObject);
+        friendQuery.include("receiver");
+        friendQuery.findInBackground(((objects, e) -> {
+            if (e == null) {
+                for (int i = 0; i < objects.size(); i++) {
+                    ParseUser receiver = objects.get(i).getParseUser("receiver");
+                    selectedFriends.add(receiver);
+                }
+
+                pb.setVisibility(View.INVISIBLE);
+                didCheckForFriends = true;
+
+                rvMoves.setAdapter(userAdapter);
+                userAdapter.notifyDataSetChanged();
+            } else {
+                pb.setVisibility(View.INVISIBLE);
+                didCheckForFriends = true;
+
+                Toast.makeText(getApplicationContext(), "error getting friends", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.getMessage());
+                e.printStackTrace();
+            }
+        }));
     }
 
 

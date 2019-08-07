@@ -311,17 +311,15 @@ public class HomeFragment extends Fragment {
     private void getNextTrip() {
         ParseQuery<ParseObject> tripQuery = ParseQuery.getQuery("Trip");
         tripQuery.whereEqualTo("owner", ParseUser.getCurrentUser());
-        tripQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, ParseException e) {
-                if (e == null && object != null) {
-                    Trip trip = Trip.fromParseObject(object);
+        tripQuery.orderByDescending("createdAt");
+        tripQuery.getFirstInBackground((object, e) -> {
+            if (e == null && object != null) {
+                Trip trip = Trip.fromParseObject(object);
 
-                    Intent intent = new Intent(getContext(), TripActivity.class);
-                    intent.putExtra("trip", Parcels.wrap(trip));
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-                }
+                Intent intent = new Intent(getContext(), TripActivity.class);
+                intent.putExtra("trip", Parcels.wrap(trip));
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
             }
         });
     }
