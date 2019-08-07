@@ -544,7 +544,7 @@ public class HomeFragment extends Fragment {
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
-      
+
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
         }

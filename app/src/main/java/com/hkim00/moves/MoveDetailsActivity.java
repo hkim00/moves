@@ -14,6 +14,8 @@ import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import com.hkim00.moves.models.Cuisine;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,12 +23,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.hkim00.moves.fragments.SearchFragment;
+
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
 
+import com.hkim00.moves.util.ParseUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -75,6 +81,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
 
 
+
+    Restaurant restaurant;
+    Event event;
+    MoveText prefCuisine;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +101,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         displayButtonStatus();
 
         lyftButton();
+
     }
 
     @Override
@@ -102,8 +115,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
         if (move.moveType.equals("food")) {
             getFoodView();
-        } else {
+        } else if(move.moveType.equals("event")) {
             getEventView();
+        } else {
+            prefCuisine = (MoveText) move;
+            Toast.makeText(getApplicationContext(), prefCuisine.Cuisine, Toast.LENGTH_SHORT).show();
+            return;
         }
 
         isTrip = getIntent().getBooleanExtra("isTrip", false);
@@ -271,6 +288,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         addMapFragment();
     }
 
+
     private void getEventDetails(String id) {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
         String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
@@ -316,6 +334,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
             }
         });
     }
+
 
     private void displayButtonStatus() {
         if (move != null) {
@@ -382,8 +401,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                 Log.d("Move", "Error: saving move to history");
                             }
                         }
-                    });
-                }
+                        Log.d("Move", "Move saved in History Successfully");
+                        Toast.makeText(MoveDetailsActivity.this, "Saved to History!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("Move", "Error: saving move to history");
+                    }
+                });
             }
         });
 
@@ -407,6 +430,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                                 ivSave.setImageResource(R.drawable.ufi_save_active);
                                 objects.get(i).saveInBackground();
                             }
+
 
                         }
                     } else { // user is saving a move that has not been completed ever before

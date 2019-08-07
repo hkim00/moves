@@ -17,10 +17,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.hkim00.moves.LogInActivity;
+
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Move;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -34,7 +38,7 @@ public class ProfileFragment extends Fragment {
 
     private Button btnSaved, btnFavorites, btnLogout;
     private TextView tvName;
-    private ImageView ivSaved, ivFavorites;
+    private ImageView ivProfilePic, ivSaved, ivFavorites;
 
     private RecyclerView rvMoves;
     private MoveAdapter movesAdapter;
@@ -64,6 +68,7 @@ public class ProfileFragment extends Fragment {
 
     private void getViewIds(View view) {
         tvName = view.findViewById(R.id.tvName);
+        ivProfilePic = view.findViewById(R.id.ivProfilePic);
         ivSaved = view.findViewById(R.id.ivSaved);
         ivFavorites = view.findViewById(R.id.ivFavorites);
 
@@ -77,6 +82,16 @@ public class ProfileFragment extends Fragment {
         currUser = ParseUser.getCurrentUser();
         tvName.setText(currUser.getUsername());
 
+        if (currUser.has("profilePhoto")) {
+            ParseFile profileImage = currUser.getParseFile("profilePhoto");
+            if (profileImage != null) {
+                Glide.with(getContext())
+                        .load(profileImage.getUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(ivProfilePic);
+            }
+        }
+
         getMoveLists("favorites");
     }
 
@@ -89,6 +104,7 @@ public class ProfileFragment extends Fragment {
 
         movesAdapter = new MoveAdapter(getContext(), moves);
         rvMoves.setAdapter(movesAdapter);
+
     }
 
     private void getMoveLists(String listType) {

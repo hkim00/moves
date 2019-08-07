@@ -1,26 +1,26 @@
 package com.hkim00.moves;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Move;
-import com.parse.CountCallback;
-import com.parse.DeleteCallback;
-import com.parse.FindCallback;
-import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
@@ -32,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
     private final static String TAG = "ProfileActivity";
 
     private Button btnSaved, btnFavorites, btnLogout;
+    private ImageView ivProfilePic;
     private RecyclerView rvFavorites;
     private RecyclerView rvSaved;
 
@@ -71,9 +72,21 @@ public class ProfileActivity extends AppCompatActivity {
     private void fillUserInfo() {
         user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
         tvName.setText(user.getUsername());
+
+        if (user.has("profilePhoto")) {
+            ParseFile profileImage = user.getParseFile("profilePhoto");
+            if (profileImage != null) {
+
+                Glide.with(getApplicationContext())
+                        .load(profileImage.getUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(ivProfilePic);
+            }
+        }
     }
 
     private void findViewIds() {
+        ivProfilePic = findViewById(R.id.ivProfilePic);
         btnSaved = findViewById(R.id.btnSave);
         btnFavorites = findViewById(R.id.btnFavorite);
         btnLogout = findViewById(R.id.btnLogout);
