@@ -64,7 +64,7 @@ public class TripActivity extends AppCompatActivity {
 
     public static List<CalendarDay> dates;
     public static List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
-    public static List<ParseUser> selectedFriends;
+    public static List<ParseUser> selectedFriends, newSelectedFriends;
 
     private List<ParseObject> serverMoves;
 
@@ -380,6 +380,7 @@ public class TripActivity extends AppCompatActivity {
                     UserLocation.clearCurrentTripLocation(getApplicationContext());
 
                     saveTripMoves(trip);
+                    saveTripFriends(trip);
 
                     onBackPressed();
                 } else {
@@ -418,6 +419,34 @@ public class TripActivity extends AppCompatActivity {
                 onBackPressed();
             } else {
                 Toast.makeText(getApplicationContext(), "error updating trip", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void saveTripFriends(ParseObject trip) {
+        if (selectedFriends.size() > 0 && !isEditingTrip) {
+            for (ParseUser selectedFriend : selectedFriends) {
+                saveFriendToTrip(selectedFriend, trip);
+            }
+        } else if (newSelectedFriends.size() > 0 && isEditingTrip) {
+            for (ParseUser selectedFriend : newSelectedFriends) {
+                saveFriendToTrip(selectedFriend, trip);
+            }
+        }
+    }
+
+
+    private void saveFriendToTrip(ParseUser user, ParseObject trip) {
+        ParseObject friend = new ParseObject("Friend");
+
+        friend.put("trip", trip);
+        friend.put("receiver", user);
+
+        friend.saveInBackground((e) -> {
+            if (e != null) {
+                Toast.makeText(getApplicationContext(), "error saving friend to trip, " + user.getUsername(), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();
             }

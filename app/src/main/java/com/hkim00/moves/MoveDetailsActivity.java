@@ -372,42 +372,33 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void setupButtons() {
-        btnChooseMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (move != null) {
-                    ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
-                    detailsQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException e) {
-                            if (e == null) {
-                                if (move.moveType.equals("food")) {
-                                    currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.name));
-                                } else {
-                                    currUser.addAllUnique("eventsCompleted", Arrays.asList(move.name));
-                                }
-                                currUser.saveInBackground();
-                                if (objects.size() == 0) { // occurs if the user has not ever completed this move
-                                    ParseObject currObj = new ParseObject("Move");
-                                    currObj.put("name", move.name);
-                                    currObj.put("placeId", move.id);
-                                    currObj.put("moveType", (move.moveType));
-                                    currObj.put("user", currUser);
-                                    currObj.put("didComplete", true);
-                                    currObj.put("count", 0);
-                                    currObj.saveInBackground();
-                                } else { // the user has already completed the move
-                                    for (int i = 0; i < objects.size(); i++) {
-                                        objects.get(i).put("didComplete", true);
-                                        objects.get(i).put("didSave", false); // user cannot save a move that has been done
-                                        ivSave.setImageResource(R.drawable.ufi_save);
-                                        objects.get(i).saveInBackground();
-                                    }
-                                }
-                                Log.d("Move", "Move saved in History Successfully");
-                                Toast.makeText(MoveDetailsActivity.this, "Saved to History!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Log.d("Move", "Error: saving move to history");
+        btnChooseMove.setOnClickListener(view -> {
+            if (move != null) {
+                ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
+                detailsQuery.findInBackground((objects, e) -> {
+                    if (e == null) {
+                        if (move.moveType.equals("food")) {
+                            currUser.addAllUnique("restaurantsCompleted", Arrays.asList(move.name));
+                        } else {
+                            currUser.addAllUnique("eventsCompleted", Arrays.asList(move.name));
+                        }
+
+                        currUser.saveInBackground();
+                        if (objects.size() == 0) { // occurs if the user has not ever completed this move
+                            ParseObject currObj = new ParseObject("Move");
+                            currObj.put("name", move.name);
+                            currObj.put("placeId", move.id);
+                            currObj.put("moveType", (move.moveType));
+                            currObj.put("user", currUser);
+                            currObj.put("didComplete", true);
+                            currObj.put("count", 0);
+                            currObj.saveInBackground();
+                        } else { // the user has already completed the move
+                            for (int i = 0; i < objects.size(); i++) {
+                                objects.get(i).put("didComplete", true);
+                                objects.get(i).put("didSave", false); // user cannot save a move that has been done
+                                ivSave.setImageResource(R.drawable.ufi_save);
+                                objects.get(i).saveInBackground();
                             }
                         }
                         Log.d("Move", "Move saved in History Successfully");
