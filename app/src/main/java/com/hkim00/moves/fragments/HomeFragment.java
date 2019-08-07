@@ -25,22 +25,15 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
-
 import com.hkim00.moves.TripActivity;
-import com.hkim00.moves.models.Trip;
-import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.models.Move;
-
-import com.hkim00.moves.models.Event;
-import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
+import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-
-import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -569,12 +562,12 @@ public class HomeFragment extends Fragment {
                     JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
                     JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
                     if (currUserPrefList != null || friendPrefList != null) {
-                            for (int i = 0; i < currUserPrefList.length(); i++) {
-                                addToPref(totalPref, currUserPrefList, params);
-                            }
-                            for (int i = 0; i < friendPrefList.length(); i++) {
-                                addToPref(totalPref, friendPrefList, params);
-                            }
+                        for (int i = 0; i < currUserPrefList.length(); i++) {
+                            addToPref(totalPref, currUserPrefList, params);
+                        }
+                        for (int i = 0; i < friendPrefList.length(); i++) {
+                            addToPref(totalPref, friendPrefList, params);
+                        }
                     }
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
