@@ -6,6 +6,7 @@ import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -23,8 +24,13 @@ public class ParseUtil {
         return parseQuery;
     }
 
+
+
+
+
     // if the move has not been done by current user, this method will save a new move
     // if it has been done before, then it will save/unsave the move
+
     public static void getDidSave(String moveType, List<ParseObject> objects, Move move) {
         ParseUser currUser = ParseUser.getCurrentUser();
         if (objects.size() > 0) {
