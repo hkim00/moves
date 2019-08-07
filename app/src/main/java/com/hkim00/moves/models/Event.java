@@ -11,62 +11,28 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
+import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
+
 @Parcel
 public class Event extends Move {
     public int count;
-    public String name, id, text;
+    public String name, id, startTime, priceRange;
     public Boolean didSave, didFavorite, didComplete;
 
-    public String moveType = "event";
-
-    public Event() {}
-
-    public static List<Move> arrayFromParseObjects(List<ParseObject> objects) {
-        List<Move> events = new ArrayList<>();
-
-        for (int i = 0; i < objects.size(); i++) {
-            Event event = Event.fromParseObject(objects.get(i));
-            events.add(event);
-        }
-        return events;
+    public Event() {
+        super();
+        super.moveType = "event";
     }
 
-    public static List<Move> arrayFromJSONArray(JSONArray objects) {
-        List<Move> eventMoves = new ArrayList<>();
-
-        try {
-            for (int i = 0; i < objects.length(); i++) {
-                Event event = Event.fromJSON(objects.getJSONObject(i));
-                eventMoves.add(event);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return eventMoves;
+    public void fromDetailsJSON(JSONObject jsonObject) throws JSONException {
+        super.name = jsonObject.getString("name");
+        super.id = jsonObject.getString("id");
+        this.startTime = getStartTime(jsonObject);
+        this.priceRange = getPriceRange(jsonObject);
+        this.lat = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
+        this.lng = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
     }
 
 
-    public static Event fromJSON(JSONObject jsonObject) throws JSONException {
-        Event event = new Event();
-
-        event.name = jsonObject.getString("name");
-        event.id = jsonObject.getString("id");
-
-        return event;
-    }
-
-
-    public static Event fromParseObject(ParseObject parseObject) {
-        Event event = new Event();
-
-        event.name = parseObject.getString("name");
-        event.id = parseObject.getString("placeId");
-
-        event.didSave = parseObject.getBoolean("didSave");
-        event.didFavorite = parseObject.getBoolean("didFavorite");
-        event.didComplete = parseObject.getBoolean("didComplete");
-
-        return event;
-    }
 }

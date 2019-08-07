@@ -24,6 +24,8 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.hkim00.moves.fragments.SearchFragment;
+
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveText;
@@ -110,20 +112,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
     private void getMove() {
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
-        ParseQuery<ParseObject> detailsQuery = getParseQuery(currUser, move);
-        detailsQuery.findInBackground((objects, e) -> {
-            if (objects.size() == 0) {
-                ParseObject currObj = new ParseObject("Move");
-                currObj.put("name", move.name);
-                currObj.put("placeId", move.id);
-                currObj.put("moveType", move.moveType);
-                currObj.put("user", currUser);
-                currObj.put("didComplete", false);
-                currObj.put("didSave", false);
-                currObj.put("didFavorite", false);
-                currObj.saveInBackground();
-            }
-        });
 
         if (move.moveType.equals("food")) {
             getFoodView();
@@ -191,7 +179,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
     private void getFoodView() {
          tvMoveName.setText(move.name);
-
          if (move.lat == null) {
              getFoodDetails();
              return;
@@ -202,10 +189,10 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
         addMapFragment();
 
           String price = "";
-          if (move.price_level < 0) {
+          if (((Restaurant) move).price_level < 0) {
               price = "Unknown";
           } else {
-              for (int i = 0; i < move.price_level; i++) {
+              for (int i = 0; i < ((Restaurant) move).price_level; i++) {
                   price += '$';
               }
           }
@@ -219,10 +206,10 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
 
           tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
 
-          if (move.rating < 0) {
+          if (((Restaurant) move).rating < 0) {
               moveRating.setVisibility(View.INVISIBLE);
           } else {
-              float moveRate = move.rating.floatValue();
+              float moveRate = ((Restaurant) move).rating.floatValue();
               moveRating.setRating(moveRate = moveRate > 0 ? moveRate / 2.0f : moveRate);
           }
     }
@@ -241,8 +228,8 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                 JSONObject result;
                 try {
                     result = response.getJSONObject("result");
-
-                    Move moveResult = Move.fromJSON(result, "food");
+                    Restaurant moveResult = new Restaurant();
+                    moveResult.fromJSON(result, "food");
                     move = moveResult;
 
                     if (move.lat != null) {
@@ -280,7 +267,6 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void getEventView() {
-        tvMoveName.setText(move.name);
         ivGroupNum.setVisibility(View.INVISIBLE);
         tvGroupNum.setVisibility(View.INVISIBLE);
         moveRating.setVisibility(View.INVISIBLE);
@@ -292,7 +278,12 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
             return;
         }
 
+        tvMoveName.setText(move.name);
         tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
+
+        tvTime.setText(((Event) move).startTime);
+        tvPrice.setText(((Event) move).priceRange);
+
         // add map fragment only after necessary information obtained from getEventDetails(id)
         addMapFragment();
     }
@@ -309,14 +300,13 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
-                 String startTime = getStartTime(response);
-                 String priceRange = getPriceRange(response);
-                 tvTime.setText(startTime);
-                 tvPrice.setText(priceRange);
+
                 try {
-                    move.lat = response.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
-                    move.lng = response.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
-                } catch (JSONException e) {
+                    Event moveResult = new Event();
+                    moveResult.fromDetailsJSON(response);
+                    move = moveResult;
+
+                  } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
@@ -367,6 +357,7 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                 }
             });
         } else {
+
             Log.i(TAG, "Error finding current move.");
         }
     }
