@@ -15,7 +15,7 @@ import java.util.List;
 @Parcel
 public class Move {
 
-    public String name, id, moveType;
+    public String name, id, moveType, cuisine;
     public Boolean didSave, didFavorite, didComplete;
 
     public Double lat, lng;

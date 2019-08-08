@@ -4,10 +4,14 @@ import android.service.restrictions.RestrictionsReceiver;
 
 import com.hkim00.moves.util.ParseUtil;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,10 +25,11 @@ public class Cuisine {
 
     public static String currCuisine;
     public static List<Move> results;
-    public static HashMap<String, String> moveToType;
+    public static ArrayList<HashMap<String, Integer>> parseList;
 
 
-    public static HashMap<String,Integer> mostPrefCuisine = new HashMap<>();
+    private static HashMap<String,Integer> mostPrefCuisine = new HashMap<>();
+    public static HashMap<String,Integer> orderedMostPrefs;
 
 
 
@@ -39,8 +44,11 @@ public class Cuisine {
         }
         mostPrefCuisine.put(cuisine, mostPrefCuisine.get(cuisine) + 1);
 
-        HashMap<String, Integer> orderedPrefs = orderedHashMap(mostPrefCuisine);
-        return orderedPrefs;
+        orderedMostPrefs = orderedHashMap(mostPrefCuisine);
+        parseList.add(orderedMostPrefs);
+        ParseUser.getCurrentUser().put("mostPrefFood", parseList);
+
+        return orderedMostPrefs;
     }
 
     private static HashMap<String, Integer> orderedHashMap(HashMap<String, Integer> original) {
@@ -60,5 +68,6 @@ public class Cuisine {
 
         return (HashMap<String, Integer>) sortedMap;
     }
+
 
 }

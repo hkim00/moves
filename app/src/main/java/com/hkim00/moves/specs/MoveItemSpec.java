@@ -34,7 +34,8 @@ public class MoveItemSpec {
                                     @Prop Move move) {
 
 
-        String name = move.name;
+        String name = (move.name == null) ? ((MoveText) move).Cuisine : move.name ;
+        String cuisine = move.cuisine;
 
 
         return Column.create(c)

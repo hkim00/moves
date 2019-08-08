@@ -8,17 +8,14 @@ public class MoveText extends Move {
     public String Cuisine;
 
     public MoveText() {
+        super();
         Cuisine = "";
+        super.moveType = "moveText";
     }
 
     public MoveText(String text) {
         this.Cuisine = text;
     }
 
-    /*
-    @Override
-    public int getMoveType() {
-        return 3;
-    }
-    */
+
 }

@@ -26,13 +26,17 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MoveText;
+import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -66,6 +70,7 @@ public class HomeFragment extends Fragment {
     ParseUser friend;
 
     private String moveType = "";
+
     private int distance;
     private int priceLevel;
     private List<Move> moveResults;
@@ -280,7 +285,7 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
             }
-            });
+        });
 
         btnRiskyMove.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -532,9 +537,9 @@ public class HomeFragment extends Fragment {
 
         RequestParams params = new RequestParams();
         params.put("key", getString(R.string.api_key));
-        params.put("location",location.lat + "," + location.lng);
+        params.put("location", location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
-        params.put("type","restaurant");
+        params.put("type", "restaurant");
 
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
@@ -552,7 +557,6 @@ public class HomeFragment extends Fragment {
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
                         String pref = totalPref.get(i);
-                        params.put("keyword", pref);
                     }
                 }
             } else {
@@ -570,7 +574,6 @@ public class HomeFragment extends Fragment {
                 } else {
                     for (int i = 0; i < totalPref.size(); i++) {
                         String pref = totalPref.get(i);
-                        params.put("keyword", pref);
                     }
                 }
             }
@@ -579,49 +582,84 @@ public class HomeFragment extends Fragment {
         Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
         Log.i("HomeFragment", uniqueTotalPref.toString());
 
-        HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
 
-                moveResults.clear();
 
-                try {
-                    JSONArray jsonArray = response.getJSONArray("results");
-                    Move.arrayFromJSONArray(moveResults, jsonArray, "food");
-                    goToMovesActivity(moveResults);
+        for (String pref : uniqueTotalPref) {
+            params.put("keyword", pref);
+            HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                    JSONArray results;
+                    try {
+                        results = response.getJSONArray("results");
 
-                } catch (JSONException e) {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+                        for (int i = 0; i < results.length(); i++) {
+                            Restaurant restaurant = new Restaurant();
+                            restaurant.fromJSON(results.getJSONObject(i), "food");
+
+                            ParseQuery<ParseObject> getResults = ParseQuery.getQuery("Move");
+                            getResults.whereEqualTo("name", restaurant.name);
+                            getResults.whereEqualTo("moveType", moveType);
+                            getResults.whereEqualTo("user", currUser);
+                            getResults.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> objects, ParseException e) {
+                                    for (int i = 0; i < objects.size(); i++) {
+                                        if (moveType == "food") {
+                                            objects.get(i).put("cuisine", pref);
+
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+
+                        moveResults.add(new MoveText(pref));
+
+                        Move.arrayFromJSONArray(moveResults, response.getJSONArray("results"), moveType);
+                        goToMovesActivity(moveResults);
+
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                new StatusCodeHandler(TAG, statusCode);
-                throwable.printStackTrace();
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                new StatusCodeHandler(TAG, statusCode);
-                throwable.printStackTrace();
-            }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    new StatusCodeHandler(TAG, statusCode);
+                    throwable.printStackTrace();
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                new StatusCodeHandler(TAG, statusCode);
-                throwable.printStackTrace();
-            }
-        });
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    new StatusCodeHandler(TAG, statusCode);
+                    throwable.printStackTrace();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    new StatusCodeHandler(TAG, statusCode);
+                    throwable.printStackTrace();
+                }
+            });
+        }
     }
 
+    private int counter = 0;
     private void goToMovesActivity(List<Move> moves) {
-        Intent intent = new Intent(getContext(), MovesActivity.class);
-        intent.putExtra("moves", Parcels.wrap(moves));
-        startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+        counter++;
+        if (counter == 2) {
+            Intent intent = new Intent(getContext(), MovesActivity.class);
+            intent.putExtra("moves", Parcels.wrap(moves));
+            startActivity(intent);
+            counter = 0;
+            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+        }
     }
 
     @Override
@@ -635,20 +673,4 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void UpdateMoveList() {
-        Map<String, Integer> PrefDict = new HashMap<String, Integer>();
-        ArrayList<Map<String, Integer>> al = new ArrayList();
-
-        PrefDict.put ("key1", 1);
-        PrefDict.put ("key2", 2);
-        PrefDict.put ("key3", 3);
-        PrefDict.put ("key4", 4);
-
-        al.add(PrefDict);
-
-        ParseUser currUser = ParseUser.getCurrentUser();
-        currUser.put("tester", al);
-        currUser.saveInBackground();
-    }
 }
-

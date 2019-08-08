@@ -119,9 +119,11 @@ public class HistoryFragment extends Fragment {
                     for (int i = 0; i < objects.size(); i++) {
                         if (objects.get(i).getString("moveType").equals("food")) {
                             moves.add(Move.fromParseObject(objects.get(i)));
+                            Cuisine.getMostPref(objects.get(i).getString("cuisine"));
                         } else {
                             moves.add(Move.fromParseObject(objects.get(i)));
                         }
+
                     }
                     pastMoves.addAll(moves);
                     addContents(moves);
