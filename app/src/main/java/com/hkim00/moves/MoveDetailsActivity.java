@@ -267,6 +267,8 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void getEventView() {
+        Event event = (Event) move;
+
         ivGroupNum.setVisibility(View.INVISIBLE);
         tvGroupNum.setVisibility(View.INVISIBLE);
         moveRating.setVisibility(View.INVISIBLE);
@@ -278,11 +280,11 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
             return;
         }
 
-        tvMoveName.setText(move.name);
-        tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
+        tvMoveName.setText(event.name);
+        tvDistance.setText(event.distanceFromLocation(getApplicationContext()) + " mi");
 
-        tvTime.setText(((Event) move).startTime);
-        tvPrice.setText(((Event) move).priceRange);
+        tvTime.setText(event.startTime);
+        tvPrice.setText(event.priceRange);
 
         // add map fragment only after necessary information obtained from getEventDetails(id)
         addMapFragment();
@@ -383,6 +385,14 @@ public class MoveDetailsActivity extends AppCompatActivity implements OnMapReady
                             currObj.put("user", currUser);
                             currObj.put("didComplete", true);
                             currObj.put("count", 0);
+                            currObj.put("lat", (move).lat);
+                            currObj.put("lng", (move).lng);
+                            if (move.moveType.equals("food")){
+                                currObj.put("price_level", ((Restaurant)move).price_level);
+                            } else {
+                                currObj.put("genre", ((Event)move).genre);
+                            }
+
                             currObj.saveInBackground();
                         } else { // the user has already completed the move
                             for (int i = 0; i < objects.size(); i++) {
