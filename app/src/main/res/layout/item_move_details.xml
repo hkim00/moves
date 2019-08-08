@@ -38,7 +38,7 @@
         android:textColor="#323232"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCuisine" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -65,12 +65,11 @@
         android:id="@+id/imageView3"
         android:layout_width="40dp"
         android:layout_height="0dp"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
-        app:layout_constraintStart_toEndOf="@+id/tvPrice"
-        app:layout_constraintTop_toTopOf="@+id/tvPrice"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCuisine"
+        app:layout_constraintStart_toStartOf="@+id/tvName"
+        app:layout_constraintTop_toTopOf="@+id/tvCuisine"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/cuisine" />
 
@@ -79,12 +78,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
         android:text="Cuisine"
         android:textColor="#323232"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
         app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="@+id/tvPrice" />
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
     <RatingBar
         android:id="@+id/ratingBar"
@@ -96,4 +95,24 @@
         android:stepSize=".1"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <ImageView
+        android:id="@+id/ivTime"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTime"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/tvTime"
+        app:srcCompat="@drawable/schedule" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Time"
+        android:textColor="#323232"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/ivTime"
+        app:layout_constraintTop_toBottomOf="@+id/tvDistance" />
 </androidx.constraintlayout.widget.ConstraintLayout>

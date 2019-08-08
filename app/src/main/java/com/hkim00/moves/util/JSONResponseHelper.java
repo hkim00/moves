@@ -5,6 +5,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.hkim00.moves.util.DateTimeFormatters.formatDate;
 import static com.hkim00.moves.util.DateTimeFormatters.formatTime;
 import static java.security.AccessController.getContext;
 
@@ -36,5 +37,17 @@ public class JSONResponseHelper {
             return formattedPriceRange;
         }
         return formattedPriceRange;
+    }
+
+    public static String getStartDate(JSONObject response) {
+        String formattedStart = "N/A";
+        try {
+            String rawStart = response.getJSONObject("dates").getJSONObject("start").getString("localDate");
+            formattedStart = formatDate(rawStart);
+        } catch (JSONException e)  {
+            Log.e(TAG, "Error getting event start time!" + " Error msg from JSON: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return formattedStart;
     }
 }

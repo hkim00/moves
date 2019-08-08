@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.UserLocation;
@@ -83,11 +85,9 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public class DetailsViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvName;
-        private TextView tvDistance;
-        private TextView tvPrice;
-        private TextView tvCuisine;
+        private TextView tvName, tvDistance, tvPrice, tvCuisine, tvTime;
         private RatingBar ratingBar;
+        private ImageView ivTime;
 
 
         public DetailsViewHolder(@NonNull View itemView) {
@@ -97,18 +97,27 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvDistance = itemView.findViewById(R.id.tvDistance);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvCuisine = itemView.findViewById(R.id.tvCuisine);
+            tvTime = itemView.findViewById(R.id.tvTime);
             ratingBar = itemView.findViewById(R.id.ratingBar);
+            ivTime = itemView.findViewById(R.id.ivTime);
         }
 
 
         public void bind(Move move) {
             tvName.setText(move.name);
 
+            ratingBar.setVisibility((move.moveType.equals("food")) ? View.VISIBLE : View.INVISIBLE);
+            ivTime.setVisibility((move.moveType.equals("food")) ? View.GONE : View.VISIBLE);
+            tvTime.setVisibility((move.moveType.equals("food")) ? View.GONE : View.VISIBLE);
+
+
             if (move.lat != null && move.lng != null) {
                 tvDistance.setText(move.distanceFromLocation(context) + " mi");
 
                 if (move.moveType.equals("food")) {
                     setFoodView(move);
+                } else {
+                    setEventView(move);
                 }
             }
         }
@@ -116,7 +125,6 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private void setFoodView(Move move) {
             tvCuisine.setText(move.cuisine);
             Restaurant restaurant = (Restaurant) move;
-
 
             String price = "";
             if (restaurant.price_level < 0) {
@@ -134,6 +142,14 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 float moveRate = ((Restaurant) move).rating.floatValue();
                 ratingBar.setRating(moveRate > 0 ? moveRate / 2.0f : moveRate);
             }
+        }
+
+
+        private void setEventView(Move move) {
+            Event event = (Event) move;
+
+            tvPrice.setText(event.priceRange);
+            tvTime.setText(event.startDate + "  •  " + event.startTime);
         }
 
     }

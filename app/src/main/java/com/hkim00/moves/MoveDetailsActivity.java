@@ -117,6 +117,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void getMoveDetails() {
         if (move.moveType.equals("food")) {
             getFoodDetails();
+        } else {
+            getEventDetails();
         }
     }
 
@@ -283,9 +285,9 @@ public class MoveDetailsActivity extends AppCompatActivity {
 //    }
 
 
-    private void getEventDetails(String id) {
+    private void getEventDetails() {
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
-        String apiUrl = API_BASE_URL_TMASTER + "/" + id + ".json";
+        String apiUrl = API_BASE_URL_TMASTER + "/" + move.id + ".json";
 
         RequestParams params = new RequestParams();
         params.put("apikey", getString(R.string.api_key_tm));
@@ -300,12 +302,15 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     moveResult.fromDetailsJSON(response);
                     move = moveResult;
 
+                    moves.clear();
+                    moves.add(move);
+
+                    if (move.lat != null) {
+                        adapter.notifyDataSetChanged();
+                    }
+
                   } catch (JSONException e) {
                     e.printStackTrace();
-                }
-
-                if (move.lat != null) {
-                //    getEventView();
                 }
             }
 
