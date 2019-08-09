@@ -98,4 +98,8 @@ dependencies {
 
     //Calendar view
     implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
+
+
+    //Card view
+    implementation "androidx.cardview:cardview:1.0.0"
 }
