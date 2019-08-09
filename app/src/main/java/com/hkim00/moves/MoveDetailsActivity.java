@@ -25,8 +25,6 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-//import util methods: JSONObject response formatters
-
 public class MoveDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "MoveDetailsActivity";
@@ -83,8 +81,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
             getEventDetails();
         }
     }
-
-    private void getMove() {
 
     private void getFoodDetails() {
         String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
