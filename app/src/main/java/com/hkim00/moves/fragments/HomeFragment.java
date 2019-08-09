@@ -25,6 +25,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.SearchActivity;
 import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
