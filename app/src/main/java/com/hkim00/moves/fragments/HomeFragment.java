@@ -294,13 +294,13 @@ public class HomeFragment extends Fragment {
 
         if (isFoodType) {
             if (foodResults.size() == 0) {
-                getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
+                getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
             } else {
                 updateRecycler(foodResults);
             }
         } else {
             if (eventResults.size() == 0) {
-                getNearbyEvents(new ArrayList<>(), true, isFriendMove);
+                getNearbyEvents(new ArrayList<>(), false, isFriendMove);
             } else {
                 updateRecycler(eventResults);
             }
