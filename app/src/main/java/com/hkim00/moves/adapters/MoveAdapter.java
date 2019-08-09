@@ -104,18 +104,9 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
                 tvDetail2.setText(move.genre);
 
             }
+            ivMoveImage.setImageResource(R.drawable.mexican);
         }
-
-        public void setFoodView(Move move){
-            Restaurant restaurant = (Restaurant) move;
-            tvDetail2.setText(restaurant.price_level);
-        }
-
-        public void setEventView(Move move){
-            Event event = (Event) move;
-            tvDetail2.setText(event.genre);
-        }
-
+        
         @Override
         public void onClick(View v) {
             goToMoveDetails();
