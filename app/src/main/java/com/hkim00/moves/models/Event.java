@@ -1,15 +1,8 @@
 package com.hkim00.moves.models;
 
-import com.parse.ParseObject;
-
-import org.json.JSONArray;
-import org.parceler.Parcel;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.parceler.Parcel;
 
 import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
 import static com.hkim00.moves.util.JSONResponseHelper.getStartDate;
@@ -18,7 +11,7 @@ import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
 @Parcel
 public class Event extends Move {
     public int count;
-    public String name, id, startDate, startTime, priceRange;
+    public String name, id, startDate, startTime, priceRange, venueName, venuePhotoUrl;
     public Boolean didSave, didFavorite, didComplete;
 
     public Event() {
@@ -37,6 +30,11 @@ public class Event extends Move {
 
         this.lat = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
         this.lng = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
+
+        if (jsonObject.has("seatmap")) {
+            venueName = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getString("name");
+            venuePhotoUrl = jsonObject.getJSONObject("seatmap").getString("staticUrl");
+        }
     }
 
 

@@ -2,67 +2,30 @@ package com.hkim00.moves;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RatingBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.hkim00.moves.adapters.MoveDetailsAdapter;
-import com.hkim00.moves.adapters.UserAdapter;
-import com.hkim00.moves.models.Cuisine;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import com.hkim00.moves.fragments.SearchFragment;
-
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
-import com.hkim00.moves.models.UserLocation;
-
-import com.hkim00.moves.util.ParseUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
-import com.lyft.lyftbutton.LyftButton;
-import com.lyft.lyftbutton.RideParams;
-import com.lyft.networking.ApiConfig;
-import com.lyft.deeplink.RideTypeEnum;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.parceler.Parcels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
 //import util methods: JSONObject response formatters
-import static com.hkim00.moves.util.JSONResponseHelper.getPriceRange;
-import static com.hkim00.moves.util.JSONResponseHelper.getStartTime;
-import static com.hkim00.moves.util.ParseUtil.getParseQuery;
 
 public class MoveDetailsActivity extends AppCompatActivity {
 
@@ -72,7 +35,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private MoveDetailsAdapter adapter;
     private Move move;
     private List<Move> moves;
-
 
     private boolean isTrip;
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
@@ -261,28 +223,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
             }
         });
     }
-
-//    private void getEventView() {
-//        ivGroupNum.setVisibility(View.INVISIBLE);
-//        tvGroupNum.setVisibility(View.INVISIBLE);
-//        moveRating.setVisibility(View.INVISIBLE);
-//
-//        String id = move.id;
-//
-//        if (move.lat == null) {
-//            getEventDetails(id);
-//            return;
-//        }
-//
-//        tvMoveName.setText(move.name);
-//        tvDistance.setText(move.distanceFromLocation(getApplicationContext()) + " mi");
-//
-//        tvTime.setText(((Event) move).startTime);
-//        tvPrice.setText(((Event) move).priceRange);
-//
-//        // add map fragment only after necessary information obtained from getEventDetails(id)
-//        addMapFragment();
-//    }
 
 
     private void getEventDetails() {
@@ -498,26 +438,5 @@ public class MoveDetailsActivity extends AppCompatActivity {
 //                btnAddToTrip.setText("Add To Trip");
 //            }
 //        }
-//    }
-//
-//    private void lyftButton() {
-//        ApiConfig apiConfig = new ApiConfig.Builder()
-//                .setClientId(getString(R.string.client_id_lyft))
-//                //waiting for Lyft to approve developer signup request
-//                .setClientToken("...")
-//                .build();
-//
-//        LyftButton lyftButton = findViewById(R.id.lyft_button);
-//        lyftButton.setApiConfig(apiConfig);
-//        UserLocation currLocation = UserLocation.getCurrentLocation(this);
-//
-//        RideParams.Builder rideParamsBuilder = new RideParams.Builder()
-//                .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
-//                //TODO: add correct dropoff location once Lyft approves developer request
-//                .setDropoffLocation(37.759234, -122.4135125);
-//        rideParamsBuilder.setRideTypeEnum(RideTypeEnum.STANDARD);
-//
-//        lyftButton.setRideParams(rideParamsBuilder.build());
-//        lyftButton.load();
 //    }
 }

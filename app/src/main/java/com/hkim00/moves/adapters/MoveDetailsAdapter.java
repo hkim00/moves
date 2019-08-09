@@ -9,15 +9,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.R;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.viewHolders.DetailsViewHolder;
 import com.hkim00.moves.viewHolders.PhotosViewHolder;
 import com.hkim00.moves.viewHolders.TransportationViewHolder;
+import com.hkim00.moves.viewHolders.VenueViewHolder;
 
 import java.util.List;
 
 public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TRANSPORTATION_POSITION = 1;
+
 
 
     private Context context;
@@ -44,12 +48,15 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (viewType == 0) {
             View view = inflater.inflate(R.layout.item_move_details, parent, false);
             viewHolder = new DetailsViewHolder(view);
-        } else if (viewType == 1) {
+        } else if (viewType == TRANSPORTATION_POSITION) {
             View view = inflater.inflate(R.layout.item_transportation, parent, false);
             viewHolder = new TransportationViewHolder(view);
         } else if (viewType == 2 && moves.get(0).moveType.equals("food")) {
             View view = inflater.inflate(R.layout.item_photos, parent, false);
             viewHolder = new PhotosViewHolder(view);
+        } else if (viewType == 2 && moves.get(0).moveType.equals("event")) {
+            View view = inflater.inflate(R.layout.item_venue, parent, false);
+            viewHolder = new VenueViewHolder(view);
         }
 
         return viewHolder;
@@ -60,12 +67,15 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (position == 0) {
             final DetailsViewHolder detailsViewHolder = (DetailsViewHolder) holder;
             detailsViewHolder.bind(context, moves.get(0));
-        } else if (position == 1) {
+        } else if (position == TRANSPORTATION_POSITION) {
             final TransportationViewHolder transportationViewHolder = (TransportationViewHolder) holder;
             transportationViewHolder.bind(context, moves.get(0));
         } else if (position == 2 && moves.get(0).moveType.equals("food")) {
             final PhotosViewHolder photosViewHolder = (PhotosViewHolder) holder;
             photosViewHolder.bind(context, moves.get(0));
+        } else if (position == 2 && moves.get(0).moveType.equals("event")) {
+            final VenueViewHolder venueViewHolder = (VenueViewHolder) holder;
+            venueViewHolder.bind(context, moves.get(0));
         }
     }
 
@@ -76,9 +86,13 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             Restaurant restaurant = (Restaurant) moves.get(0);
 
             return (restaurant.photoReferences.size() > 0) ? 3 : 2;
-        } else {
-            return 2;
+        } else if (moves.get(0).lat != null && moves.get(0).moveType.equals("event")) {
+            Event event = (Event) moves.get(0);
+
+            return (event.venueName != null && event.venuePhotoUrl != null) ? 3 : 2;
         }
+
+        return 2;
     }
 
 }
