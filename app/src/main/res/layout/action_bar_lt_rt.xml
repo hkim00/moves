@@ -16,7 +16,7 @@
         app:srcCompat="@drawable/move_logo" />
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/ivLeft"
         android:layout_width="20dp"
         android:layout_height="0dp"
         android:layout_marginTop="2dp"
@@ -27,12 +27,31 @@
         app:srcCompat="@drawable/back_arrow" />
 
     <Button
-        android:id="@+id/btnBack"
+        android:id="@+id/btnLeft"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="50dp"
         android:layout_height="0dp"
-        android:layout_marginStart="6dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+        app:layout_constraintBottom_toBottomOf="@+id/ivLeft"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView4" />
+        app:layout_constraintTop_toTopOf="@+id/ivLeft" />
+
+    <ImageView
+        android:id="@+id/ivRight"
+        android:layout_width="30dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView3"
+        app:srcCompat="@drawable/ufi_save" />
+
+    <Button
+        android:id="@+id/btnRight"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivRight"
+        app:layout_constraintEnd_toEndOf="@+id/ivRight"
+        app:layout_constraintTop_toTopOf="@+id/ivRight" />
 </androidx.constraintlayout.widget.ConstraintLayout>
