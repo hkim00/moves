@@ -4,8 +4,11 @@ import android.app.ActionBar;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +41,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "MoveDetailsActivity";
 
+    private ProgressBar progressBar;
     private RecyclerView rvMove;
     private MoveDetailsAdapter adapter;
     public static Move move;
@@ -99,7 +103,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
+        progressBar = findViewById(R.id.progressBar);
         rvMove = findViewById(R.id.rvMove);
+
+        progressBar.setVisibility(View.INVISIBLE);
 
         moves = new ArrayList<>();
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
@@ -113,6 +120,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
 
     private void getMoveDetails() {
+        progressBar.setVisibility(View.VISIBLE);
         if (move.moveType.equals("food")) {
             getFoodDetails();
         } else {
@@ -124,6 +132,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         if (move != null) {
             ParseQuery<ParseObject> detailsQuery = getParseQuery(ParseUser.getCurrentUser(), move);
             detailsQuery.findInBackground(((objects, e) -> {
+                progressBar.setVisibility(View.INVISIBLE);
                 if (e == null) {
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject moveParseObject = objects.get(0);
@@ -209,14 +218,16 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     }
 
                 } catch (JSONException e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Error getting restaurant information", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Error getting restaurant");
-
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
@@ -224,6 +235,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
@@ -231,6 +243,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Log.e(TAG, responseString);
                 throwable.printStackTrace();
@@ -264,24 +277,30 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     }
 
                   } catch (JSONException e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Error getting event information", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error getting event");
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, responseString);
                 throwable.printStackTrace();
             }

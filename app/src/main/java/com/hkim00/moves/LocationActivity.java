@@ -90,20 +90,23 @@ public class LocationActivity extends AppCompatActivity implements
         btnCurrentLocation.setOnClickListener(view -> getCurrentLocation());
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-        overridePendingTransition(R.anim.left_in, R.anim.right_out);
-    }
-
     private void setupActionBar() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.action_bar);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
         getSupportActionBar().setElevation(2);
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
     private void getViewIds() {
