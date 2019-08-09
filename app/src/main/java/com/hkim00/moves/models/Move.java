@@ -17,7 +17,8 @@ public class Move {
 
     public String name, id, moveType, cuisine;
     public Boolean didSave, didFavorite, didComplete;
-
+    public String genre;
+    public int price_level;
     public Double lat, lng;
 
     public Move() {}
@@ -33,6 +34,12 @@ public class Move {
         move.name = parseObject.getString("name");
         move.id = parseObject.getString("placeId");
         move.moveType = parseObject.getString("moveType");
+
+        move.lat = parseObject.getDouble("lat");
+        move.lng = parseObject.getDouble("lng");
+
+        move.genre = parseObject.getString("genre");
+        move.price_level = parseObject.getInt("price_level");
 
         move.didSave = parseObject.getBoolean("didSave");
         move.didFavorite = parseObject.getBoolean("didFavorite");

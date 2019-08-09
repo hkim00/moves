@@ -122,11 +122,7 @@ public class ProfileFragment extends Fragment {
                     List<Move> results = new ArrayList<>();
 
                     for (int i = 0; i < objects.size(); i++) {
-                        if (objects.get(i).getString("moveType").equals("food")) {
-                            results.add(Move.fromParseObject(objects.get(i)));
-                        } else {
-                            results.add(Move.fromParseObject(objects.get(i)));
-                        }
+                        results.add(Move.fromParseObject(objects.get(i)));
                     }
 
                     if (listType.equals("saved")) {
