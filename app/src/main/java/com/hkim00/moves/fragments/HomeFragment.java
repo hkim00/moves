@@ -89,8 +89,9 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnAddFriends, btnAddFriend;
+    private Button btnRiskyMove, btnAddFriends, btnAddFriend;
 
+    private TextView tvNoMoves;
     private RecyclerView rvMoveResults;
     private MoveCategoryAdapter adapter;
     private List<MoveCategory> moveResults, foodResults, eventResults;
@@ -215,16 +216,17 @@ public class HomeFragment extends Fragment {
         tvFriend = view.findViewById(R.id.tvFriend);
         ivAddFriends = view.findViewById(R.id.ivAddFriends);
 
-        btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
 
+        tvNoMoves = view.findViewById(R.id.tvNoMoves);
         rvMoveResults = view.findViewById(R.id.rvMoveResults);
         progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupDesign() {
+        tvNoMoves.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
 
         btnDistance.getLayoutParams().width= HomeActivity.screenWidth/3;
@@ -262,8 +264,6 @@ public class HomeFragment extends Fragment {
         btnFood.setOnClickListener(view -> toggleMoveType(true));
 
         btnEvents.setOnClickListener(view -> toggleMoveType(false));
-
-        btnMove.setOnClickListener(view -> typeMoveSelected());
 
         btnRiskyMove.setOnClickListener(view -> {
             if (moveType == "food") {
@@ -339,25 +339,6 @@ public class HomeFragment extends Fragment {
         @Override
         public void afterTextChanged(Editable s) {}
     };
-
-    private void typeMoveSelected() {
-        if (location.lat == null && location.lng == null) {
-            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (moveType.equals("")){
-            Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (moveType.equals("food")) {
-            getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
-        }
-        else if (moveType.equals("event")) {
-            getNearbyEvents(new ArrayList<>(), false, isFriendMove);
-        }
-    }
 
     private void priceLevelSelected(int priceLevel) {
 
@@ -653,6 +634,8 @@ public class HomeFragment extends Fragment {
         moveResults.clear();
         moveResults.addAll(replacementArray);
         adapter.notifyDataSetChanged();
+
+        tvNoMoves.setVisibility(replacementArray.size() == 0 ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
