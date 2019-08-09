@@ -13,30 +13,33 @@ import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.PhotoAdapter;
 import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MoveCategory;
 
 import java.util.List;
 
-public class MovesViewHolder extends RecyclerView.ViewHolder {
+public class MoveCategoryViewHolder extends RecyclerView.ViewHolder {
 
     private TextView tvPreference;
     private RecyclerView rvMoves;
     private MoveAdapter adapter;
 
     private Context context;
-    private List<Move> moves;
 
 
-    public MovesViewHolder(@NonNull View itemView) {
+    public MoveCategoryViewHolder(@NonNull View itemView) {
         super(itemView);
 
+        tvPreference = itemView.findViewById(R.id.tvPreference);
         rvMoves = itemView.findViewById(R.id.rvMoves);
     }
 
-    public void bind(Context context, Cuisine cuisine) {
+    public void bind(Context context, MoveCategory moveCategory) {
         this.context = context;
 
-        if (cuisine != null) {
-            setupRecyclerView(cuisine.results);
+        tvPreference.setText(moveCategory.category);
+
+        if (moveCategory != null) {
+            setupRecyclerView(moveCategory.moves);
         }
     }
 

@@ -24,7 +24,7 @@ public class Cuisine {
 
 
     public static String currCuisine;
-    public List<Move> results;
+    public static List<Move> results;
     public static ArrayList<HashMap<String, Integer>> parseList;
 
 
