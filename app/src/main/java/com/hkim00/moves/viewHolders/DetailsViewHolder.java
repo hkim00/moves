@@ -84,6 +84,7 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
 
         tvPrice.setText(event.priceRange);
         tvTime.setText(event.startDate + "  •  " + event.startTime);
+        tvCuisine.setText(event.genre);
     }
 
 }
