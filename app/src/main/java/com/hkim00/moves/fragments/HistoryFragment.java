@@ -16,7 +16,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -55,91 +57,55 @@ public class HistoryFragment extends Fragment {
     private static ComponentContext componentContext;
     private static RecyclerBinder recyclerBinder;
     private static Context context;
-
+    private RecyclerView rvMoves;
+    private MoveAdapter movesAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return setupRecycler();
+        return inflater.inflate(R.layout.fragment_history, container, false);
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getHistory();
 
+        rvMoves = view.findViewById(R.id.rvPastMoves);
+
+        setupRecyclerView();
+        getMoveLists();
     }
 
-
-    private View setupRecycler() {
-        pastMoves = new ArrayList<>();
-
-        componentContext = new ComponentContext(getContext());
-
-        recyclerBinder =  new RecyclerBinder.Builder()
-                .layoutInfo(new LinearLayoutInfo(getContext(), OrientationHelper.VERTICAL, false))
-                .build(componentContext);
-
-        Recycler recycler = Recycler.create(componentContext)
-                .binder(recyclerBinder)
-                .paddingDip(YogaEdge.LEFT, 10)
-                .paddingDip(YogaEdge.RIGHT, 10)
-                .build();
-
-        final Component component = Column.create(componentContext)
-                .child(Text.create(componentContext)
-                        .text("Past Moves")
-                        .textStyle(3) //bold italic
-                        .textSizeDip(24)
-                        .textAlignment(Layout.Alignment.ALIGN_CENTER)
-                        .paddingDip(YogaEdge.BOTTOM, 10)
-                        .paddingDip(YogaEdge.TOP, 15))
-                .child(recycler)
-                .build();
-
-
-        return LithoView.create(componentContext, component);
-    }
-
-
-
-    private void getHistory() {
+    private void getMoveLists() {
         ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
+
         moveQuery.whereEqualTo("user", ParseUser.getCurrentUser());
-        moveQuery.whereEqualTo("didComplete", true);
         moveQuery.orderByDescending("createdAt");
+        moveQuery.whereEqualTo("didComplete", true);
+        moveQuery.findInBackground((objects, e) -> {
+            if (e == null) {
+                List<Move> moves = new ArrayList<>();
 
-        moveQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    List<Move> moves = new ArrayList<>();
-
-                    for (int i = 0; i < objects.size(); i++) {
-                        if (objects.get(i).getString("moveType").equals("food")) {
-                            moves.add(Move.fromParseObject(objects.get(i)));
-                        } else {
-                            moves.add(Move.fromParseObject(objects.get(i)));
-                        }
-
-                    }
-                    pastMoves.addAll(moves);
-                    addContents(moves);
-                } else {
-                    Log.e(TAG, "Error finding past moves.");
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Error past moves", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < objects.size(); i++) {
+                    moves.add(Move.fromParseObject(objects.get(i)));
                 }
+                pastMoves.clear();
+                pastMoves.addAll(moves);
+                movesAdapter.notifyDataSetChanged();
+
+            } else {
+                Log.e(TAG, "Error finding history.");
+                e.printStackTrace();
             }
         });
     }
 
+    private void setupRecyclerView() {
+        rvMoves.setLayoutManager(new LinearLayoutManager(getContext()));
 
-    private void addContents(List<Move> moves) {
-        for (int i = 0; i < moves.size(); i++) {
-            Component component = MoveItem.create(componentContext).move(moves.get(i)).build();
-            recyclerBinder.appendItem(component);
-        }
+        pastMoves = new ArrayList<>();
+
+        movesAdapter = new MoveAdapter(getContext(), pastMoves);
+        rvMoves.setAdapter(movesAdapter);
     }
 }
