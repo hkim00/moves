@@ -8,12 +8,22 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context=".MoveDetailsActivity">
 
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/rvMove"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMove"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/rvMove"
+        app:layout_constraintEnd_toEndOf="@+id/rvMove"
+        app:layout_constraintStart_toStartOf="@+id/rvMove"
+        app:layout_constraintTop_toTopOf="@+id/rvMove" />
 </androidx.constraintlayout.widget.ConstraintLayout>

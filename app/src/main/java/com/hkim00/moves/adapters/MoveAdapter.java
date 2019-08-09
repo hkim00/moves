@@ -39,9 +39,9 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     @Override
     public int getItemViewType(int position) {
-        if (moves.get(position).moveType == "food") {
+        if (moves.get(position).moveType.equals("food")) {
             return 1;
-        } else if (moves.get(position).moveType == "event") {
+        } else if (moves.get(position).moveType.equals("event")) {
             return 2;
         } else return 3;
     }
