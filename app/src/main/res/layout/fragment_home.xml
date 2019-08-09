@@ -27,31 +27,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 
-    <TextView
-        android:id="@+id/tvLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="31dp"
-        android:text="Location"
-        android:textAlignment="center"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSearching" />
-
-    <Button
-        android:id="@+id/btnLocation"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvLocation"
-        app:layout_constraintEnd_toEndOf="@+id/ivDropDown"
-        app:layout_constraintStart_toStartOf="@+id/tvLocation"
-        app:layout_constraintTop_toTopOf="@+id/tvLocation"
-        app:layout_constraintVertical_bias="1.0" />
-
     <!--<ImageView-->
         <!--android:id="@+id/ivTime"-->
         <!--android:layout_width="32dp"-->
@@ -111,10 +86,10 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="80dp"
         android:layout_height="45dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toStartOf="@+id/view9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLocation" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/vFoodIndicator"
@@ -394,29 +369,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/tvSearching"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Searching around"
-        android:textColor="#00A82F"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/ivDropDown"
-        android:layout_width="16dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toEndOf="@+id/tvLocation"
-        app:layout_constraintTop_toTopOf="@+id/tvLocation"
-        app:srcCompat="@drawable/expand_more_24px" />
-
     <ImageView
         android:id="@+id/ivAddFriends"
         android:layout_width="wrap_content"
@@ -459,10 +411,21 @@
         android:id="@+id/view9"
         android:layout_width="0.25dp"
         android:layout_height="50dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLocation" />
+        tools:layout_editor_absoluteY="66dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/rvMoveResults"
+        app:layout_constraintTop_toTopOf="@+id/rvMoveResults" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

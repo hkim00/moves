@@ -70,7 +70,6 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private CardView cardView;
         private TextView tvTitle;
         private ImageView ivMoveImage;
         private ConstraintLayout clMove;
@@ -80,7 +79,6 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cardView);
             clMove = itemView.findViewById(R.id.clMove);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             ivMoveImage = itemView.findViewById(R.id.ivMoveImg);
