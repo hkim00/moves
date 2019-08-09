@@ -102,11 +102,11 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        if (moves.get(0).lat != null && moves.get(0).moveType.equals("food")) {
+        if (moves.get(0).didCheckHTTPDetails && moves.get(0).moveType.equals("food")) {
             Restaurant restaurant = (Restaurant) moves.get(0);
 
             return (restaurant.photoReferences.size() > 0) ? 4 : 3;
-        } else if (moves.get(0).lat != null && moves.get(0).moveType.equals("event")) {
+        } else if (moves.get(0).didCheckHTTPDetails && moves.get(0).moveType.equals("event")) {
             Event event = (Event) moves.get(0);
 
             return (event.venueName != null && event.venuePhotoUrl != null) ? 4 : 3;

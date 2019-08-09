@@ -23,6 +23,7 @@ public class Restaurant extends Move {
 
     @Override
     public void fromJSON(JSONObject jsonObject, String moveType) throws JSONException {
+        super.didCheckHTTPDetails = true;
         super.fromJSON(jsonObject, moveType);
 
         this.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;

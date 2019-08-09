@@ -44,8 +44,7 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
         ivTime.setVisibility((move.moveType.equals("food")) ? View.GONE : View.VISIBLE);
         tvTime.setVisibility((move.moveType.equals("food")) ? View.GONE : View.VISIBLE);
 
-
-        if (move.lat != null && move.lng != null) {
+        if (move.didCheckHTTPDetails) {
             tvDistance.setText(move.distanceFromLocation(context) + " mi");
 
             if (move.moveType.equals("food")) {
@@ -58,6 +57,7 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
 
     private void setFoodView(Move move) {
         tvCuisine.setText(move.cuisine);
+
         Restaurant restaurant = (Restaurant) move;
 
         if (restaurant.price_level < 0) {

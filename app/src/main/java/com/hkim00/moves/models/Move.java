@@ -23,7 +23,10 @@ public class Move {
     public Double lat, lng;
     public ParseObject parseObject;
 
+    public boolean didCheckHTTPDetails = false;
+
     public Move() {
+
         didComplete = false;
         didSave = false;
         didFavorite = false;
