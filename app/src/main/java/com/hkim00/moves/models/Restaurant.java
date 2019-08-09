@@ -13,7 +13,7 @@ public class Restaurant extends Move {
 
     public Integer price_level;
     public Double rating;
-    public String id;
+    public String id, cuisine;
     public List<String> photoReferences;
 
     public Restaurant() {

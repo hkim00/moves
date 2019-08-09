@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,28 +21,25 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.SearchActivity;
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.adapters.MoveCategoryAdapter;
 import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.MoveText;
+import com.hkim00.moves.models.MoveCategory;
 import com.hkim00.moves.models.Restaurant;
-import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -72,17 +70,16 @@ public class HomeFragment extends Fragment {
 
     private int distance;
     private int priceLevel;
-    private List<Move> moveResults;
     private UserLocation location;
 
-    private TextView tvLocation, tvDistance, tvPriceLevel;
+    private TextView tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
-    private Button btnDistance, btnPrice, btnLocation;
+    private Button btnDistance, btnPrice;
 
     private Button btnFood, btnEvents;
+    private ImageView ivAddFriends;
+    private View vFoodIndicator, vEventIndicator;
 
-    private ConstraintLayout clCategories;
-    private ImageView ivFood, ivEvents, ivAddFriends;
 
     private ConstraintLayout clPrice;
     private TextView tvRightPopupTitle, tvMiles;
@@ -92,7 +89,13 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnSearch, btnAddFriend;
+    private Button btnRiskyMove, btnAddFriends, btnAddFriend;
+
+    private TextView tvNoMoves;
+    private RecyclerView rvMoveResults;
+    private MoveCategoryAdapter adapter;
+    private List<MoveCategory> moveResults, foodResults, eventResults;
+    private ProgressBar progressBar;
 
     @Nullable
     @Override
@@ -103,10 +106,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        location = new UserLocation();
-
-        moveResults = new ArrayList<>();
+        location = HomeActivity.location;
 
         getViewIds(view);
 
@@ -114,7 +114,9 @@ public class HomeFragment extends Fragment {
 
         setupButtons();
 
-        checkForCurrentLocation();
+        setupRecyclerView();
+
+        toggleMoveType(true);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -125,9 +127,14 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void checkForCurrentLocation() {
-        location = UserLocation.getCurrentLocation(getContext());
-        tvLocation.setText((location.lat == null && location.name == null) ? "Choose location" : location.name);
+    private void setupRecyclerView() {
+        moveResults = new ArrayList<>();
+        foodResults = new ArrayList<>();
+        eventResults = new ArrayList<>();
+
+        rvMoveResults.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new MoveCategoryAdapter(HomeFragment.this.getContext(), moveResults);
+        rvMoveResults.setAdapter(adapter);
     }
 
     private void checkForPostalCode() {
@@ -185,9 +192,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void getViewIds(View view) {
-        btnLocation = view.findViewById(R.id.btnLocation);
-
-        tvLocation = view.findViewById(R.id.tvLocation);
         ivDistance = view.findViewById(R.id.ivDistance);
         tvDistance = view.findViewById(R.id.tvDistance);
         btnDistance = view.findViewById(R.id.btnDistance);
@@ -197,9 +201,8 @@ public class HomeFragment extends Fragment {
 
         btnFood = view.findViewById(R.id.btnFood);
         btnEvents = view.findViewById(R.id.btnEvent);
-
-        clCategories = view.findViewById(R.id.clCategories);
-
+        vFoodIndicator = view.findViewById(R.id.vFoodIndicator);
+        vEventIndicator = view.findViewById(R.id.vEventIndicator);
 
         clPrice = view.findViewById(R.id.clPrice);
         tvRightPopupTitle = view.findViewById(R.id.tvRightPopupTitle);
@@ -213,16 +216,19 @@ public class HomeFragment extends Fragment {
         tvFriend = view.findViewById(R.id.tvFriend);
         ivAddFriends = view.findViewById(R.id.ivAddFriends);
 
-        btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
-        btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
-        btnSearch = view.findViewById(R.id.btnSearch);
 
+        tvNoMoves = view.findViewById(R.id.tvNoMoves);
+        rvMoveResults = view.findViewById(R.id.rvMoveResults);
+        progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupDesign() {
+        tvNoMoves.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+
         btnDistance.getLayoutParams().width= HomeActivity.screenWidth/3;
         btnPrice.getLayoutParams().width= HomeActivity.screenWidth/3;
         btnAddFriend.getLayoutParams().width=HomeActivity.screenWidth/3;
@@ -239,12 +245,6 @@ public class HomeFragment extends Fragment {
         tvFriend.setText("");
 
         moveType = "";
-
-        clCategories.post(() -> {
-            int constraintHeight = clCategories.getLayoutParams().height;
-           // ivFood.getLayoutParams().height = constraintHeight/4;
-            //ivEvents.getLayoutParams().height = constraintHeight/4;
-        });
     }
 
     private void setupButtons() {
@@ -261,44 +261,16 @@ public class HomeFragment extends Fragment {
         btnPriceLevel4.setOnClickListener(view -> priceLevelSelected(4));
 
         // TODO: find more user-friendly way to show state (i.e. whether user has selected food or event before clicking move)
-        btnFood.setOnClickListener(view -> {
-            moveType = "food";
-            Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
-        });
+        btnFood.setOnClickListener(view -> toggleMoveType(true));
 
-        btnEvents.setOnClickListener(view -> {
-            moveType = "event";
-            Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
-        });
-        btnLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), LocationActivity.class);
-                startActivityForResult(intent, LOCATION_REQUEST_CODE);
-                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+        btnEvents.setOnClickListener(view -> toggleMoveType(false));
+
+        btnRiskyMove.setOnClickListener(view -> {
+            if (moveType == "food") {
+                getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
             }
-        });
-
-        btnMove.setOnClickListener(view -> typeMoveSelected());
-
-        btnTrip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), TripActivity.class);
-                startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-            }
-        });
-
-        btnRiskyMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (moveType == "food") {
-                    getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
-                }
-                if (moveType == "event") {
-                    getNearbyEvents(new ArrayList<>(), true, isFriendMove);
-                }
+            if (moveType == "event") {
+                getNearbyEvents(new ArrayList<>(), true, isFriendMove);
             }
         });
 
@@ -312,24 +284,28 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.commit();
         });
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Fragment fragment = new SearchFragment();
-                ((SearchFragment) fragment).isAddFriend = false;
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(((ViewGroup)getView().getParent()).getId(), fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-
-
-            }
-        });
-
     }
 
+    private void toggleMoveType(boolean isFoodType) {
+        moveType = (isFoodType) ? "food" : "event";
 
+        vFoodIndicator.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
+        vEventIndicator.setVisibility(isFoodType ? View.INVISIBLE : View.VISIBLE);
+
+        if (isFoodType) {
+            if (foodResults.size() == 0) {
+                getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
+            } else {
+                updateRecycler(foodResults);
+            }
+        } else {
+            if (eventResults.size() == 0) {
+                getNearbyEvents(new ArrayList<>(), true, isFriendMove);
+            } else {
+                updateRecycler(eventResults);
+            }
+        }
+    }
 
 
 
@@ -363,25 +339,6 @@ public class HomeFragment extends Fragment {
         @Override
         public void afterTextChanged(Editable s) {}
     };
-
-    private void typeMoveSelected() {
-        if (location.lat == null && location.lng == null) {
-            Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (moveType.equals("")){
-            Toast.makeText(getContext(), "Please select food or event!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (moveType.equals("food")) {
-            getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
-        }
-        else if (moveType.equals("event")) {
-            getNearbyEvents(new ArrayList<>(), false, isFriendMove);
-        }
-    }
 
     private void priceLevelSelected(int priceLevel) {
 
@@ -449,6 +406,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyEvents(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+        progressBar.setVisibility(View.VISIBLE);
         checkForPostalCode();
 
         String apiUrl = API_BASE_URL_TM + ".json";
@@ -494,8 +452,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
+                progressBar.setVisibility(View.INVISIBLE);
 
-                moveResults.clear();
+                List<Move> moves = new ArrayList<>();
 
                 if (response.has("_embedded")) {
                     try {
@@ -504,36 +463,46 @@ public class HomeFragment extends Fragment {
                             try {
                                 Event event = new Event();
                                 event.fromJSON(jsonArray.getJSONObject(i), moveType);
-                                moveResults.add(event);
+                                moves.add(event);
                             } catch (JSONException e) {
+                                progressBar.setVisibility(View.INVISIBLE);
                                 e.printStackTrace();
                             }
                         }
-                        goToMovesActivity(moveResults);
+
+                        if (moves.size() > 0) {
+                            MoveCategory moveCategory = new MoveCategory("", moves);
+                            eventResults.add(moveCategory);
+                            progressBar.setVisibility(View.INVISIBLE);
+
+                            updateRecycler(eventResults);
+                        }
 
                     } catch (JSONException e) {
+                        progressBar.setVisibility(View.INVISIBLE);
                         Log.e(TAG, "Error getting events");
                         e.printStackTrace();
                     }
-                } else {
-                    goToMovesActivity(moveResults);
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 Log.i(TAG, errorResponse.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 Log.i(TAG, errorResponse.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 Log.i(TAG, responseString);
             }
@@ -541,6 +510,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+        progressBar.setVisibility(View.VISIBLE);
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
@@ -593,7 +563,11 @@ public class HomeFragment extends Fragment {
         Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
         Log.i("HomeFragment", uniqueTotalPref.toString());
 
-
+        if (uniqueTotalPref.size() == 0) {
+            progressBar.setVisibility(View.INVISIBLE);
+            updateRecycler(new ArrayList<>());
+            return;
+        }
 
         for (String pref : uniqueTotalPref) {
             params.put("keyword", pref);
@@ -601,59 +575,53 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
+
                     JSONArray results;
+
+                    List<Move> moves = new ArrayList<>();
+
                     try {
                         results = response.getJSONArray("results");
 
                         for (int i = 0; i < results.length(); i++) {
                             Restaurant restaurant = new Restaurant();
                             restaurant.fromJSON(results.getJSONObject(i), "food");
-
-                            ParseQuery<ParseObject> getResults = ParseQuery.getQuery("Move");
-                            getResults.whereEqualTo("name", restaurant.name);
-                            getResults.whereEqualTo("moveType", moveType);
-                            getResults.whereEqualTo("user", currUser);
-                            getResults.findInBackground(new FindCallback<ParseObject>() {
-                                @Override
-                                public void done(List<ParseObject> objects, ParseException e) {
-                                    for (int i = 0; i < objects.size(); i++) {
-                                        if (moveType == "food") {
-                                            objects.get(i).put("cuisine", pref);
-
-                                        }
-
-                                    }
-                                }
-                            });
+                            restaurant.cuisine = pref;
+                            moves.add(restaurant);
                         }
 
-                        moveResults.add(new MoveText(pref));
 
-                        Move.arrayFromJSONArray(moveResults, response.getJSONArray("results"), moveType);
-                        goToMovesActivity(moveResults);
+                        if (moves.size() > 0) {
+                            MoveCategory moveCategory = new MoveCategory(pref, moves);
+                            foodResults.add(moveCategory);
+                            progressBar.setVisibility(View.INVISIBLE);
 
-
+                            updateRecycler(foodResults);
+                        }
                     } catch (JSONException e) {
+                        progressBar.setVisibility(View.INVISIBLE);
                         Log.e(TAG, e.getMessage());
                         e.printStackTrace();
                     }
                 }
 
-
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
@@ -661,16 +629,13 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private int counter = 0;
-    private void goToMovesActivity(List<Move> moves) {
-        counter++;
-        if (counter == 2) {
-            Intent intent = new Intent(getContext(), MovesActivity.class);
-            intent.putExtra("moves", Parcels.wrap(moves));
-            startActivity(intent);
-            counter = 0;
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        }
+
+    private void updateRecycler(List<MoveCategory> replacementArray) {
+        moveResults.clear();
+        moveResults.addAll(replacementArray);
+        adapter.notifyDataSetChanged();
+
+        tvNoMoves.setVisibility(replacementArray.size() == 0 ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -678,7 +643,7 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
-            checkForCurrentLocation();
+            location = UserLocation.getCurrentLocation(getContext());
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }

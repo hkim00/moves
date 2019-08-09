@@ -34,7 +34,6 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private TextView tvDetail2;
     public Move move;
 
-
     public MovesViewHolder (@NonNull View itemView) {
         super(itemView);
         clMove = itemView.findViewById(R.id.clMove);
@@ -50,7 +49,6 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         tvTitle.setText(move.name);
         tvDetail1.setText(move.distanceFromLocation(context) + "mi   •");
         if (move.moveType.equals("food")) {
-
             String price = "";
             if (move.price_level < 0) {
                 price = "Unknown";
@@ -62,7 +60,6 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
             tvDetail2.setText(price);
         } else {
             tvDetail2.setText(move.genre);
-
         }
         ivMoveImage.setImageResource(R.drawable.mexican);
     }
@@ -76,7 +73,7 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         Intent intent = new Intent(context, MoveDetailsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("move", Parcels.wrap(move));
-//            intent.putExtra("isTrip", isTrip);
+        intent.putExtra("isTrip", isTrip);
         context.startActivity(intent);
 
         if (context instanceof Activity) {
@@ -84,5 +81,3 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         }
     }
 }
-
-

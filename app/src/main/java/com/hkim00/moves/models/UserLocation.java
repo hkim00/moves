@@ -155,7 +155,7 @@ public class UserLocation {
     }
 
 
-    private static void saveLocation(Context context, boolean isTrip, UserLocation location) {
+    public static void saveLocation(Context context, boolean isTrip, UserLocation location) {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences((isTrip) ? TRIP_LOCATION : LOCATION, 0); //0 for private mode
         SharedPreferences.Editor editor = sharedPreferences.edit();
