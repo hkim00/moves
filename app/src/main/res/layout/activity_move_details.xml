@@ -1,241 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:lyft="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MoveDetailsActivity">
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+xmlns:lyft="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".MoveDetailsActivity">
 
-    <TextView
-        android:id="@+id/tvYourMove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="116dp"
-        android:text="Your move is..."
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textSize="25dp"
-        android:textStyle="bold|italic"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMove"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivDistance"
-        android:layout_width="30dp"
-        android:layout_height="27dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
-        app:layout_constraintTop_toTopOf="@+id/ivMoveImage"
-        app:srcCompat="@drawable/place" />
-
-    <TextView
-        android:id="@+id/tvMoveName"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="Move Name"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-        android:textSize="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvYourMove" />
-
-    <ImageView
-        android:id="@+id/ivMoveImage"
-        android:layout_width="198dp"
-        android:layout_height="144dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMoveName"
-        tools:src="@drawable/letsmove" />
-
-    <ImageView
-        android:id="@+id/ivPrice"
-        android:layout_width="30dp"
-        android:layout_height="27dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
-        app:layout_constraintTop_toBottomOf="@+id/ivDistance"
-        app:srcCompat="@drawable/local_atm" />
-
-    <ImageView
-        android:id="@+id/ivTime"
-        android:layout_width="30dp"
-        android:layout_height="27dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
-        app:layout_constraintTop_toBottomOf="@+id/ivPrice"
-        app:srcCompat="@drawable/schedule" />
-
-    <ImageView
-        android:id="@+id/ivGroupNum"
-        android:layout_width="30dp"
-        android:layout_height="27dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivMoveImage"
-        app:layout_constraintStart_toEndOf="@id/ivMoveImage"
-        app:layout_constraintTop_toBottomOf="@+id/ivTime"
-        app:srcCompat="@drawable/group" />
-
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="4dp"
-        android:text="distance"
-        app:layout_constraintBottom_toBottomOf="@id/ivDistance"
-        app:layout_constraintStart_toEndOf="@id/ivDistance"
-        app:layout_constraintTop_toTopOf="@id/ivDistance"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/tvGroupNum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="groupNum"
-        app:layout_constraintBottom_toBottomOf="@+id/ivGroupNum"
-        app:layout_constraintStart_toEndOf="@+id/ivGroupNum"
-        app:layout_constraintTop_toTopOf="@+id/ivGroupNum" />
-
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="time"
-        app:layout_constraintBottom_toBottomOf="@+id/ivTime"
-        app:layout_constraintStart_toEndOf="@+id/ivTime"
-        app:layout_constraintTop_toTopOf="@+id/ivTime" />
-
-    <TextView
-        android:id="@+id/tvPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="price"
-        app:layout_constraintBottom_toBottomOf="@+id/ivPrice"
-        app:layout_constraintStart_toEndOf="@+id/ivPrice"
-        app:layout_constraintTop_toTopOf="@+id/ivPrice" />
-
-    <ImageView
-        android:id="@+id/ivFavorite"
-        android:layout_width="30dp"
-        android:layout_height="24dp"
-        app:layout_constraintStart_toStartOf="@id/btnFavorite"
-        app:layout_constraintTop_toTopOf="@id/btnFavorite"
-        app:srcCompat="@drawable/ufi_heart" />
-
-    <Button
-        android:id="@+id/btnFavorite"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="30dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/ivSave"
-        app:layout_constraintTop_toBottomOf="@+id/moveRating" />
-
-    <ImageView
-        android:id="@+id/ivSave"
-        android:layout_width="30dp"
-        android:layout_height="24dp"
-        app:layout_constraintStart_toStartOf="@id/btnSave"
-        app:layout_constraintTop_toTopOf="@id/btnSave"
-        app:srcCompat="@drawable/ufi_save" />
-
-    <Button
-        android:id="@+id/btnSave"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="30dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/moveRating"
-        app:layout_constraintTop_toBottomOf="@+id/moveRating" />
-
-
-    <RatingBar
-        android:id="@+id/moveRating"
-        style="@style/Widget.AppCompat.RatingBar.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:numStars="5"
-        android:stepSize="0.5"
-        app:layout_constraintStart_toStartOf="@+id/ivMoveImage"
-        app:layout_constraintTop_toBottomOf="@+id/ivMoveImage" />
-
-    <LinearLayout
-        android:id="@+id/llButtons"
-        android:layout_width="395dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintTop_toBottomOf="@+id/btnFavorite"
-        lyft:layout_constraintEnd_toEndOf="parent"
-        lyft:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/btnChooseMove"
-            android:layout_width="124dp"
-            android:layout_height="51dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="8dp"
-            android:background="#FDD835"
-            android:text="Choose Move!" />
-
-        <com.lyft.lyftbutton.LyftButton
-            android:id="@+id/lyft_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnChooseMove"
-            lyft:lyftStyle="lyftMulberryDark" />
-
-        <Button
-            android:id="@+id/btnAddToTrip"
-            style="@style/Widget.AppCompat.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="8dp"
-            android:textColor="#000000"
-            tools:text="Add to trip" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/map_container"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llButtons">
-        android:id="@+id/map_container"
-        android:layout_width="match_parent"
-        android:layout_height="200dp""/>
-    </FrameLayout>
-
+        app:layout_constraintBottom_toBottomOf="@+id/rvMove"
+        app:layout_constraintEnd_toEndOf="@+id/rvMove"
+        app:layout_constraintStart_toStartOf="@+id/rvMove"
+        app:layout_constraintTop_toTopOf="@+id/rvMove" />
 </androidx.constraintlayout.widget.ConstraintLayout>

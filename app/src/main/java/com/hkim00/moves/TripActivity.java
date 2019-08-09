@@ -1,6 +1,8 @@
 package com.hkim00.moves;
 
+import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -78,6 +80,8 @@ public class TripActivity extends AppCompatActivity {
 
         getViewIds();
 
+        setupActionBar();
+
         setupRecyclerView();
 
         setupButtons();
@@ -92,6 +96,19 @@ public class TripActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
+
+    private void setupActionBar() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
+        getSupportActionBar().setElevation(2);
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
+    }
 
     private void getViewIds() {
         etTrip = findViewById(R.id.etTripName);

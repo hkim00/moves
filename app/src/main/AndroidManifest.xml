@@ -19,17 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SelectUsersActivity"></activity>
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".SelectUsersActivity" />
         <activity android:name=".CalendarActivity" />
         <activity android:name=".TripActivity" />
-
         <activity android:name=".LocationActivity" />
         <activity android:name=".MovesActivity" />
         <activity android:name=".MoveDetailsActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".SignUpActivity" />
-
         <activity android:name=".Intro1Activity" />
         <activity android:name=".Intro2Activity" />
         <activity android:name=".Intro3Activity" />

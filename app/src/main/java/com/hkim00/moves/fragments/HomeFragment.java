@@ -25,7 +25,10 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.SearchActivity;
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.models.Cuisine;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
@@ -497,7 +500,15 @@ public class HomeFragment extends Fragment {
                 if (response.has("_embedded")) {
                     try {
                         JSONArray jsonArray = (response.getJSONObject("_embedded")).getJSONArray("events");
-                        Move.arrayFromJSONArray(moveResults, jsonArray, "event");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            try {
+                                Event event = new Event();
+                                event.fromJSON(jsonArray.getJSONObject(i), moveType);
+                                moveResults.add(event);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         goToMovesActivity(moveResults);
 
                     } catch (JSONException e) {
