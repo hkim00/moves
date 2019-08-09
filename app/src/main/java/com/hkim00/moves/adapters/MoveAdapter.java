@@ -13,9 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -28,13 +30,16 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     private final Context context;
     private final List<Move> moves;
+
     private boolean isTrip;
+    private boolean isHome;
 
     public MoveAdapter(Context context, List<Move> moves) {
         this.context = context;
         this.moves = moves;
 
-        this.isTrip = (context instanceof TripActivity) ? true : false;
+        this.isTrip = context instanceof TripActivity;
+        this.isHome = context instanceof HomeActivity;
     }
 
     @Override
@@ -51,7 +56,6 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_move, parent, false);
-        view.setElevation(5);
         return new ViewHolder(view);
     }
 
