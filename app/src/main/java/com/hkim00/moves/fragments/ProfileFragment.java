@@ -29,7 +29,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -37,12 +39,13 @@ public class ProfileFragment extends Fragment {
     ParseUser currUser;
 
     private Button btnSaved, btnFavorites, btnLogout;
-    private TextView tvName;
+    private TextView tvName, tvDateJoined;
     private ImageView ivProfilePic, ivSaved, ivFavorites;
 
     private RecyclerView rvMoves;
     private MoveAdapter movesAdapter;
     private List<Move> saveMoves, favMoves, moves;
+
 
     private boolean didCheckSave = false;
 
@@ -71,6 +74,7 @@ public class ProfileFragment extends Fragment {
         ivProfilePic = view.findViewById(R.id.ivProfilePic);
         ivSaved = view.findViewById(R.id.ivSaved);
         ivFavorites = view.findViewById(R.id.ivFavorites);
+        tvDateJoined = view.findViewById(R.id.tvDateJoined);
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnSaved =  view.findViewById(R.id.btnSave);
@@ -81,6 +85,9 @@ public class ProfileFragment extends Fragment {
     private void fillUserInfo() {
         currUser = ParseUser.getCurrentUser();
         tvName.setText(currUser.getUsername());
+
+        String formatDate = new SimpleDateFormat("yyyy-MM-dd").format(currUser.getCreatedAt());
+        tvDateJoined.setText("Date joined: " + formatDate);
 
         if (currUser.has("profilePhoto")) {
             ParseFile profileImage = currUser.getParseFile("profilePhoto");
