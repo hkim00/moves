@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,10 +18,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
-import com.hkim00.moves.fragments.HomeFragment;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
-import com.hkim00.moves.models.Restaurant;
 
 import org.parceler.Parcels;
 
@@ -39,8 +37,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
         this.moves = moves;
 
         this.isTrip = context instanceof TripActivity;
-        this.isHome = context instanceof HomeActivity;
-    }
+        this.isHome = context instanceof HomeActivity; }
 
     @Override
     public int getItemViewType(int position) {
@@ -55,7 +52,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
     @Override
 
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_move, parent, false);
+        View view = LayoutInflater.from(context).inflate((isHome) ? R.layout.item_home_move : R.layout.item_move, parent, false);
         return new ViewHolder(view);
     }
 
@@ -73,6 +70,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        private CardView cardView;
         private TextView tvTitle;
         private ImageView ivMoveImage;
         private ConstraintLayout clMove;
@@ -82,6 +80,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.cardView);
             clMove = itemView.findViewById(R.id.clMove);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             ivMoveImage = itemView.findViewById(R.id.ivMoveImg);
