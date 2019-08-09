@@ -104,6 +104,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
                 tvDetail2.setText(move.genre);
 
             }
+            ivMoveImage.setImageResource(R.drawable.mexican);
         }
         
         @Override
