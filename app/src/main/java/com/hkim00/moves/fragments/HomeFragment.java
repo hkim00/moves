@@ -31,6 +31,7 @@ import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.adapters.MoveCategoryAdapter;
 import com.hkim00.moves.models.Cuisine;
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveCategory;
 import com.hkim00.moves.models.Restaurant;
@@ -76,7 +77,9 @@ public class HomeFragment extends Fragment {
     private Button btnDistance, btnPrice;
 
     private Button btnFood, btnEvents;
-    private ImageView ivFood, ivEvents, ivAddFriends;
+    private ImageView ivAddFriends;
+    private View vFoodIndicator, vEventIndicator;
+
 
     private ConstraintLayout clPrice;
     private TextView tvRightPopupTitle, tvMiles;
@@ -86,11 +89,11 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnAddFriend;
+    private Button btnMove, btnRiskyMove, btnAddFriends, btnAddFriend;
 
     private RecyclerView rvMoveResults;
     private MoveCategoryAdapter adapter;
-    private List<MoveCategory> foodResults, eventResults;
+    private List<MoveCategory> moveResults, foodResults, eventResults;
     private ProgressBar progressBar;
 
     @Nullable
@@ -112,6 +115,8 @@ public class HomeFragment extends Fragment {
 
         setupRecyclerView();
 
+        toggleMoveType(true);
+
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             friend = bundle.getParcelable("friend");
@@ -119,21 +124,16 @@ public class HomeFragment extends Fragment {
             tvFriend.setText(friend.getUsername());
             isFriendMove = true;
         }
-
-        getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
     }
 
     private void setupRecyclerView() {
+        moveResults = new ArrayList<>();
         foodResults = new ArrayList<>();
         eventResults = new ArrayList<>();
 
         rvMoveResults.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MoveCategoryAdapter(HomeFragment.this.getContext(), foodResults);
+        adapter = new MoveCategoryAdapter(HomeFragment.this.getContext(), moveResults);
         rvMoveResults.setAdapter(adapter);
-    }
-
-    private void checkForCurrentLocation() {
-        location = UserLocation.getCurrentLocation(getContext());
     }
 
     private void checkForPostalCode() {
@@ -200,7 +200,8 @@ public class HomeFragment extends Fragment {
 
         btnFood = view.findViewById(R.id.btnFood);
         btnEvents = view.findViewById(R.id.btnEvent);
-
+        vFoodIndicator = view.findViewById(R.id.vFoodIndicator);
+        vEventIndicator = view.findViewById(R.id.vEventIndicator);
 
         clPrice = view.findViewById(R.id.clPrice);
         tvRightPopupTitle = view.findViewById(R.id.tvRightPopupTitle);
@@ -216,7 +217,6 @@ public class HomeFragment extends Fragment {
 
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
-        btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
 
@@ -259,28 +259,11 @@ public class HomeFragment extends Fragment {
         btnPriceLevel4.setOnClickListener(view -> priceLevelSelected(4));
 
         // TODO: find more user-friendly way to show state (i.e. whether user has selected food or event before clicking move)
-        btnFood.setOnClickListener(view -> {
-            moveType = "food";
-            Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
-        });
+        btnFood.setOnClickListener(view -> toggleMoveType(true));
 
-        btnEvents.setOnClickListener(view -> {
-            moveType = "event";
-            Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
-        });
-//        btnLocation.setOnClickListener(view -> {
-//            Intent intent = new Intent(getContext(), LocationActivity.class);
-//            startActivityForResult(intent, LOCATION_REQUEST_CODE);
-//            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-//        });
+        btnEvents.setOnClickListener(view -> toggleMoveType(false));
 
         btnMove.setOnClickListener(view -> typeMoveSelected());
-
-        btnTrip.setOnClickListener(view -> {
-            Intent intent = new Intent(getContext(), TripActivity.class);
-            startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        });
 
         btnRiskyMove.setOnClickListener(view -> {
             if (moveType == "food") {
@@ -303,7 +286,26 @@ public class HomeFragment extends Fragment {
 
     }
 
+    private void toggleMoveType(boolean isFoodType) {
+        moveType = (isFoodType) ? "food" : "event";
 
+        vFoodIndicator.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
+        vEventIndicator.setVisibility(isFoodType ? View.INVISIBLE : View.VISIBLE);
+
+        if (isFoodType) {
+            if (foodResults.size() == 0) {
+                getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
+            } else {
+                updateRecycler(foodResults);
+            }
+        } else {
+            if (eventResults.size() == 0) {
+                getNearbyEvents(new ArrayList<>(), true, isFriendMove);
+            } else {
+                updateRecycler(eventResults);
+            }
+        }
+    }
 
 
 
@@ -423,6 +425,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyEvents(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+        progressBar.setVisibility(View.VISIBLE);
         checkForPostalCode();
 
         String apiUrl = API_BASE_URL_TM + ".json";
@@ -468,46 +471,57 @@ public class HomeFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
+                progressBar.setVisibility(View.INVISIBLE);
 
-//                moveResults.clear();
-//
-//                if (response.has("_embedded")) {
-//                    try {
-//                        JSONArray jsonArray = (response.getJSONObject("_embedded")).getJSONArray("events");
-//                        for (int i = 0; i < jsonArray.length(); i++) {
-//                            try {
-//                                Event event = new Event();
-//                                event.fromJSON(jsonArray.getJSONObject(i), moveType);
-//                                moveResults.add(event);
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        goToMovesActivity(moveResults);
-//
-//                    } catch (JSONException e) {
-//                        Log.e(TAG, "Error getting events");
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    goToMovesActivity(moveResults);
-//                }
+                List<Move> moves = new ArrayList<>();
+
+                if (response.has("_embedded")) {
+                    try {
+                        JSONArray jsonArray = (response.getJSONObject("_embedded")).getJSONArray("events");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            try {
+                                Event event = new Event();
+                                event.fromJSON(jsonArray.getJSONObject(i), moveType);
+                                moves.add(event);
+                            } catch (JSONException e) {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                e.printStackTrace();
+                            }
+                        }
+
+                        if (moves.size() > 0) {
+                            MoveCategory moveCategory = new MoveCategory("", moves);
+                            eventResults.add(moveCategory);
+                            progressBar.setVisibility(View.INVISIBLE);
+
+                            updateRecycler(eventResults);
+                        }
+
+                    } catch (JSONException e) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Log.e(TAG, "Error getting events");
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 Log.i(TAG, errorResponse.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 Log.i(TAG, errorResponse.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
                 new StatusCodeHandler(TAG, statusCode);
                 Log.i(TAG, responseString);
             }
@@ -568,6 +582,12 @@ public class HomeFragment extends Fragment {
         Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
         Log.i("HomeFragment", uniqueTotalPref.toString());
 
+        if (uniqueTotalPref.size() == 0) {
+            progressBar.setVisibility(View.INVISIBLE);
+            updateRecycler(new ArrayList<>());
+            return;
+        }
+
         for (String pref : uniqueTotalPref) {
             params.put("keyword", pref);
             HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
@@ -576,6 +596,7 @@ public class HomeFragment extends Fragment {
                     super.onSuccess(statusCode, headers, response);
 
                     JSONArray results;
+
                     List<Move> moves = new ArrayList<>();
 
                     try {
@@ -592,8 +613,9 @@ public class HomeFragment extends Fragment {
                         if (moves.size() > 0) {
                             MoveCategory moveCategory = new MoveCategory(pref, moves);
                             foodResults.add(moveCategory);
-                            adapter.notifyDataSetChanged();
                             progressBar.setVisibility(View.INVISIBLE);
+
+                            updateRecycler(foodResults);
                         }
                     } catch (JSONException e) {
                         progressBar.setVisibility(View.INVISIBLE);
@@ -626,16 +648,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private int counter = 0;
-    private void goToMovesActivity(List<Move> moves) {
-        counter++;
-        if (counter == 2) {
-            Intent intent = new Intent(getContext(), MovesActivity.class);
-            intent.putExtra("moves", Parcels.wrap(moves));
-            startActivity(intent);
-            counter = 0;
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        }
+
+    private void updateRecycler(List<MoveCategory> replacementArray) {
+        moveResults.clear();
+        moveResults.addAll(replacementArray);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -643,7 +660,7 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
-            checkForCurrentLocation();
+            location = UserLocation.getCurrentLocation(getContext());
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }
