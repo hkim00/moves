@@ -231,6 +231,8 @@ public class TripActivity extends AppCompatActivity {
             currentTrip = Parcels.unwrap(getIntent().getParcelableExtra("trip"));
 
             location = currentTrip.location;
+            UserLocation.saveLocation(getApplicationContext(), true, location);
+
             etTrip.setText(currentTrip.name);
 
             dates.add(currentTrip.startDay);

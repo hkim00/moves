@@ -8,12 +8,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -26,6 +30,7 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.adapters.TripAdapter;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.specs.MoveItem;
@@ -42,12 +47,12 @@ import java.util.List;
 
 
 public class PastTripsFragment extends Fragment {
+    public final static String TAG = "PastTripsFragment";
 
-
-    ArrayList<Trip> upcomingTrips;
-    private static ComponentContext componentContext;
-    private static RecyclerBinder recyclerBinder;
-    private static Context context;
+    private static ArrayList<Trip> upcomingTrips;
+    private RecyclerView rvUpcomingTrips;
+    private TripAdapter tripAdapter;
+    private TextView tvNoTrips;
 
 
     @Override
@@ -60,40 +65,21 @@ public class PastTripsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getNextTrip();
+        rvUpcomingTrips = view.findViewById(R.id.rvUpcomingTrips);
+        tvNoTrips = view.findViewById(R.id.tvNoTrips);
 
         SetUpRecycler();
+        getNextTrip();
+
     }
 
-    private View SetUpRecycler() {
+    private void SetUpRecycler() {
         upcomingTrips = new ArrayList<>();
 
+        rvUpcomingTrips.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        componentContext = new ComponentContext(getContext());
-
-        recyclerBinder =  new RecyclerBinder.Builder()
-                .layoutInfo(new LinearLayoutInfo(getContext(), OrientationHelper.VERTICAL, false))
-                .build(componentContext);
-
-        Recycler recycler = Recycler.create(componentContext)
-                .binder(recyclerBinder)
-                .paddingDip(YogaEdge.LEFT, 10)
-                .paddingDip(YogaEdge.RIGHT, 10)
-                .build();
-
-        final Component component = Column.create(componentContext)
-                .child(Text.create(componentContext)
-                        .text("Upcoming Trips")
-                        .textStyle(3) //bold italic
-                        .textSizeDip(24)
-                        .textAlignment(Layout.Alignment.ALIGN_CENTER)
-                        .paddingDip(YogaEdge.BOTTOM, 10)
-                        .paddingDip(YogaEdge.TOP, 15))
-                .child(recycler)
-                .build();
-
-
-        return LithoView.create(componentContext, component);
+        tripAdapter = new TripAdapter(getContext(), upcomingTrips);
+        rvUpcomingTrips.setAdapter(tripAdapter);
     }
 
 
@@ -105,21 +91,26 @@ public class PastTripsFragment extends Fragment {
         tripQuery.findInBackground(new FindCallback<ParseObject>() {
            @Override
            public void done(List<ParseObject> objects, ParseException e) {
-               List<Trip> trips = new ArrayList<>();
+               if (e == null) {
+                   List<Trip> trips = new ArrayList<>();
 
-               if (objects.size() == 0) {
-                   Trip trip = Trip.fromParseObject(objects.get);
-                   Intent intent = new Intent(getContext(), TripActivity.class);
-                   intent.putExtra("trip", Parcels.wrap(trip));
-                   startActivity(intent);
-                   getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-               }else {
-                    for (int i = 0; i <objects.size(); i++) {
-                       Trip trip = Trip.fromParseObject(objects.get(i));
-                       trips.add(trip);
+                   if (objects.size() == 0) {
+                       tvNoTrips.setVisibility(View.VISIBLE);
+                   } else {
+                       tvNoTrips.setVisibility(View.INVISIBLE);
+                       for (int i = 0; i < objects.size(); i++) {
+                           Trip trip = Trip.fromParseObject(objects.get(i));
+                           trips.add(trip);
 
+                       }
+                       upcomingTrips.clear();
+                       upcomingTrips.addAll(trips);
+                       tripAdapter.notifyDataSetChanged();
                    }
-                    upcomingTrips.addAll(trips);
+               }
+               else {
+                   Log.e(TAG, "Error finding upcoming trips.");
+                   e.printStackTrace();
                }
 
             }
@@ -127,10 +118,5 @@ public class PastTripsFragment extends Fragment {
         });
     }
 
-    private void addContents(List<Trip> trips) {
-        for (int i = 0; i < trips.size(); i++) {
-            Component component = Trip.create(componentContext).trip(trips.get(i)).build();
-            recyclerBinder.appendItem(component);
-        }
-    }
+
 }
