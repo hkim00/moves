@@ -5,16 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/ivDropDown"
+        android:layout_width="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnCenter"
+        app:layout_constraintStart_toEndOf="@+id/tvLocation"
+        app:layout_constraintTop_toTopOf="@+id/tvLocation"
+        app:srcCompat="@drawable/expand_more_24px" />
+
     <TextView
         android:id="@+id/tvLocation"
         android:layout_width="wrap_content"
-        android:layout_height="31dp"
+        android:layout_height="wrap_content"
         android:text="Location"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSearch" />
@@ -25,9 +35,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:textSize="12sp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/tvLocation"
-        app:layout_constraintEnd_toEndOf="@+id/tvLocation"
+        app:layout_constraintEnd_toEndOf="@+id/ivDropDown"
         app:layout_constraintStart_toStartOf="@+id/tvLocation"
         app:layout_constraintTop_toBottomOf="@+id/tvSearch" />
 
@@ -39,30 +49,18 @@
         android:textColor="#00A82F"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ivCenter"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:scaleType="centerInside"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/move_logo" />
-
-    <ImageView
         android:id="@+id/ivRight"
         android:layout_width="30dp"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/btnCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ivCenter"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/search_icon" />
 
     <Button

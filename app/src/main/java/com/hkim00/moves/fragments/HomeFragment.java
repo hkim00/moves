@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,9 +71,9 @@ public class HomeFragment extends Fragment {
     private int priceLevel;
     private UserLocation location;
 
-    private TextView tvLocation, tvDistance, tvPriceLevel;
+    private TextView tvDistance, tvPriceLevel;
     private ImageView ivDistance, ivPrice;
-    private Button btnDistance, btnPrice, btnLocation;
+    private Button btnDistance, btnPrice;
 
     private Button btnFood, btnEvents;
     private ImageView ivFood, ivEvents, ivAddFriends;
@@ -90,6 +91,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvMoveResults;
     private MoveCategoryAdapter adapter;
     private List<MoveCategory> foodResults, eventResults;
+    private ProgressBar progressBar;
 
     @Nullable
     @Override
@@ -100,15 +102,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        location = new UserLocation();
+        location = HomeActivity.location;
 
         getViewIds(view);
 
         setupDesign();
 
         setupButtons();
-
-        checkForCurrentLocation();
 
         setupRecyclerView();
 
@@ -134,7 +134,6 @@ public class HomeFragment extends Fragment {
 
     private void checkForCurrentLocation() {
         location = UserLocation.getCurrentLocation(getContext());
-        tvLocation.setText((location.lat == null && location.name == null) ? "Choose location" : location.name);
     }
 
     private void checkForPostalCode() {
@@ -192,9 +191,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void getViewIds(View view) {
-        btnLocation = view.findViewById(R.id.btnLocation);
-
-        tvLocation = view.findViewById(R.id.tvLocation);
         ivDistance = view.findViewById(R.id.ivDistance);
         tvDistance = view.findViewById(R.id.tvDistance);
         btnDistance = view.findViewById(R.id.btnDistance);
@@ -225,9 +221,12 @@ public class HomeFragment extends Fragment {
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
 
         rvMoveResults = view.findViewById(R.id.rvMoveResults);
+        progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupDesign() {
+        progressBar.setVisibility(View.INVISIBLE);
+
         btnDistance.getLayoutParams().width= HomeActivity.screenWidth/3;
         btnPrice.getLayoutParams().width= HomeActivity.screenWidth/3;
         btnAddFriend.getLayoutParams().width=HomeActivity.screenWidth/3;
@@ -269,11 +268,11 @@ public class HomeFragment extends Fragment {
             moveType = "event";
             Toast.makeText(getContext(), "You have selected: " + moveType, Toast.LENGTH_SHORT).show();
         });
-        btnLocation.setOnClickListener(view -> {
-            Intent intent = new Intent(getContext(), LocationActivity.class);
-            startActivityForResult(intent, LOCATION_REQUEST_CODE);
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        });
+//        btnLocation.setOnClickListener(view -> {
+//            Intent intent = new Intent(getContext(), LocationActivity.class);
+//            startActivityForResult(intent, LOCATION_REQUEST_CODE);
+//            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+//        });
 
         btnMove.setOnClickListener(view -> typeMoveSelected());
 
@@ -515,6 +514,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+        progressBar.setVisibility(View.VISIBLE);
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
@@ -587,11 +587,15 @@ public class HomeFragment extends Fragment {
                             moves.add(restaurant);
                         }
 
-                        MoveCategory moveCategory = new MoveCategory(pref, moves);
-                        foodResults.add(moveCategory);
 
-                        adapter.notifyDataSetChanged();
+                        if (moves.size() > 0) {
+                            MoveCategory moveCategory = new MoveCategory(pref, moves);
+                            foodResults.add(moveCategory);
+                            adapter.notifyDataSetChanged();
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
                     } catch (JSONException e) {
+                        progressBar.setVisibility(View.INVISIBLE);
                         Log.e(TAG, e.getMessage());
                         e.printStackTrace();
                     }
@@ -599,18 +603,21 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     new StatusCodeHandler(TAG, statusCode);
                     throwable.printStackTrace();
                 }
