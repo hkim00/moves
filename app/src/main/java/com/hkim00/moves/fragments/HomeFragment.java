@@ -78,8 +78,6 @@ public class HomeFragment extends Fragment {
     private Button btnDistance, btnPrice, btnLocation;
 
     private Button btnFood, btnEvents;
-
-    private ConstraintLayout clCategories;
     private ImageView ivFood, ivEvents, ivAddFriends;
 
     private ConstraintLayout clPrice;
@@ -196,8 +194,6 @@ public class HomeFragment extends Fragment {
         btnFood = view.findViewById(R.id.btnFood);
         btnEvents = view.findViewById(R.id.btnEvent);
 
-        clCategories = view.findViewById(R.id.clCategories);
-
 
         clPrice = view.findViewById(R.id.clPrice);
         tvRightPopupTitle = view.findViewById(R.id.tvRightPopupTitle);
@@ -235,12 +231,6 @@ public class HomeFragment extends Fragment {
         tvFriend.setText("");
 
         moveType = "";
-
-        clCategories.post(() -> {
-            int constraintHeight = clCategories.getLayoutParams().height;
-           // ivFood.getLayoutParams().height = constraintHeight/4;
-            //ivEvents.getLayoutParams().height = constraintHeight/4;
-        });
     }
 
     private void setupButtons() {
