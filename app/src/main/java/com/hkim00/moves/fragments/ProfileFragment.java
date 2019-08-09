@@ -17,21 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.hkim00.moves.LogInActivity;
 
 import com.hkim00.moves.R;
-import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.adapters.ProfileAdapter;
 import com.hkim00.moves.models.Move;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -40,14 +35,14 @@ public class ProfileFragment extends Fragment {
 
     private Button btnSaved, btnFavorites, btnLogout;
     private TextView tvName, tvDateJoined;
-    private ImageView ivProfilePic, ivSaved, ivFavorites;
+    private ImageView ivProfilePic;
+    private static ImageView ivSaved, ivFavorites;
 
-    private RecyclerView rvMoves;
-    private MoveAdapter movesAdapter;
-    private List<Move> saveMoves, favMoves, moves;
+    private RecyclerView rvProfileFragment;
+    private static ProfileAdapter movesAdapter;
+    private static List<Move> saveMoves, favMoves, moves;
 
-
-    private boolean didCheckSave = false;
+    private static boolean didCheckSave = false;
 
 
     @Nullable
@@ -62,59 +57,24 @@ public class ProfileFragment extends Fragment {
 
         getViewIds(view);
 
-        setupButtons();
-
         setupRecyclerView();
-
-        fillUserInfo();
     }
 
     private void getViewIds(View view) {
-        tvName = view.findViewById(R.id.tvName);
-        ivProfilePic = view.findViewById(R.id.ivProfilePic);
-        ivSaved = view.findViewById(R.id.ivSaved);
-        ivFavorites = view.findViewById(R.id.ivFavorites);
-        tvDateJoined = view.findViewById(R.id.tvDateJoined);
-
-        btnLogout = view.findViewById(R.id.btnLogout);
-        btnSaved =  view.findViewById(R.id.btnSave);
-        btnFavorites = view.findViewById(R.id.btnFavorite);
-        rvMoves = view.findViewById(R.id.rvMoves);
+        rvProfileFragment = view.findViewById(R.id.rvMoves);
     }
 
-    private void fillUserInfo() {
-        currUser = ParseUser.getCurrentUser();
-        tvName.setText(currUser.getUsername());
-
-        String formatDate = new SimpleDateFormat("yyyy-MM-dd").format(currUser.getCreatedAt());
-        tvDateJoined.setText("Date joined: " + formatDate);
-
-        if (currUser.has("profilePhoto")) {
-            ParseFile profileImage = currUser.getParseFile("profilePhoto");
-            if (profileImage != null) {
-                Glide.with(getContext())
-                        .load(profileImage.getUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePic);
-            }
-        }
-
-        getMoveLists("favorites");
-    }
 
     private void setupRecyclerView() {
-        rvMoves.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvProfileFragment.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        saveMoves = new ArrayList<>();
-        favMoves = new ArrayList<>();
         moves = new ArrayList<>();
 
-        movesAdapter = new MoveAdapter(getContext(), moves);
-        rvMoves.setAdapter(movesAdapter);
-
+        movesAdapter = new ProfileAdapter(getContext(), moves);
+        rvProfileFragment.setAdapter(movesAdapter);
     }
 
-    private void getMoveLists(String listType) {
+    public static void getMoveLists(String listType) {
         ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
 
         moveQuery.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -137,6 +97,7 @@ public class ProfileFragment extends Fragment {
                         didCheckSave = true;
                     } else {
                         favMoves = results;
+                        didCheckSave = false;
                     }
 
                     updateMoves(results);
@@ -148,19 +109,11 @@ public class ProfileFragment extends Fragment {
         }
 
 
-    private void updateMoves(List<Move> replacementArray) {
+    public static void updateMoves(List<Move> replacementArray) {
         moves.clear();
         moves.addAll(replacementArray);
         movesAdapter.notifyDataSetChanged();
     }
-
-
-    private void setupButtons() {
-        btnLogout.setOnClickListener(view -> logout());
-        btnFavorites.setOnClickListener(view -> toggleRecyclerInfo(true));
-        btnSaved.setOnClickListener(view -> toggleRecyclerInfo(false));
-    }
-
 
     private void logout() {
         ParseUser.logOut();
@@ -176,14 +129,12 @@ public class ProfileFragment extends Fragment {
     }
 
 
-    private void toggleRecyclerInfo(boolean isFavView) {
-        ivSaved.setImageResource((isFavView) ? R.drawable.ufi_save : R.drawable.ufi_save_active);
-        ivFavorites.setImageResource((isFavView) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
-
+    public static void toggleRecyclerInfo(boolean isFavView) {
         if (!didCheckSave && !isFavView) {
             getMoveLists("saved");
         } else {
-            updateMoves((isFavView) ? favMoves : saveMoves);
+            getMoveLists("favMoves");
         }
     }
+
 }

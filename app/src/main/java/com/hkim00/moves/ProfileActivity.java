@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -89,9 +88,6 @@ public class ProfileActivity extends AppCompatActivity {
         ivProfilePic = findViewById(R.id.ivProfilePic);
         btnSaved = findViewById(R.id.btnSave);
         btnFavorites = findViewById(R.id.btnFavorite);
-        btnLogout = findViewById(R.id.btnLogout);
-        rvFavorites = findViewById(R.id.rvMoves);
-        rvSaved = findViewById(R.id.rvSaved);
 
         tvName = findViewById(R.id.tvName);
 
