@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,6 @@ import java.util.List;
 public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.ViewHolder>{
     private Context context;
     private List<CategoryButton> catButtons;
-    public List<String> foodPrefList;
 
     public CatButtonsAdapter(Context context, List<CategoryButton> catButtons) {
         this.context = context;
@@ -62,7 +62,6 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            foodPrefList = new ArrayList<>();
             if (position != RecyclerView.NO_POSITION) {
                 CategoryButton categoryButton = catButtons.get(position);
                 categoryButton.isPref = !categoryButton.isPref;
@@ -72,6 +71,7 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
         public void bind(CategoryButton categoryButton) {
             // TODO: image database? Looks like Google Places uses reviewer images as official listing photo
             tvCuisine.setText(categoryButton.type);
+            ivCuisine.setImageResource(R.drawable.mexican);
         }
     }
 }
