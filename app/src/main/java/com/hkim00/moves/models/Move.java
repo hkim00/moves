@@ -73,6 +73,12 @@ public class Move {
         this.name = jsonObject.getString("name");
         this.moveType = moveType;
         this.id = jsonObject.getString((moveType.equals("food")) ? "place_id" : "id");
+
+        if (moveType.equals("food")) {
+            JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
+            this.lat = location.getDouble("lat");
+            this.lng = location.getDouble("lng");
+        }
     }
 
 

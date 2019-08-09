@@ -11,21 +11,33 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.UserAdapter;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.ParseUtil;
+import com.hkim00.moves.util.StatusCodeHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -35,6 +47,7 @@ public class SearchActivity extends AppCompatActivity {
     private EditText etSearch;
     private Button btnType;
     private RecyclerView rvSearchResults;
+    private ProgressBar progressBar;
 
     private List<Move> moveResults;
     private List<ParseUser> userResults;
@@ -42,6 +55,7 @@ public class SearchActivity extends AppCompatActivity {
     private MoveAdapter moveAdapter;
     private UserAdapter userAdapter;
 
+    private UserLocation location;
     private boolean isTimerRunning;
     private String type;
 
@@ -55,7 +69,9 @@ public class SearchActivity extends AppCompatActivity {
 
         getViewIds();
 
-        setupRecyclerView();
+        setupView();
+
+        btnType.setOnClickListener(view -> toggleType());
     }
 
     @Override
@@ -70,6 +86,7 @@ public class SearchActivity extends AppCompatActivity {
         etSearch = findViewById(R.id.etSearch);
         btnType = findViewById(R.id.btnType);
         rvSearchResults = findViewById(R.id.rvSearchResults);
+        progressBar = findViewById(R.id.progressBar);
     }
 
 
@@ -87,7 +104,29 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
-    private void setupRecyclerView() {
+    private void toggleType() {
+        etSearch.setText("");
+        checkIfNeedToClearRecyclerView();
+
+        if (type.equals("users")) {
+            type = "food";
+            tvType.setText("Food");
+            etSearch.setHint("Restaurant name");
+        } else if (type.equals("food")) {
+            type = "events";
+            tvType.setText("Event");
+            etSearch.setHint("Event title");
+        } else {
+            type = "users";
+            tvType.setText("User");
+            etSearch.setHint("Username");
+        }
+    }
+
+    private void setupView() {
+        progressBar.setVisibility(View.INVISIBLE);
+
+        location = UserLocation.getCurrentLocation(getApplicationContext());
         etSearch.addTextChangedListener(charTextWatcher);
 
         type = "users";
@@ -122,12 +161,11 @@ public class SearchActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) { }
 
             public void onFinish() {
-
-
+                progressBar.setVisibility(View.VISIBLE);
                 if (type.equals("users")) {
                     findUsers();
                 } else {
-                    //findMoves();
+                    findMoves();
                 }
                 isTimerRunning = false;
             }
@@ -141,6 +179,7 @@ public class SearchActivity extends AppCompatActivity {
 
         userQuery.findInBackground((objects, e) -> {
             if (e == null) {
+                progressBar.setVisibility(View.INVISIBLE);
                 List<ParseUser> users = new ArrayList<>();
 
                 for (int i = 0; i < objects.size(); i++) {
@@ -152,6 +191,7 @@ public class SearchActivity extends AppCompatActivity {
                 updateUsers(users);
 
             } else {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, "Error finding users with usernames' containing: " + etSearch.getText().toString().toLowerCase().trim());
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "Error finding users", Toast.LENGTH_SHORT).show();
@@ -181,6 +221,16 @@ public class SearchActivity extends AppCompatActivity {
         checkIfNeedToClearRecyclerView();
     }
 
+    private void updateMoves(List<Move> moves) {
+        moveResults.clear();
+        moveResults.addAll(moves);
+
+        rvSearchResults.setAdapter(moveAdapter);
+        moveAdapter.notifyDataSetChanged();
+
+        checkIfNeedToClearRecyclerView();
+    }
+
     private final TextWatcher charTextWatcher= new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -190,4 +240,69 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) { }
     };
+
+
+    private void findMoves() {
+        if (location.lat == null || location.lng == null) {
+            progressBar.setVisibility(View.INVISIBLE);
+            Toast.makeText(getApplicationContext(), "Set a location", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+        final String API_URL = (type.equals("food")) ? "https://maps.googleapis.com/maps/api/place/textsearch/json?" : "https://app.ticketmaster.com/discovery/v2/events.json";
+        RequestParams params = new RequestParams();
+
+        if (type.equals("food")) {
+            params.put("key", getString(R.string.api_key));
+            params.put("query", etSearch.getText().toString().toLowerCase().trim());
+            params.put("radius", 20000);
+            params.put("location", location.lat + "," + location.lng);
+        } else {
+            params.put("apikey", getString(R.string.api_key_tm));
+            params.put("postalCode", location.postalCode);
+            params.put("sort", "date,asc");
+            params.put("keyword", etSearch.getText().toString().toLowerCase().trim());
+        }
+
+        HomeActivity.client.get(API_URL, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                List<Move> moveResults = new ArrayList<>();
+                try {
+                    Move.arrayFromJSONArray(moveResults, response.getJSONArray("results"), type);
+                } catch (JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+
+                progressBar.setVisibility(View.INVISIBLE);
+                updateMoves(moveResults);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
+                new StatusCodeHandler(TAG, statusCode);
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
+                new StatusCodeHandler(TAG, statusCode);
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
+                new StatusCodeHandler(TAG, statusCode);
+                throwable.printStackTrace();
+            }
+        });
+
+    }
 }

@@ -171,7 +171,6 @@ public class SearchFragment extends Fragment {
     private void findMoves() {
         final String API_URL = (type.equals("food")) ? "https://maps.googleapis.com/maps/api/place/textsearch/json?" : "https://app.ticketmaster.com/discovery/v2/events.json";
 
-
         RequestParams params = new RequestParams();
 
         if (type.equals("food")) {
