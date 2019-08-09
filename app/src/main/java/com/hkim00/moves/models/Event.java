@@ -25,6 +25,7 @@ public class Event extends Move {
     }
 
     public void fromDetailsJSON(JSONObject jsonObject) throws JSONException {
+        super.didCheckHTTPDetails = true;
         super.name = jsonObject.getString("name");
         super.id = jsonObject.getString("id");
 

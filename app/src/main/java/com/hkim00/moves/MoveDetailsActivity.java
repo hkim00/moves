@@ -1,7 +1,14 @@
 package com.hkim00.moves;
 
+import android.app.ActionBar;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +21,9 @@ import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,14 +35,19 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.hkim00.moves.util.ParseUtil.getParseQuery;
+
 public class MoveDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "MoveDetailsActivity";
 
+    private ProgressBar progressBar;
     private RecyclerView rvMove;
     private MoveDetailsAdapter adapter;
-    private Move move;
+    public static Move move;
     private List<Move> moves;
+
+    private static ImageView ivRight;
 
     private boolean isTrip;
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
@@ -48,6 +63,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move_details);
 
+        setupActionBar();
+
         setupRecyclerView();
 
         getMoveDetails();
@@ -60,8 +77,36 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
 
+    private void setupActionBar() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt_rt);
+        getSupportActionBar().setElevation(2);
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
+
+        ivRight = findViewById(R.id.ivRight);
+        Button btnRight = findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(view -> rightButtonAction());
+    }
+
+    private void rightButtonAction() {
+        if (!move.didComplete) {
+            saveMove();
+        } else {
+            favoriteMove();
+        }
+    }
+
     private void setupRecyclerView() {
+        progressBar = findViewById(R.id.progressBar);
         rvMove = findViewById(R.id.rvMove);
+
+        progressBar.setVisibility(View.INVISIBLE);
 
         moves = new ArrayList<>();
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
@@ -75,12 +120,76 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
 
     private void getMoveDetails() {
+        progressBar.setVisibility(View.VISIBLE);
         if (move.moveType.equals("food")) {
             getFoodDetails();
         } else {
             getEventDetails();
         }
     }
+
+    private void checkIfInParse() {
+        if (move != null) {
+            ParseQuery<ParseObject> detailsQuery = getParseQuery(ParseUser.getCurrentUser(), move);
+            detailsQuery.findInBackground(((objects, e) -> {
+                progressBar.setVisibility(View.INVISIBLE);
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+                        ParseObject moveParseObject = objects.get(0);
+
+                        move.parseObject = moveParseObject;
+
+                        move.didComplete = (moveParseObject.has("didComplete")) ? moveParseObject.getBoolean("didComplete") : false;
+                        move.didFavorite = (moveParseObject.has("didFavorite")) ? moveParseObject.getBoolean("didFavorite") : false;
+                        move.didSave = (moveParseObject.has("didSave")) ? moveParseObject.getBoolean("didSave") : false;
+
+                        if (move.didComplete) {
+                            ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+                        } else {
+                            ivRight.setImageResource((move.didSave) ? R.drawable.ufi_save_active : R.drawable.ufi_save);
+                        }
+                    }
+                } else {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }));
+        }
+    }
+
+    private void saveMove() {
+        if (move != null) {
+            move.didSave = !move.didSave;
+            ivRight.setImageResource((move.didSave) ? R.drawable.ufi_save_active : R.drawable.ufi_save);
+
+            if (move.parseObject != null) {
+                move.parseObject.put("didSave", move.didSave);
+                move.parseObject.saveInBackground();
+            } else {
+                move.saveToParse();
+            }
+        }
+    }
+
+    private void favoriteMove() {
+        if (move != null) {
+            move.didFavorite = !move.didFavorite;
+            ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+
+            if (move.parseObject != null) {
+                move.parseObject.put("didFavorite", move.didFavorite);
+                move.parseObject.saveInBackground();
+            } else {
+                move.saveToParse();
+            }
+        }
+    }
+
+
+    public static void changeSaveToFav() {
+        ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+    }
+
 
     private void getFoodDetails() {
         String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
@@ -105,17 +214,20 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
                     if (move.lat != null) {
                         adapter.notifyDataSetChanged();
+                        checkIfInParse();
                     }
 
                 } catch (JSONException e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Error getting restaurant information", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Error getting restaurant");
-
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
@@ -123,6 +235,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
@@ -130,6 +243,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Log.e(TAG, responseString);
                 throwable.printStackTrace();
@@ -159,27 +273,34 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
                     if (move.lat != null) {
                         adapter.notifyDataSetChanged();
+                        checkIfInParse();
                     }
 
                   } catch (JSONException e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Error getting event information", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error getting event");
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, errorResponse.toString());
                 throwable.printStackTrace();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.e(TAG, responseString);
                 throwable.printStackTrace();
             }
