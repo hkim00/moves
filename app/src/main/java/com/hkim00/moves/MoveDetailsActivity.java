@@ -2,8 +2,12 @@ package com.hkim00.moves;
 
 import android.app.ActionBar;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +20,9 @@ import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,14 +34,18 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.hkim00.moves.util.ParseUtil.getParseQuery;
+
 public class MoveDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "MoveDetailsActivity";
 
     private RecyclerView rvMove;
     private MoveDetailsAdapter adapter;
-    private Move move;
+    public static Move move;
     private List<Move> moves;
+
+    private static ImageView ivRight;
 
     private boolean isTrip;
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
@@ -70,10 +81,24 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.action_bar);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt_rt);
         getSupportActionBar().setElevation(2);
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
+
+        ivRight = findViewById(R.id.ivRight);
+        Button btnRight = findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(view -> rightButtonAction());
     }
 
+    private void rightButtonAction() {
+        if (!move.didComplete) {
+            saveMove();
+        } else {
+
+        }
+    }
 
     private void setupRecyclerView() {
         rvMove = findViewById(R.id.rvMove);
@@ -96,6 +121,54 @@ public class MoveDetailsActivity extends AppCompatActivity {
             getEventDetails();
         }
     }
+
+    private void checkIfInParse() {
+        if (move != null) {
+            ParseQuery<ParseObject> detailsQuery = getParseQuery(ParseUser.getCurrentUser(), move);
+            detailsQuery.findInBackground(((objects, e) -> {
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+                        ParseObject moveParseObject = objects.get(0);
+
+                        move.parseObject = moveParseObject;
+
+                        move.didComplete = (moveParseObject.has("didComplete")) ? moveParseObject.getBoolean("didComplete") : false;
+                        move.didFavorite = (moveParseObject.has("didFavorite")) ? moveParseObject.getBoolean("didFavorite") : false;
+                        move.didSave = (moveParseObject.has("didSave")) ? moveParseObject.getBoolean("didSave") : false;
+
+                        if (move.didComplete) {
+                            ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+                        } else {
+                            ivRight.setImageResource((move.didSave) ? R.drawable.ufi_save_active : R.drawable.ufi_save);
+                        }
+                    }
+                } else {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+            }));
+        }
+    }
+
+    private void saveMove() {
+        if (move != null) {
+            move.didSave = !move.didSave;
+            ivRight.setImageResource((move.didSave) ? R.drawable.ufi_save_active : R.drawable.ufi_save);
+
+            if (move.parseObject != null) {
+                move.parseObject.put("didSave", move.didSave);
+                move.parseObject.saveInBackground();
+            } else {
+                move.saveToParse();
+            }
+        }
+    }
+
+
+    public static void changeSaveToFav() {
+        ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+    }
+
 
     private void getFoodDetails() {
         String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
@@ -120,6 +193,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
                     if (move.lat != null) {
                         adapter.notifyDataSetChanged();
+                        checkIfInParse();
                     }
 
                 } catch (JSONException e) {
@@ -174,6 +248,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
                     if (move.lat != null) {
                         adapter.notifyDataSetChanged();
+                        checkIfInParse();
                     }
 
                   } catch (JSONException e) {
