@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
@@ -52,50 +53,21 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
 
     private void chooseMove() {
         if (move.lat != null) {
-            ParseQuery<ParseObject> detailsQuery = getParseQuery(ParseUser.getCurrentUser(), move);
-            detailsQuery.findInBackground((objects, e) -> {
-                if (e == null) {
+            ParseUser.getCurrentUser().addAllUnique((move.moveType.equals("food")) ? "restaurantsCompleted" : "eventsCompleted", Arrays.asList(move.name));
+            ParseUser.getCurrentUser().saveInBackground();
 
-                    if (move.moveType.equals("food")) {
-                        ParseUser.getCurrentUser().addAllUnique("restaurantsCompleted", Arrays.asList(move.name));
-                    } else {
-                        ParseUser.getCurrentUser().addAllUnique("eventsCompleted", Arrays.asList(move.name));
-                    }
-                    ParseUser.getCurrentUser().saveInBackground();
+            showMoveWasChosen();
 
-                    if (objects.size() == 0) {
-                        ParseObject currObj = new ParseObject("Move");
-                        currObj.put("name", move.name);
-                        currObj.put("placeId", move.id);
-                        currObj.put("moveType", (move.moveType));
-                        currObj.put("user", ParseUser.getCurrentUser());
-                        currObj.put("didComplete", true);
-                        currObj.put("didSave", false);
-                        currObj.put("count", 0);
-                        currObj.put("lat", (move).lat);
-                        currObj.put("lng", (move).lng);
-                        if (move.moveType.equals("food")){
-                            currObj.put("price_level", ((Restaurant)move).price_level);
-                        } else {
-                            currObj.put("genre", ((Event) move).genre);
-                        }
+            move.didComplete = true;
+            move.didSave = false;
 
-                        showMoveWasChosen();
-                        currObj.saveInBackground();
-
-                    } else { // the user has already completed the move
-                        for (int i = 0; i < objects.size(); i++) {
-                            objects.get(i).put("didComplete", true);
-                            objects.get(i).put("didSave", false); // user cannot save a move that has been done
-
-                            showMoveWasChosen();
-                            objects.get(i).saveInBackground();
-                        }
-                    }
-                } else {
-                    Log.d("Move", "Error: saving move to history");
-                }
-            });
+            if (move.parseObject != null && move.didSave && !move.didComplete) {
+                move.parseObject.put("didComplete", move.didComplete);
+                move.parseObject.put("didSave", move.didSave);
+                move.parseObject.saveInBackground();
+            } else {
+                move.saveToParse();
+            }
         }
     }
 
@@ -103,5 +75,7 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
         tvChooseMove.setText("Move Chosen");
         tvChooseMove.setTextColor(ContextCompat.getColor(context, R.color.black));
         vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
+
+        MoveDetailsActivity.changeSaveToFav();
     }
 }

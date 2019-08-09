@@ -42,10 +42,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private RecyclerView rvMove;
     private MoveDetailsAdapter adapter;
-    private Move move;
+    public static Move move;
     private List<Move> moves;
 
-    private ImageView ivRight;
+    private static ImageView ivRight;
 
     private boolean isTrip;
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
@@ -95,9 +95,32 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void rightButtonAction() {
         if (!move.didComplete) {
             saveMove();
+        } else {
+
         }
     }
 
+    private void setupRecyclerView() {
+        rvMove = findViewById(R.id.rvMove);
+
+        moves = new ArrayList<>();
+        move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
+        moves.add(move);
+
+        rvMove.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        adapter = new MoveDetailsAdapter(MoveDetailsActivity.this, moves);
+        rvMove.setAdapter(adapter);
+    }
+
+
+    private void getMoveDetails() {
+        if (move.moveType.equals("food")) {
+            getFoodDetails();
+        } else {
+            getEventDetails();
+        }
+    }
 
     private void checkIfInParse() {
         if (move != null) {
@@ -109,11 +132,15 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
                         move.parseObject = moveParseObject;
 
-                        move.didFavorite = (moveParseObject.has("didComplete")) ? moveParseObject.getBoolean("didComplete") : false;
+                        move.didComplete = (moveParseObject.has("didComplete")) ? moveParseObject.getBoolean("didComplete") : false;
                         move.didFavorite = (moveParseObject.has("didFavorite")) ? moveParseObject.getBoolean("didFavorite") : false;
                         move.didSave = (moveParseObject.has("didSave")) ? moveParseObject.getBoolean("didSave") : false;
 
-                        ivRight.setImageResource((move.didSave) ? R.drawable.ufi_save_active : R.drawable.ufi_save);
+                        if (move.didComplete) {
+                            ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+                        } else {
+                            ivRight.setImageResource((move.didSave) ? R.drawable.ufi_save_active : R.drawable.ufi_save);
+                        }
                     }
                 } else {
                     Log.e(TAG, e.getMessage());
@@ -138,27 +165,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void setupRecyclerView() {
-        rvMove = findViewById(R.id.rvMove);
-
-        moves = new ArrayList<>();
-        move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
-        moves.add(move);
-
-        rvMove.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-        adapter = new MoveDetailsAdapter(MoveDetailsActivity.this, moves);
-        rvMove.setAdapter(adapter);
+    public static void changeSaveToFav() {
+        ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
     }
 
-
-    private void getMoveDetails() {
-        if (move.moveType.equals("food")) {
-            getFoodDetails();
-        } else {
-            getEventDetails();
-        }
-    }
 
     private void getFoodDetails() {
         String apiUrl = "https://maps.googleapis.com/maps/api/place/details/json";
