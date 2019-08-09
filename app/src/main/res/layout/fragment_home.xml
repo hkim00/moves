@@ -414,16 +414,6 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/expand_more_24px" />
 
-    <ImageView
-        android:id="@+id/ivSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/btnSearch"
-        app:layout_constraintEnd_toEndOf="@+id/btnSearch"
-        app:layout_constraintStart_toStartOf="@+id/btnSearch"
-        app:layout_constraintTop_toTopOf="@+id/btnSearch"
-        app:srcCompat="@drawable/places_ic_search" />
-
     <TextView
         android:id="@+id/tvFood"
         android:layout_width="wrap_content"
@@ -546,18 +536,9 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="35dp"
         android:layout_height="34dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/ivSearch"
-        app:layout_constraintTop_toTopOf="@+id/btnSearch" />
-
-    <Button
-        android:id="@+id/btnSearch"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="35dp"
-        android:layout_height="34dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/view2"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 

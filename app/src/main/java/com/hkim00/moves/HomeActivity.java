@@ -1,11 +1,13 @@
 package com.hkim00.moves;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,14 +53,14 @@ public class HomeActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
         bottomNavigation = findViewById(R.id.bottom_navigation);
 
-        setupActionBar();
+        setupRightActionBar();
 
         getScreenWidth();
 
         setupNavBar();
     }
 
-    private void setupActionBar() {
+    private void setupClearActionBar() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
@@ -76,6 +78,7 @@ public class HomeActivity extends AppCompatActivity {
 
             switch (menuItem.getItemId()) {
                 case R.id.action_history:
+                    setupClearActionBar();
                     fragment = new HistoryFragment();
 
                     if (currentFrag != HISTORY_TAG) {
@@ -86,6 +89,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case R.id.action_past_trips:
+                    setupClearActionBar();
                     fragment = new PastTripsFragment();
                     if (currentFrag != SEARCH_TAG) {
                         if (currentFrag < SEARCH_TAG) {
@@ -99,6 +103,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case R.id.action_home:
+                    setupRightActionBar();
                     fragment = new HomeFragment();
 
                     if (currentFrag != HOME_TAG) {
@@ -113,6 +118,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case R.id.action_profile:
+                    setupClearActionBar();
                     fragment = new ProfileFragment();
 
                     if (currentFrag != PROFILE_TAG) {
@@ -132,6 +138,27 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigation.setSelectedItemId(R.id.action_home);
     }
+
+
+    private void setupRightActionBar() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_rt);
+        getSupportActionBar().setElevation(2);
+
+        Button btnRight = findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(view -> goToSearchActivity());
+    }
+
+    private void goToSearchActivity() {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    }
+
 
     private void getScreenWidth() {
         Display display = getWindowManager().getDefaultDisplay();

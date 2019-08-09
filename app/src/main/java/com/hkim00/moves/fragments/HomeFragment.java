@@ -25,9 +25,7 @@ import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.SearchActivity;
 import com.hkim00.moves.TripActivity;
-import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveText;
@@ -92,7 +90,7 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnSearch, btnAddFriend;
+    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnAddFriend;
 
     @Nullable
     @Override
@@ -218,8 +216,6 @@ public class HomeFragment extends Fragment {
         btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
-        btnSearch = view.findViewById(R.id.btnSearch);
-
     }
 
     private void setupDesign() {
@@ -311,22 +307,6 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         });
-
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Fragment fragment = new SearchFragment();
-                ((SearchFragment) fragment).isAddFriend = false;
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(((ViewGroup)getView().getParent()).getId(), fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-
-
-            }
-        });
-
     }
 
 
