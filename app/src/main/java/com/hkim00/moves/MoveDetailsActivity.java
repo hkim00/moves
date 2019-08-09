@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -70,8 +71,11 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.action_bar);
+        getSupportActionBar().setCustomView(R.layout.action_bar_with_back);
         getSupportActionBar().setElevation(2);
+
+        Button btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(view -> onBackPressed());
     }
 
 
