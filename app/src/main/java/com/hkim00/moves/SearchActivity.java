@@ -272,7 +272,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 List<Move> moveResults = new ArrayList<>();
                 try {
-                    Move.arrayFromJSONArray(moveResults, response.getJSONArray("results"), type);
+                    Move.arrayFromJSONArray(moveResults, type.equals("food") ? response.getJSONArray("results") : response.getJSONObject("_embedded").getJSONArray("events"), type);
                 } catch (JSONException e) {
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();

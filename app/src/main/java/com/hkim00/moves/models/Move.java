@@ -36,6 +36,7 @@ public class Move {
     public boolean equals(Object obj) {
         return (((Move) obj).id.equals(this.id)) ? true : false;
     }
+
   
     public static Move fromParseObject(ParseObject parseObject) {
         Move move = new Move();
@@ -78,6 +79,9 @@ public class Move {
             JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
             this.lat = location.getDouble("lat");
             this.lng = location.getDouble("lng");
+        } else {
+            this.lat = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
+            this.lng = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
         }
     }
 
