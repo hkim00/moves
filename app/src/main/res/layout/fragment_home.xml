@@ -233,16 +233,6 @@
         app:layout_constraintTop_toTopOf="@+id/btnAddFriends" />
 
     <Button
-        android:id="@+id/btnMove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginBottom="76dp"
-        android:text="Move"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
         android:id="@+id/btnRiskyMove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
