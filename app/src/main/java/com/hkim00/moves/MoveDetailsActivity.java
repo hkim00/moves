@@ -96,7 +96,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
         if (!move.didComplete) {
             saveMove();
         } else {
-
+            favoriteMove();
         }
     }
 
@@ -157,6 +157,20 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
             if (move.parseObject != null) {
                 move.parseObject.put("didSave", move.didSave);
+                move.parseObject.saveInBackground();
+            } else {
+                move.saveToParse();
+            }
+        }
+    }
+
+    private void favoriteMove() {
+        if (move != null) {
+            move.didFavorite = !move.didFavorite;
+            ivRight.setImageResource((move.didFavorite) ? R.drawable.ufi_heart_active : R.drawable.ufi_heart);
+
+            if (move.parseObject != null) {
+                move.parseObject.put("didFavorite", move.didFavorite);
                 move.parseObject.saveInBackground();
             } else {
                 move.saveToParse();
