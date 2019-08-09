@@ -91,6 +91,7 @@ public class HomeFragment extends Fragment {
 
     private Button btnMove, btnRiskyMove, btnAddFriends, btnAddFriend;
 
+    private TextView tvNoMoves;
     private RecyclerView rvMoveResults;
     private MoveCategoryAdapter adapter;
     private List<MoveCategory> moveResults, foodResults, eventResults;
@@ -220,11 +221,13 @@ public class HomeFragment extends Fragment {
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
 
+        tvNoMoves = view.findViewById(R.id.tvNoMoves);
         rvMoveResults = view.findViewById(R.id.rvMoveResults);
         progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupDesign() {
+        tvNoMoves.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
 
         btnDistance.getLayoutParams().width= HomeActivity.screenWidth/3;
@@ -653,6 +656,8 @@ public class HomeFragment extends Fragment {
         moveResults.clear();
         moveResults.addAll(replacementArray);
         adapter.notifyDataSetChanged();
+
+        tvNoMoves.setVisibility(replacementArray.size() == 0 ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
