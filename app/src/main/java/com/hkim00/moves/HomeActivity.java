@@ -89,7 +89,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case R.id.action_past_trips:
-                    setupClearActionBar();
+                    setupAddTrip();
                     fragment = new PastTripsFragment();
                     if (currentFrag != SEARCH_TAG) {
                         if (currentFrag < SEARCH_TAG) {
@@ -153,12 +153,29 @@ public class HomeActivity extends AppCompatActivity {
         btnRight.setOnClickListener(view -> goToSearchActivity());
     }
 
+    private void setupAddTrip() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_at);
+        getSupportActionBar().setElevation(2);
+
+        Button btnRight = findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(view -> goToNewTrip());
+    }
     private void goToSearchActivity() {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 
+    private void goToNewTrip() {
+        Intent intent = new Intent(this, TripActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    }
 
     private void getScreenWidth() {
         Display display = getWindowManager().getDefaultDisplay();

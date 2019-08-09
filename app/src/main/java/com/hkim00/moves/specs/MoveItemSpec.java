@@ -35,7 +35,6 @@ public class MoveItemSpec {
 
 
         String name = (move.name == null) ? ((MoveText) move).Cuisine : move.name ;
-        String cuisine = move.cuisine;
 
 
         return Column.create(c)

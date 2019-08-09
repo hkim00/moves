@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="60dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="60dp"
+    android:layout_marginBottom="8dp"
+    android:elevation="5dp" >
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/clTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/tvTripName"
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="bottom"
+            android:text="Trip Name"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/clTrip"
+            app:layout_constraintTop_toTopOf="@id/clTrip" />
+
+
+        <TextView
+            android:id="@+id/tvDatePlanned"
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_marginTop="4dp"
+            android:gravity="bottom"
+            android:text="Date"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="@id/tvTripName"
+            app:layout_constraintTop_toBottomOf="@id/tvTripName" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
