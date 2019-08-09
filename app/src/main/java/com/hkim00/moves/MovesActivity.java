@@ -13,7 +13,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.specs.MoveSection;
 
@@ -23,11 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovesActivity extends AppCompatActivity {
-
     List<Move> moves;
     TextView tvNoResults;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
