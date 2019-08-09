@@ -20,17 +20,20 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
+import com.hkim00.moves.adapters.MoveResultAdapter;
+import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
-import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
@@ -90,6 +93,10 @@ public class HomeFragment extends Fragment {
 
     private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnAddFriend;
 
+    private RecyclerView rvMoveResults;
+    private MoveResultAdapter adapter;
+    private List<Cuisine> foodPreferenceResults, eventPreferenceResults;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,6 +119,8 @@ public class HomeFragment extends Fragment {
 
         checkForCurrentLocation();
 
+        setupRecyclerView();
+
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             friend = bundle.getParcelable("friend");
@@ -119,6 +128,15 @@ public class HomeFragment extends Fragment {
             tvFriend.setText(friend.getUsername());
             isFriendMove = true;
         }
+    }
+
+    private void setupRecyclerView() {
+        foodPreferenceResults = new ArrayList<>();
+        eventPreferenceResults = new ArrayList<>();
+
+        rvMoveResults.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new MoveResultAdapter(HomeFragment.this.getContext(), foodPreferenceResults);
+        rvMoveResults.setAdapter(adapter);
     }
 
     private void checkForCurrentLocation() {
@@ -212,6 +230,8 @@ public class HomeFragment extends Fragment {
         btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
+
+        rvMoveResults = view.findViewById(R.id.rvMoveResults);
     }
 
     private void setupDesign() {
