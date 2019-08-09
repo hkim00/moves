@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
+import com.hkim00.moves.fragments.PastTripsFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
 import com.hkim00.moves.util.UncaughtExceptionHandler;
 import com.hkim00.moves.fragments.SearchFragment;
@@ -69,9 +70,8 @@ public class HomeActivity extends AppCompatActivity {
                     currentFrag = HISTORY_TAG;
                     break;
 
-                case R.id.action_search:
-                    fragment = new SearchFragment();
-                    ((SearchFragment) fragment).isAddFriend = false;
+                case R.id.action_past_trips:
+                    fragment = new PastTripsFragment();
                     if (currentFrag != SEARCH_TAG) {
                         if (currentFrag < SEARCH_TAG) {
                             fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);

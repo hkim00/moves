@@ -7,51 +7,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:background="#E1990A"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/tvLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
         android:text="Location"
         android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="@+id/view"
-        app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@+id/view" />
+        android:textColor="#171616"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnLocation"
+        app:layout_constraintEnd_toEndOf="@+id/btnLocation"
+        app:layout_constraintHorizontal_bias="0.014"
+        app:layout_constraintStart_toStartOf="@+id/btnLocation"
+        app:layout_constraintTop_toTopOf="@+id/btnLocation"
+        app:layout_constraintVertical_bias="0.277" />
 
     <Button
         android:id="@+id/btnLocation"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/view"
-        app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@+id/view" />
-
-    <View
-        android:id="@+id/view2"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:background="#EAC66A"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="123dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSearching" />
 
     <!--<ImageView-->
         <!--android:id="@+id/ivTime"-->
@@ -160,167 +140,100 @@
         app:layout_constraintStart_toStartOf="@+id/btnPrice"
         app:layout_constraintTop_toTopOf="@+id/btnPrice" />
 
+    <View
+        android:id="@+id/view2"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLine" />
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCategories"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnRiskyMove"
-        app:layout_constraintTop_toBottomOf="@+id/view2">
-
-        <ImageView
-            android:id="@+id/ivFood"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/food_background" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="5dp"
-            android:text="Food"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ivFood"
-            app:layout_constraintStart_toStartOf="@+id/ivFood" />
-
-        <Button
-            android:id="@+id/btnFood"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/ivFood"
-            app:layout_constraintEnd_toEndOf="@+id/ivFood"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/ivFood"
-            app:layout_constraintTop_toTopOf="@+id/ivFood"
-            app:layout_constraintVertical_bias="1.0" />
+        android:layout_width="409dp"
+        android:layout_height="527dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivLine2">
 
         <!--<ImageView-->
-            <!--android:id="@+id/ivActivities"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="120dp"-->
-            <!--android:scaleType="centerCrop"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/ivFood"-->
-            <!--app:srcCompat="@drawable/activities_background" />-->
+        <!--android:id="@+id/ivActivities"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ivFood"-->
+        <!--app:srcCompat="@drawable/activities_background" />-->
 
         <!--<TextView-->
-            <!--android:id="@+id/textView3"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:text="Activities"-->
-            <!--android:textColor="#FFFFFF"-->
-            <!--android:textSize="30sp"-->
-            <!--android:textStyle="bold"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/ivActivities"-->
-            <!--app:layout_constraintStart_toStartOf="@+id/ivActivities" />-->
+        <!--android:id="@+id/textView3"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:text="Activities"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textSize="30sp"-->
+        <!--android:textStyle="bold"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/ivActivities"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/ivActivities" />-->
 
         <!--<Button-->
-            <!--android:id="@+id/btnActivities"-->
-            <!--style="@style/Widget.AppCompat.Button.Borderless"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="0dp"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/ivActivities"-->
-            <!--app:layout_constraintEnd_toEndOf="@+id/ivActivities"-->
-            <!--app:layout_constraintStart_toStartOf="@+id/ivActivities"-->
-            <!--app:layout_constraintTop_toTopOf="@+id/ivActivities" />-->
+        <!--android:id="@+id/btnActivities"-->
+        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/ivActivities"-->
+        <!--app:layout_constraintEnd_toEndOf="@+id/ivActivities"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/ivActivities"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/ivActivities" />-->
 
         <!--<ImageView-->
-            <!--android:id="@+id/ivAttractions"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="120dp"-->
-            <!--android:scaleType="centerCrop"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintHorizontal_bias="0.0"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/ivActivities"-->
-            <!--app:srcCompat="@drawable/attractions_background" />-->
+        <!--android:id="@+id/ivAttractions"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.0"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/ivActivities"-->
+        <!--app:srcCompat="@drawable/attractions_background" />-->
 
         <!--<TextView-->
-            <!--android:id="@+id/textView5"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:text="Attractions"-->
-            <!--android:textColor="#FFFFFF"-->
-            <!--android:textSize="30sp"-->
-            <!--android:textStyle="bold"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"-->
-            <!--app:layout_constraintStart_toStartOf="@+id/ivAttractions" />-->
+        <!--android:id="@+id/textView5"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:text="Attractions"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textSize="30sp"-->
+        <!--android:textStyle="bold"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/ivAttractions" />-->
 
         <!--<Button-->
-            <!--android:id="@+id/btnAttractions"-->
-            <!--style="@style/Widget.AppCompat.Button.Borderless"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="0dp"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"-->
-            <!--app:layout_constraintEnd_toEndOf="@+id/ivAttractions"-->
-            <!--app:layout_constraintStart_toStartOf="@+id/ivAttractions"-->
-            <!--app:layout_constraintTop_toTopOf="@+id/ivAttractions" />-->
+        <!--android:id="@+id/btnAttractions"-->
+        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/ivAttractions"-->
+        <!--app:layout_constraintEnd_toEndOf="@+id/ivAttractions"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/ivAttractions"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/ivAttractions" />-->
 
-        <ImageView
-            android:id="@+id/ivEvents"
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnFood"
-            app:srcCompat="@drawable/events_background" />
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Events"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ivEvents"
-            app:layout_constraintStart_toStartOf="parent" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMoveResults"
+            android:layout_width="418dp"
+            android:layout_height="521dp"
+            app:layout_constraintStart_toStartOf="@id/clCategories"
+            app:layout_constraintTop_toTopOf="@id/clCategories" />
 
-        <Button
-            android:id="@+id/btnEvents"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/ivEvents"
-            app:layout_constraintEnd_toEndOf="@+id/ivEvents"
-            app:layout_constraintStart_toStartOf="@+id/ivEvents"
-            app:layout_constraintTop_toTopOf="@+id/ivEvents" />
-
-        <Button
-            android:id="@+id/btnTrip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="New Trip"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEvents" />
-
-        <Button
-            android:id="@+id/btnNextTrip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="get next trip"
-            app:layout_constraintStart_toStartOf="@+id/btnTrip"
-            app:layout_constraintTop_toBottomOf="@+id/btnTrip" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -328,20 +241,21 @@
         android:id="@+id/tvFriend"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="52dp"
+        android:layout_marginTop="10dp"
         android:text="Friend"
-        app:layout_constraintBottom_toBottomOf="@+id/clCategories"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddFriends"
+        app:layout_constraintStart_toStartOf="@+id/btnAddFriends"
+        app:layout_constraintTop_toTopOf="@+id/btnAddFriends" />
 
     <Button
         android:id="@+id/btnMove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="76dp"
         android:text="Move"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -350,30 +264,20 @@
         android:id="@+id/btnRiskyMove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="76dp"
         android:text="Risky"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnAddFriends" />
-
-    <Button
-        android:id="@+id/btnAddFriends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="44dp"
-        android:layout_marginBottom="16dp"
-        android:text="Add Friends"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/clCategories"
-        app:layout_constraintTop_toBottomOf="@+id/view2">
+        tools:layout_editor_absoluteX="179dp"
+        tools:layout_editor_absoluteY="221dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view2">
 
         <View
             android:id="@+id/view5"
@@ -425,8 +329,10 @@
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/btnPriceLevel3"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/btnPriceLevel3"
-            app:layout_constraintTop_toTopOf="@+id/btnPriceLevel3" />
+            app:layout_constraintTop_toTopOf="@+id/btnPriceLevel3"
+            app:layout_constraintVertical_bias="1.0" />
 
         <Button
             android:id="@+id/btnPriceLevel3"
@@ -481,5 +387,178 @@
             app:layout_constraintTop_toTopOf="@+id/etDistance" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvSearching"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="8dp"
+        android:text="Searching around"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivDropDown"
+        android:layout_width="16dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnLocation"
+        app:layout_constraintEnd_toEndOf="@+id/btnLocation"
+        app:layout_constraintHorizontal_bias="0.771"
+        app:layout_constraintStart_toEndOf="@+id/tvLocation"
+        app:layout_constraintTop_toTopOf="@+id/btnLocation"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/expand_more_24px" />
+
+    <ImageView
+        android:id="@+id/ivSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSearch"
+        app:layout_constraintEnd_toEndOf="@+id/btnSearch"
+        app:layout_constraintStart_toStartOf="@+id/btnSearch"
+        app:layout_constraintTop_toTopOf="@+id/btnSearch"
+        app:srcCompat="@drawable/places_ic_search" />
+
+    <TextView
+        android:id="@+id/tvFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Food"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="#1A1919"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnFood"
+        app:layout_constraintEnd_toEndOf="@+id/btnFood"
+        app:layout_constraintStart_toStartOf="@+id/btnFood"
+        app:layout_constraintTop_toTopOf="@+id/btnFood" />
+
+    <Button
+        android:id="@+id/btnFood"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnLocation" />
+
+    <Button
+        android:id="@+id/btnEvent"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="64dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnFood" />
+
+    <TextView
+        android:id="@+id/tvEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="#1A1A1A"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnEvent"
+        app:layout_constraintEnd_toEndOf="@+id/btnEvent"
+        app:layout_constraintStart_toStartOf="@+id/btnEvent"
+        app:layout_constraintTop_toTopOf="@+id/btnEvent" />
+
+    <ImageView
+        android:id="@+id/ivLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        app:srcCompat="@drawable/line"
+        app:layout_constraintTop_toBottomOf="@id/btnFood"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="124dp" />
+
+    <ImageView
+        android:id="@+id/ivLine2"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="68dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnFood"
+        app:srcCompat="@drawable/line" />
+
+    <ImageView
+        android:id="@+id/ivChooseEvemt"
+        android:layout_width="76dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="3dp"
+        app:layout_constraintEnd_toEndOf="@+id/tvEvent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEvent"
+        app:srcCompat="@drawable/rectangle" />
+
+    <ImageView
+        android:id="@+id/ivChooseFood"
+        android:layout_width="68dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="3dp"
+        app:layout_constraintEnd_toEndOf="@+id/tvFood"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tvFood"
+        app:layout_constraintTop_toBottomOf="@+id/tvFood"
+        app:srcCompat="@drawable/rectangle" />
+
+    <ImageView
+        android:id="@+id/ivAddFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAddFriends"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddFriends"
+        app:layout_constraintStart_toStartOf="@+id/btnAddFriends"
+        app:layout_constraintTop_toTopOf="@+id/btnAddFriends"
+        app:srcCompat="@drawable/group" />
+
+    <Button
+        android:id="@+id/btnAddFriends"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintStart_toEndOf="@+id/btnPrice"
+        app:layout_constraintTop_toTopOf="@+id/view2" />
+
+    <ImageView
+        android:id="@+id/ivTrip"
+        android:layout_width="22dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnTrip"
+        app:layout_constraintEnd_toEndOf="@+id/btnTrip"
+        app:layout_constraintStart_toStartOf="@+id/btnTrip"
+        app:layout_constraintTop_toTopOf="@+id/btnTrip"
+        app:srcCompat="@drawable/create_24px" />
+
+    <Button
+        android:id="@+id/btnTrip"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="35dp"
+        android:layout_height="34dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/ivSearch"
+        app:layout_constraintTop_toTopOf="@+id/btnSearch" />
+
+    <Button
+        android:id="@+id/btnSearch"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="35dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -124,7 +124,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvFood" />
 
     <TextView
-        android:id="@+id/tvEvents"
+        android:id="@+id/tvEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -136,23 +136,23 @@
         app:layout_constraintTop_toTopOf="@+id/tvFood" />
 
     <Button
-        android:id="@+id/btnEvents"
+        android:id="@+id/btnEvent"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="80dp"
         android:layout_height="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvEvents"
-        app:layout_constraintEnd_toEndOf="@+id/tvEvents"
-        app:layout_constraintStart_toStartOf="@+id/tvEvents"
-        app:layout_constraintTop_toTopOf="@+id/tvEvents" />
+        app:layout_constraintBottom_toBottomOf="@+id/tvEvent"
+        app:layout_constraintEnd_toEndOf="@+id/tvEvent"
+        app:layout_constraintStart_toStartOf="@+id/tvEvent"
+        app:layout_constraintTop_toTopOf="@+id/tvEvent" />
 
     <View
         android:id="@+id/vEventsView"
         android:layout_width="0dp"
         android:layout_height="4dp"
         android:background="#2196F3"
-        app:layout_constraintEnd_toEndOf="@+id/tvEvents"
-        app:layout_constraintStart_toStartOf="@+id/tvEvents"
-        app:layout_constraintTop_toBottomOf="@+id/tvEvents" />
+        app:layout_constraintEnd_toEndOf="@+id/tvEvent"
+        app:layout_constraintStart_toStartOf="@+id/tvEvent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEvent" />
 
     <TextView
         android:id="@+id/tvSelected"
@@ -163,8 +163,8 @@
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/tvEvents"
-        app:layout_constraintTop_toTopOf="@+id/tvEvents" />
+        app:layout_constraintStart_toEndOf="@+id/tvEvent"
+        app:layout_constraintTop_toTopOf="@+id/tvEvent" />
 
     <Button
         android:id="@+id/btnSelected"
@@ -206,7 +206,7 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnEvents" />
+        app:layout_constraintTop_toBottomOf="@+id/btnEvent" />
 
     <Button
         android:id="@+id/btnSave"

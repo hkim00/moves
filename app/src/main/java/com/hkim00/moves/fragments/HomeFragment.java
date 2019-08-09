@@ -26,7 +26,6 @@ import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
-import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveText;
 import com.hkim00.moves.models.Restaurant;
@@ -37,7 +36,6 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -49,10 +47,8 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
@@ -83,7 +79,7 @@ public class HomeFragment extends Fragment {
     private Button btnFood, btnEvents;
 
     private ConstraintLayout clCategories;
-    private ImageView ivFood, ivEvents;
+    private ImageView ivFood, ivEvents, ivAddFriends;
 
     private ConstraintLayout clPrice;
     private TextView tvRightPopupTitle, tvMiles;
@@ -93,7 +89,7 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnNextTrip;
+    private Button btnMove, btnRiskyMove, btnTrip, btnAddFriends, btnSearch, btnAddFriend;
 
     @Nullable
     @Override
@@ -120,6 +116,7 @@ public class HomeFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             friend = bundle.getParcelable("friend");
+            ivAddFriends.setVisibility(View.INVISIBLE);
             tvFriend.setText(friend.getUsername());
             isFriendMove = true;
         }
@@ -196,11 +193,10 @@ public class HomeFragment extends Fragment {
         tvPriceLevel = view.findViewById(R.id.tvPriceLevel);
 
         btnFood = view.findViewById(R.id.btnFood);
-        btnEvents = view.findViewById(R.id.btnEvents);
+        btnEvents = view.findViewById(R.id.btnEvent);
 
         clCategories = view.findViewById(R.id.clCategories);
-        ivFood = view.findViewById(R.id.ivFood);
-        ivEvents = view.findViewById(R.id.ivEvents);
+
 
         clPrice = view.findViewById(R.id.clPrice);
         tvRightPopupTitle = view.findViewById(R.id.tvRightPopupTitle);
@@ -212,17 +208,21 @@ public class HomeFragment extends Fragment {
         btnPriceLevel4 = view.findViewById(R.id.btnPriceLevel4);
 
         tvFriend = view.findViewById(R.id.tvFriend);
+        ivAddFriends = view.findViewById(R.id.ivAddFriends);
 
         btnMove = view.findViewById(R.id.btnMove);
         btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
         btnTrip = view.findViewById(R.id.btnTrip);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
-        btnNextTrip = view.findViewById(R.id.btnNextTrip);
+        btnAddFriend = view.findViewById(R.id.btnAddFriends);
+        btnSearch = view.findViewById(R.id.btnSearch);
+
     }
 
     private void setupDesign() {
-        btnDistance.getLayoutParams().width= HomeActivity.screenWidth/2;
-        btnPrice.getLayoutParams().width= HomeActivity.screenWidth/2;
+        btnDistance.getLayoutParams().width= HomeActivity.screenWidth/3;
+        btnPrice.getLayoutParams().width= HomeActivity.screenWidth/3;
+        btnAddFriend.getLayoutParams().width=HomeActivity.screenWidth/3;
 
         clPrice.setVisibility(View.INVISIBLE);
 
@@ -239,8 +239,8 @@ public class HomeFragment extends Fragment {
 
         clCategories.post(() -> {
             int constraintHeight = clCategories.getLayoutParams().height;
-            ivFood.getLayoutParams().height = constraintHeight/4;
-            ivEvents.getLayoutParams().height = constraintHeight/4;
+           // ivFood.getLayoutParams().height = constraintHeight/4;
+            //ivEvents.getLayoutParams().height = constraintHeight/4;
         });
     }
 
@@ -309,25 +309,25 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.commit();
         });
 
-        btnNextTrip.setOnClickListener(view -> getNextTrip());
-    }
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new SearchFragment();
+                ((SearchFragment) fragment).isAddFriend = false;
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(((ViewGroup)getView().getParent()).getId(), fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
 
 
-    private void getNextTrip() {
-        ParseQuery<ParseObject> tripQuery = ParseQuery.getQuery("Trip");
-        tripQuery.whereEqualTo("owner", ParseUser.getCurrentUser());
-        tripQuery.orderByDescending("createdAt");
-        tripQuery.getFirstInBackground((object, e) -> {
-            if (e == null && object != null) {
-                Trip trip = Trip.fromParseObject(object);
-
-                Intent intent = new Intent(getContext(), TripActivity.class);
-                intent.putExtra("trip", Parcels.wrap(trip));
-                startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
             }
         });
+
     }
+
+
+
 
 
     private void toggleRightPopup(String type) {

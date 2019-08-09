@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.UserAdapter;
-import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
@@ -104,12 +103,12 @@ public class TripActivity extends AppCompatActivity {
         btnSelectFriends = findViewById(R.id.btnSelectFriends);
 
         tvFood = findViewById(R.id.tvFood);
-        tvEvents = findViewById(R.id.tvEvents);
+        tvEvents = findViewById(R.id.tvEvent);
         tvSelected = findViewById(R.id.tvSelected);
         tvFriends = findViewById(R.id.tvFriends);
 
         btnFood = findViewById(R.id.btnFood);
-        btnEvents = findViewById(R.id.btnEvents);
+        btnEvents = findViewById(R.id.btnEvent);
         btnSelected = findViewById(R.id.btnSelected);
         btnFriends = findViewById(R.id.btnFriends);
 
