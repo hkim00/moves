@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hkim00.moves.fragments.HistoryFragment;
 import com.hkim00.moves.fragments.HomeFragment;
+//import com.hkim00.moves.fragments.PastTripsFragment;
 import com.hkim00.moves.fragments.PastTripsFragment;
 import com.hkim00.moves.fragments.ProfileFragment;
 import com.hkim00.moves.models.UserLocation;

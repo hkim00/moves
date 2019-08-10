@@ -70,7 +70,6 @@ public class PastTripsFragment extends Fragment {
 
         SetUpRecycler();
         getNextTrip();
-
     }
 
     private void SetUpRecycler() {
@@ -81,8 +80,6 @@ public class PastTripsFragment extends Fragment {
         tripAdapter = new TripAdapter(getContext(), upcomingTrips);
         rvUpcomingTrips.setAdapter(tripAdapter);
     }
-
-
 
     private void getNextTrip() {
         ParseQuery<ParseObject> tripQuery = ParseQuery.getQuery("Trip");
@@ -101,7 +98,6 @@ public class PastTripsFragment extends Fragment {
                         for (int i = 0; i < objects.size(); i++) {
                             Trip trip = Trip.fromParseObject(objects.get(i));
                             trips.add(trip);
-
                         }
                         upcomingTrips.clear();
                         upcomingTrips.addAll(trips);
@@ -112,9 +108,7 @@ public class PastTripsFragment extends Fragment {
                     Log.e(TAG, "Error finding upcoming trips.");
                     e.printStackTrace();
                 }
-
             }
-
         });
     }
 }
