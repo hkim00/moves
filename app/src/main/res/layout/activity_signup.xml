@@ -7,20 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".SignUpActivity">
 
-    <TextView
-        android:id="@+id/tvMoves2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="8dp"
-        android:text="MOVES"
-        android:textColor="#FDD835"
-        android:textSize="45dp"
-        android:textStyle="bold|italic"
-        app:layout_constraintEnd_toEndOf="parent"
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="99dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="156dp"
+        android:layout_marginTop="132dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/move_logo" />
 
     <EditText
         android:id="@+id/etPassword2"
@@ -50,11 +45,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="164dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:text="Smart move!"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMoves2" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
 
     <Button
         android:id="@+id/btnGetStarted"
@@ -63,7 +58,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:background="#FDD835"
+        android:background="#22A02D"
         android:text="Get Started!"
         android:textColor="#F4F4F4"
         android:textStyle="bold"
@@ -98,7 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="add photo"
-        android:textColor="#2196F3"
+        android:textColor="#22A02D"
         app:layout_constraintBottom_toBottomOf="@+id/ivProfilePic"
         app:layout_constraintStart_toEndOf="@+id/ivProfilePic"
         app:layout_constraintTop_toTopOf="@+id/ivProfilePic" />

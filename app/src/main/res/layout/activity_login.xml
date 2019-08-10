@@ -12,11 +12,11 @@
         android:layout_width="376dp"
         android:layout_height="45dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="284dp"
+        android:layout_marginTop="276dp"
         android:layout_marginEnd="16dp"
         android:hint="Username"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,15 +40,14 @@
         android:id="@+id/tvMoves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="112dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="8dp"
         android:text="MOVES"
-        android:textColor="#FDD835"
-        android:textSize="55dp"
+        android:textColor="#22A02D"
+        android:textSize="45sp"
         android:textStyle="bold|italic"
-        app:layout_constraintBottom_toTopOf="@id/etUsername"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.538" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
     <Button
         android:id="@+id/btnlogIn"
@@ -56,7 +55,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:background="#FDD835"
+        android:background="#22A02D"
         android:text="Log In"
         android:textColor="#FBFAFB"
         android:textSize="20dp"
@@ -96,9 +95,20 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="132dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
         android:text="What are the moves?"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tvMoves"
+        app:layout_constraintTop_toBottomOf="@+id/tvMoves" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="99dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="156dp"
+        android:layout_marginTop="88dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMoves" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/move_logo" />
 </androidx.constraintlayout.widget.ConstraintLayout>
