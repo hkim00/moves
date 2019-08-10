@@ -16,9 +16,8 @@ import java.util.List;
 @Parcel
 public class Move {
 
-    public String name, id, moveType, cuisine;
+    public String name, id, moveType, cuisine, genre;
     public Boolean didSave, didFavorite, didComplete;
-    public String genre;
     public int price_level;
     public Double lat, lng;
     public ParseObject parseObject;
