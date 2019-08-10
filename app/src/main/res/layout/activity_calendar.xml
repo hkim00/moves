@@ -41,4 +41,15 @@
         app:layout_constraintTop_toTopOf="@+id/tvDates"
         app:layout_constraintVertical_bias="0.666" />
 
+    <Button
+        android:id="@+id/btnRemoveDate"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:background="#EBEBEB"
+        android:text="Remove dates"
+        android:textColor="#F44336"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
