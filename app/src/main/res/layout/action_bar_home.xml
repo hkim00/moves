@@ -39,7 +39,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvLocation"
         app:layout_constraintEnd_toEndOf="@+id/ivDropDown"
         app:layout_constraintStart_toStartOf="@+id/tvLocation"
-        app:layout_constraintTop_toBottomOf="@+id/tvSearch" />
+        app:layout_constraintTop_toTopOf="@+id/tvSearch" />
 
     <TextView
         android:id="@+id/tvSearch"
