@@ -249,7 +249,7 @@ public class HomeFragment extends Fragment {
     private void setupButtons() {
         btnPrice.setOnClickListener(view -> toggleRightPopup("price"));
 
-        btnDistance.setOnClickListener(view -> toggleRightPopup("distance"));
+        btnDistance.setOnClickListener(view -> distanceAction());
 
         btnPriceLevel1.setOnClickListener(view -> priceLevelSelected(1));
 
@@ -274,12 +274,28 @@ public class HomeFragment extends Fragment {
         });
     }
 
+
+    private void distanceAction() {
+        if (moveType.equals("food")) {
+            toggleRightPopup("distance");
+        } else {
+
+        }
+    }
+
+
     private void toggleMoveType(boolean isFoodType) {
         moveType = (isFoodType) ? "food" : "event";
 
         vFoodIndicator.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
         vEventIndicator.setVisibility(isFoodType ? View.INVISIBLE : View.VISIBLE);
         cardView.setVisibility(View.INVISIBLE);
+
+        tvPriceLevel.setVisibility((isFoodType && priceLevel != 0) ? View.VISIBLE : View.INVISIBLE);
+        ivPrice.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
+        btnPrice.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
+
+        ivDistance.setImageResource(isFoodType ? R.drawable.place : R.drawable.schedule);
 
         if (isFoodType) {
             if (foodResults.size() == 0) {
@@ -295,8 +311,6 @@ public class HomeFragment extends Fragment {
             }
         }
     }
-
-
 
     private void toggleRightPopup(String type) {
         if (!(!tvRightPopupTitle.getText().toString().toLowerCase().equals(type) && cardView.getVisibility() == View.VISIBLE)) {

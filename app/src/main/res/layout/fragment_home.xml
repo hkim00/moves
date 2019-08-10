@@ -178,15 +178,6 @@
         app:layout_constraintTop_toTopOf="@+id/ivDistance"
         app:srcCompat="@drawable/local_atm" />
 
-    <Button
-        android:id="@+id/btnPrice"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintStart_toEndOf="@+id/btnDistance"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
-
     <TextView
         android:id="@+id/tvPriceLevel"
         android:layout_width="wrap_content"
@@ -199,6 +190,15 @@
         app:layout_constraintEnd_toEndOf="@+id/btnPrice"
         app:layout_constraintStart_toStartOf="@+id/btnPrice"
         app:layout_constraintTop_toTopOf="@+id/btnPrice" />
+
+    <Button
+        android:id="@+id/btnPrice"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintStart_toEndOf="@+id/btnDistance"
+        app:layout_constraintTop_toTopOf="@+id/view2" />
 
     <View
         android:id="@+id/view2"
