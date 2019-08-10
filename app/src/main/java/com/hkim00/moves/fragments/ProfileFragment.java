@@ -115,19 +115,6 @@ public class ProfileFragment extends Fragment {
         movesAdapter.notifyDataSetChanged();
     }
 
-    private void logout() {
-        ParseUser.logOut();
-
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("location", 0); //0 for private mode
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.commit();
-
-        final Intent intent = new Intent(getContext(), LogInActivity.class);
-        startActivity(intent);
-        getActivity().finish();
-    }
-
 
     public static void toggleRecyclerInfo(boolean isFavView) {
         if (!didCheckSave && !isFavView) {
