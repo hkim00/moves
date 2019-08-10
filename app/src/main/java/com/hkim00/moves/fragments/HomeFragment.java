@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hkim00.moves.CalendarActivity;
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.LocationActivity;
 import com.hkim00.moves.MovesActivity;
@@ -36,12 +37,14 @@ import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveCategory;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.hkim00.moves.util.StatusCodeHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.parse.ParseUser;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +66,9 @@ public class HomeFragment extends Fragment {
     public static final String API_BASE_URL = "https://maps.googleapis.com/maps/api";
     public static final String API_BASE_URL_TM = "https://app.ticketmaster.com/discovery/v2/events";
     public static final int LOCATION_REQUEST_CODE = 20;
+    public static final int CALENDAR_REQUEST_CODE = 30;
+
+    public static List<CalendarDay> dates;
 
     ParseUser currUser = ParseUser.getCurrentUser();
     ParseUser friend;
@@ -279,7 +285,7 @@ public class HomeFragment extends Fragment {
         if (moveType.equals("food")) {
             toggleRightPopup("distance");
         } else {
-
+            goToCalendarActivity();
         }
     }
 
@@ -343,6 +349,13 @@ public class HomeFragment extends Fragment {
         public void afterTextChanged(Editable s) {}
     };
 
+    private void goToCalendarActivity() {
+        Intent intent = new Intent(getContext(), CalendarActivity.class);
+        intent.putExtra("isTrip", false);
+        startActivityForResult(intent, CALENDAR_REQUEST_CODE);
+        getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+    }
+
     private void priceLevelSelected(int priceLevel) {
 
         int selectedColor = getResources().getColor(R.color.selected_blue);
@@ -356,17 +369,15 @@ public class HomeFragment extends Fragment {
         btnPriceLevel4.setBackgroundColor(getResources().getColor(R.color.white));
         btnPriceLevel4.setTextColor(getResources().getColor(R.color.black));
 
+
+        ivPrice.setVisibility((this.priceLevel == priceLevel) ? View.VISIBLE : View.INVISIBLE);
+        tvPriceLevel.setVisibility(this.priceLevel == priceLevel ? View.INVISIBLE : View.VISIBLE);
+
+
         if (this.priceLevel == priceLevel) {
             this.priceLevel = 0;
-
-            ivPrice.setVisibility(View.VISIBLE);
-            tvPriceLevel.setVisibility(View.INVISIBLE);
         } else {
             this.priceLevel = priceLevel;
-
-            tvPriceLevel.setVisibility(View.VISIBLE);
-            ivPrice.setVisibility(View.INVISIBLE);
-
             if (priceLevel == 1) {
                 btnPriceLevel1.setBackgroundColor(selectedColor);
                 btnPriceLevel1.setTextColor(getResources().getColor(R.color.white));
@@ -647,6 +658,18 @@ public class HomeFragment extends Fragment {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             location = UserLocation.getCurrentLocation(getContext());
+        } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
+            if (dates.size() > 0) {
+                ivDistance.setVisibility(View.INVISIBLE);
+
+                tvDistance.setVisibility(View.VISIBLE);
+                tvDistance.setText(Trip.getDateRangeString(dates.get(0), dates.get(dates.size() - 1)));
+            } else {
+                ivDistance.setVisibility(View.VISIBLE);
+
+                tvDistance.setVisibility(View.INVISIBLE);
+                tvDistance.setText("");
+            }
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }
