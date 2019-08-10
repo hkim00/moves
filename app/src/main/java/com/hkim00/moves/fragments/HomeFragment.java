@@ -103,6 +103,8 @@ public class HomeFragment extends Fragment {
     private List<MoveCategory> moveResults, foodResults, eventResults;
     private ProgressBar progressBar;
 
+    private String distanceFoodString, distanceEventString;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -231,6 +233,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupDesign() {
+        dates = new ArrayList<>();
+        distanceEventString = "";
+        distanceFoodString = "";
+
         tvNoMoves.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
 
@@ -304,12 +310,20 @@ public class HomeFragment extends Fragment {
         ivDistance.setImageResource(isFoodType ? R.drawable.place : R.drawable.schedule);
 
         if (isFoodType) {
+            ivDistance.setVisibility((distanceFoodString != "") ? View.INVISIBLE : View.VISIBLE);
+            tvDistance.setVisibility((distanceFoodString != "") ? View.VISIBLE : View.INVISIBLE);
+            tvDistance.setText((distanceFoodString != "") ? distanceFoodString : "");
+
             if (foodResults.size() == 0) {
                 getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
             } else {
                 updateRecycler(foodResults);
             }
         } else {
+            ivDistance.setVisibility((distanceEventString != "") ? View.INVISIBLE : View.VISIBLE);
+            tvDistance.setVisibility((distanceEventString != "") ? View.VISIBLE : View.INVISIBLE);
+            tvDistance.setText((distanceEventString != "") ? distanceEventString : "");
+
             if (eventResults.size() == 0) {
                 getNearbyEvents(new ArrayList<>(), false, isFriendMove);
             } else {
@@ -343,6 +357,7 @@ public class HomeFragment extends Fragment {
             ivDistance.setVisibility(distanceString.equals("") ? View.VISIBLE : View.INVISIBLE);
             tvDistance.setVisibility((distanceString.equals("")) ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setText((distanceString.equals("")) ? "" : distanceString + "mi");
+            distanceFoodString = (distanceString.equals("")) ? "" : distanceString + "mi";
         }
 
         @Override
@@ -664,7 +679,9 @@ public class HomeFragment extends Fragment {
 
                 tvDistance.setVisibility(View.VISIBLE);
                 tvDistance.setText(Trip.getDateRangeString(dates.get(0), dates.get(dates.size() - 1)));
+                distanceEventString = Trip.getDateRangeString(dates.get(0), dates.get(dates.size() - 1));
             } else {
+                distanceEventString = "";
                 ivDistance.setVisibility(View.VISIBLE);
 
                 tvDistance.setVisibility(View.INVISIBLE);

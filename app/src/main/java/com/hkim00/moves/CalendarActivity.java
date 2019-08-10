@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,13 +15,15 @@ import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.models.Trip;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import java.util.ArrayList;
+
 public class CalendarActivity extends AppCompatActivity {
 
     private final static String TAG = "TripActivity";
 
     private MaterialCalendarView calendarView;
     private TextView tvDates;
-    private Button btnSave;
+    private Button btnSave, btnRemoveDate;
 
     private boolean isTrip;
 
@@ -64,6 +67,7 @@ public class CalendarActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         tvDates = findViewById(R.id.tvDates);
         btnSave = findViewById(R.id.btnSave);
+        btnRemoveDate = findViewById(R.id.btnRemoveDate);
     }
 
 
@@ -71,6 +75,13 @@ public class CalendarActivity extends AppCompatActivity {
         isTrip = getIntent().getBooleanExtra("isTrip", false);
 
         btnSave.setText(isTrip ? "Save" : "Select");
+        btnRemoveDate.setVisibility(View.INVISIBLE);
+
+        if (!isTrip) {
+            if (HomeFragment.dates.size() > 0) {
+                btnRemoveDate.setVisibility(View.VISIBLE);
+            }
+        }
 
         calendarView.setOnRangeSelectedListener((materialCalendarView, list) -> {
             tvDates.setText(Trip.getDateRangeString(list.get(0), list.get(list.size() - 1)));
@@ -83,6 +94,15 @@ public class CalendarActivity extends AppCompatActivity {
                 btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
             }
         });
+
+        btnRemoveDate.setOnClickListener(view -> removeDates());
+    }
+
+    private void removeDates() {
+        HomeFragment.dates = new ArrayList<>();
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        onBackPressed();
     }
 
 
