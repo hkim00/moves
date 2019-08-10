@@ -99,12 +99,12 @@ public class TripActivity extends AppCompatActivity {
 
     private void setupActionBar() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar_lt);
         getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         Button btnLeft = findViewById(R.id.btnLeft);
         btnLeft.setOnClickListener(view -> onBackPressed());

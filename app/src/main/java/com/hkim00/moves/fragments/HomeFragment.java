@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -80,8 +81,7 @@ public class HomeFragment extends Fragment {
     private ImageView ivAddFriends;
     private View vFoodIndicator, vEventIndicator;
 
-
-    private ConstraintLayout clPrice;
+    private CardView cardView;
     private TextView tvRightPopupTitle, tvMiles;
     private EditText etDistance;
     private Button btnPriceLevel1, btnPriceLevel2, btnPriceLevel3, btnPriceLevel4;
@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnRiskyMove, btnAddFriends, btnAddFriend;
+    private Button btnAddFriends, btnAddFriend;
 
     private TextView tvNoMoves;
     private RecyclerView rvMoveResults;
@@ -204,7 +204,7 @@ public class HomeFragment extends Fragment {
         vFoodIndicator = view.findViewById(R.id.vFoodIndicator);
         vEventIndicator = view.findViewById(R.id.vEventIndicator);
 
-        clPrice = view.findViewById(R.id.clPrice);
+        cardView = view.findViewById(R.id.cardView);
         tvRightPopupTitle = view.findViewById(R.id.tvRightPopupTitle);
         tvMiles = view.findViewById(R.id.tvMiles);
         etDistance = view.findViewById(R.id.etDistance);
@@ -216,7 +216,6 @@ public class HomeFragment extends Fragment {
         tvFriend = view.findViewById(R.id.tvFriend);
         ivAddFriends = view.findViewById(R.id.ivAddFriends);
 
-        btnRiskyMove = view.findViewById(R.id.btnRiskyMove);
         btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
 
@@ -233,7 +232,7 @@ public class HomeFragment extends Fragment {
         btnPrice.getLayoutParams().width= HomeActivity.screenWidth/3;
         btnAddFriend.getLayoutParams().width=HomeActivity.screenWidth/3;
 
-        clPrice.setVisibility(View.INVISIBLE);
+        cardView.setVisibility(View.INVISIBLE);
 
         etDistance.addTextChangedListener(textWatcher);
         tvDistance.setVisibility(View.INVISIBLE);
@@ -260,19 +259,9 @@ public class HomeFragment extends Fragment {
 
         btnPriceLevel4.setOnClickListener(view -> priceLevelSelected(4));
 
-        // TODO: find more user-friendly way to show state (i.e. whether user has selected food or event before clicking move)
         btnFood.setOnClickListener(view -> toggleMoveType(true));
 
         btnEvents.setOnClickListener(view -> toggleMoveType(false));
-
-        btnRiskyMove.setOnClickListener(view -> {
-            if (moveType == "food") {
-                getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
-            }
-            if (moveType == "event") {
-                getNearbyEvents(new ArrayList<>(), true, isFriendMove);
-            }
-        });
 
         btnAddFriends.setOnClickListener(view -> {
             Fragment fragment = new SearchFragment();
@@ -283,7 +272,6 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         });
-
     }
 
     private void toggleMoveType(boolean isFoodType) {
@@ -291,16 +279,17 @@ public class HomeFragment extends Fragment {
 
         vFoodIndicator.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
         vEventIndicator.setVisibility(isFoodType ? View.INVISIBLE : View.VISIBLE);
+        cardView.setVisibility(View.INVISIBLE);
 
         if (isFoodType) {
             if (foodResults.size() == 0) {
-                getNearbyRestaurants(new ArrayList<>(), true, isFriendMove);
+                getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
             } else {
                 updateRecycler(foodResults);
             }
         } else {
             if (eventResults.size() == 0) {
-                getNearbyEvents(new ArrayList<>(), true, isFriendMove);
+                getNearbyEvents(new ArrayList<>(), false, isFriendMove);
             } else {
                 updateRecycler(eventResults);
             }
@@ -310,8 +299,8 @@ public class HomeFragment extends Fragment {
 
 
     private void toggleRightPopup(String type) {
-        if (!(!tvRightPopupTitle.getText().toString().toLowerCase().equals(type) && clPrice.getVisibility() == View.VISIBLE)) {
-            clPrice.setVisibility((clPrice.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
+        if (!(!tvRightPopupTitle.getText().toString().toLowerCase().equals(type) && cardView.getVisibility() == View.VISIBLE)) {
+            cardView.setVisibility((cardView.getVisibility() == View.INVISIBLE) ? View.VISIBLE : View.INVISIBLE);
         }
 
         tvRightPopupTitle.setText((type.equals("price")) ? "Price" : "Distance");

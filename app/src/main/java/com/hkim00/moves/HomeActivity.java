@@ -83,12 +83,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupClearActionBar() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar);
         getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
     }
 
     private void setupNavBar() {
@@ -169,8 +169,8 @@ public class HomeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar_home);
         getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
-        TextView tvSearch = findViewById(R.id.tvSearch);
         tvLocation = findViewById(R.id.tvLocation);
         btnCenter = findViewById(R.id.btnCenter);
         btnCenter.setOnClickListener(view -> goToLocationActivity());
@@ -183,12 +183,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupAddTrip() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar_at);
         getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         Button btnRight = findViewById(R.id.btnRight);
         btnRight.setOnClickListener(view -> goToNewTrip());
