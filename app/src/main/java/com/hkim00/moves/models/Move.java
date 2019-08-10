@@ -76,6 +76,7 @@ public class Move {
         this.id = jsonObject.getString((moveType.equals("food")) ? "place_id" : "id");
 
         if (moveType.equals("food")) {
+            this.price_level = (jsonObject.has("price_level")) ? jsonObject.getInt("price_level") : -1;
             JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
             this.lat = location.getDouble("lat");
             this.lng = location.getDouble("lng");
