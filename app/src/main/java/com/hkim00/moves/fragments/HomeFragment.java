@@ -424,6 +424,7 @@ public class HomeFragment extends Fragment {
         }
 
         filterPlaced();
+        toggleRightPopup("price");
     }
 
     // helper method for getting prefs from user and adding them as params and to the list of total pref

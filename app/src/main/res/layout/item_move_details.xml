@@ -33,7 +33,7 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
+            android:layout_width="20dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/tvDistance"
             app:layout_constraintStart_toStartOf="@+id/tvName"
@@ -98,7 +98,7 @@
 
         <ImageView
             android:id="@+id/ivTime"
-            android:layout_width="wrap_content"
+            android:layout_width="20dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/tvTime"
             app:layout_constraintStart_toStartOf="@+id/imageView"

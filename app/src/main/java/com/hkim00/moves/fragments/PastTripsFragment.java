@@ -85,29 +85,26 @@ public class PastTripsFragment extends Fragment {
         ParseQuery<ParseObject> tripQuery = ParseQuery.getQuery("Trip");
         tripQuery.whereEqualTo("owner", ParseUser.getCurrentUser());
         tripQuery.orderByDescending("createdAt");
-        tripQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    List<Trip> trips = new ArrayList<>();
+        tripQuery.findInBackground((objects, e) -> {
+            if (e == null) {
+                List<Trip> trips = new ArrayList<>();
 
-                    if (objects.size() == 0) {
-                        tvNoTrips.setVisibility(View.VISIBLE);
-                    } else {
-                        tvNoTrips.setVisibility(View.INVISIBLE);
-                        for (int i = 0; i < objects.size(); i++) {
-                            Trip trip = Trip.fromParseObject(objects.get(i));
-                            trips.add(trip);
-                        }
-                        upcomingTrips.clear();
-                        upcomingTrips.addAll(trips);
-                        tripAdapter.notifyDataSetChanged();
+                if (objects.size() == 0) {
+                    tvNoTrips.setVisibility(View.VISIBLE);
+                } else {
+                    tvNoTrips.setVisibility(View.INVISIBLE);
+                    for (int i = 0; i < objects.size(); i++) {
+                        Trip trip = Trip.fromParseObject(objects.get(i));
+                        trips.add(trip);
                     }
+                    upcomingTrips.clear();
+                    upcomingTrips.addAll(trips);
+                    tripAdapter.notifyDataSetChanged();
                 }
-                else {
-                    Log.e(TAG, "Error finding upcoming trips.");
-                    e.printStackTrace();
-                }
+            }
+            else {
+                Log.e(TAG, "Error finding upcoming trips.");
+                e.printStackTrace();
             }
         });
     }
