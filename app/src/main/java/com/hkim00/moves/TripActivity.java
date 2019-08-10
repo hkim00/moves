@@ -333,6 +333,7 @@ public class TripActivity extends AppCompatActivity {
 
     private void goToCalendarActivity() {
         Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+        intent.putExtra("isTrip", true);
         startActivityForResult(intent, CALENDAR_REQUEST_CODE);
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }

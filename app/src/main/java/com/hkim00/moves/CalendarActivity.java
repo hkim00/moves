@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.models.Trip;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
@@ -20,6 +21,8 @@ public class CalendarActivity extends AppCompatActivity {
     private MaterialCalendarView calendarView;
     private TextView tvDates;
     private Button btnSave;
+
+    private boolean isTrip;
 
 
     @Override
@@ -65,6 +68,10 @@ public class CalendarActivity extends AppCompatActivity {
 
 
     private void setupCalendar() {
+        isTrip = getIntent().getBooleanExtra("isTrip", false);
+
+        btnSave.setText(isTrip ? "Save" : "Select");
+
         calendarView.setOnRangeSelectedListener((materialCalendarView, list) -> {
             tvDates.setText(Trip.getDateRangeString(list.get(0), list.get(list.size() - 1)));
             btnSave.setBackgroundColor(getResources().getColor(R.color.selected_blue));
@@ -82,7 +89,11 @@ public class CalendarActivity extends AppCompatActivity {
     private void setupSave() {
         btnSave.setOnClickListener(view -> {
             if (calendarView.getSelectedDates().size() > 0) {
-                TripActivity.dates = calendarView.getSelectedDates();
+                if (isTrip) {
+                    TripActivity.dates = calendarView.getSelectedDates();
+                } else {
+                    HomeFragment.dates = calendarView.getSelectedDates();
+                }
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
                 onBackPressed();
