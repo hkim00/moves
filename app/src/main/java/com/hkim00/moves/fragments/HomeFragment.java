@@ -2,6 +2,7 @@ package com.hkim00.moves.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -104,6 +105,7 @@ public class HomeFragment extends Fragment {
     private ProgressBar progressBar;
 
     private String distanceFoodString, distanceEventString;
+    private boolean isTimerRunning;
 
     @Nullable
     @Override
@@ -236,6 +238,7 @@ public class HomeFragment extends Fragment {
         dates = new ArrayList<>();
         distanceEventString = "";
         distanceFoodString = "";
+        isTimerRunning = false;
 
         tvNoMoves.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
@@ -358,6 +361,7 @@ public class HomeFragment extends Fragment {
             tvDistance.setVisibility((distanceString.equals("")) ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setText((distanceString.equals("")) ? "" : distanceString + "mi");
             distanceFoodString = (distanceString.equals("")) ? "" : distanceString + "mi";
+            filterPlaced();
         }
 
         @Override
@@ -418,6 +422,8 @@ public class HomeFragment extends Fragment {
                 tvPriceLevel.setText("$$$$");
             }
         }
+
+        filterPlaced();
     }
 
     // helper method for getting prefs from user and adding them as params and to the list of total pref
@@ -600,6 +606,7 @@ public class HomeFragment extends Fragment {
 
         for (String pref : uniqueTotalPref) {
             params.put("keyword", pref);
+
             HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -658,6 +665,32 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
+    private void filterPlaced() {
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            startTimer();
+        }
+    }
+
+    private void startTimer() {
+        new CountDownTimer(500, 500) { //0.5 seconds
+
+            public void onTick(long millisUntilFinished) { }
+
+            public void onFinish() {
+                progressBar.setVisibility(View.VISIBLE);
+                if (moveType.equals("food")) {
+                    foodResults.clear();
+                    getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
+                } else {
+                    eventResults.clear();
+                    getNearbyEvents(new ArrayList<>(), false, isFriendMove);
+                }
+                isTimerRunning = false;
+            }
+        }.start();
+    }
 
     private void updateRecycler(List<MoveCategory> replacementArray) {
         moveResults.clear();
