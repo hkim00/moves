@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.hkim00.moves.R;
 import com.hkim00.moves.models.CategoryButton;
+import com.hkim00.moves.util.MoveCategoriesHelper;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -74,7 +75,95 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
             itemView.setBackgroundColor(context.getResources().getColor((categoryButton.isPref ? R.color.quantum_vanillagreen900 : R.color.white)));
             tvCuisine.setTextColor(context.getResources().getColor((categoryButton.isPref ? R.color.white : R.color.black)));
             tvCuisine.setText(categoryButton.type);
-            ivCuisine.setImageResource(R.drawable.mexican);
+            getCategoryImage();
         }
+
+        private void getCategoryImage() {
+            if (tvCuisine.getText() == "Mexican") {
+                ivCuisine.setImageResource(R.drawable.mexican);
+            }
+            if (tvCuisine.getText() == "Italian") {
+                ivCuisine.setImageResource(R.drawable.italian);
+            }
+            if (tvCuisine.getText() == "Thai") {
+                ivCuisine.setImageResource(R.drawable.thai);
+            }
+            if (tvCuisine.getText() == "Chinese") {
+                ivCuisine.setImageResource(R.drawable.chinese);
+            }
+            if (tvCuisine.getText() == "Vegan") {
+                ivCuisine.setImageResource(R.drawable.vegan);
+            }
+            if (tvCuisine.getText() == "Indian") {
+                ivCuisine.setImageResource(R.drawable.indian);
+            }
+            if (tvCuisine.getText() == "American") {
+                ivCuisine.setImageResource(R.drawable.american);
+            }
+            if (tvCuisine.getText() == "Greek") {
+                ivCuisine.setImageResource(R.drawable.greek);
+            }
+            if (tvCuisine.getText() == "French") {
+                ivCuisine.setImageResource(R.drawable.french);
+            }
+            if (tvCuisine.getText() == "Japanese") {
+                ivCuisine.setImageResource(R.drawable.japanese);
+            }
+            if (tvCuisine.getText() == "Vietnamese") {
+                ivCuisine.setImageResource(R.drawable.vietnamese);
+            }
+            if (tvCuisine.getText() == "African") {
+                ivCuisine.setImageResource(R.drawable.african);
+            }
+            if (tvCuisine.getText() == "Halal") {
+                ivCuisine.setImageResource(R.drawable.halal);
+            }
+            if (tvCuisine.getText() == "German") {
+                ivCuisine.setImageResource(R.drawable.german);
+            }
+            if (tvCuisine.getText() == "Korean") {
+                ivCuisine.setImageResource(R.drawable.korean);
+            }
+            if (tvCuisine.getText() == "Lebanese") {
+                ivCuisine.setImageResource(R.drawable.lebanese);
+            }
+            if (tvCuisine.getText() == "Ethiopian") {
+                ivCuisine.setImageResource(R.drawable.ethiopian);
+            }
+            if (tvCuisine.getText() == "Vietnamese") {
+                ivCuisine.setImageResource(R.drawable.vietnamese);
+            }
+            if (tvCuisine.getText() == "Spanish") {
+                ivCuisine.setImageResource(R.drawable.spanish);
+            }
+            if (tvCuisine.getText() == "Turkish") {
+                ivCuisine.setImageResource(R.drawable.turkish);
+            }
+            if (tvCuisine.getText() == "Caribbean") {
+                ivCuisine.setImageResource(R.drawable.caribbean);
+            }
+            if (tvCuisine.getText() == "Indonesian") {
+                ivCuisine.setImageResource(R.drawable.indonesian);
+            }
+            if (tvCuisine.getText() == "Music") {
+                ivCuisine.setImageResource(R.drawable.music);
+            }
+            if (tvCuisine.getText() == "Sports") {
+                ivCuisine.setImageResource(R.drawable.sports);
+            }
+            if (tvCuisine.getText() == "Dance") {
+                ivCuisine.setImageResource(R.drawable.dance);
+            }
+            if (tvCuisine.getText() == "Broadway") {
+                ivCuisine.setImageResource(R.drawable.broadway);
+            }
+            if (tvCuisine.getText() == "Theater") {
+                ivCuisine.setImageResource(R.drawable.theater);
+            }
+            if (tvCuisine.getText() == "Opera") {
+                ivCuisine.setImageResource(R.drawable.opera);
+            }
+        }
+
     }
 }

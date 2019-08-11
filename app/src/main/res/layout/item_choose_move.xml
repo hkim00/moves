@@ -19,7 +19,7 @@
             android:id="@+id/vChooseMoveView"
             android:layout_width="0dp"
             android:layout_height="35dp"
-            android:background="#2196F3"
+            android:background="#22A02D"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

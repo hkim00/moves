@@ -46,6 +46,8 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public void bind(Context context, Move move) {
         this.context = context;
+        this.move = move;
+
         tvTitle.setText(move.name);
         tvDetail1.setText(move.distanceFromLocation(context) + "mi   •");
         if (move.moveType.equals("food")) {
@@ -73,7 +75,6 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         Intent intent = new Intent(context, MoveDetailsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("move", Parcels.wrap(move));
-//        intent.putExtra("isTrip", isTrip);
         context.startActivity(intent);
 
         if (context instanceof Activity) {

@@ -58,6 +58,8 @@ public class ProfileFragment extends Fragment {
         getViewIds(view);
 
         setupRecyclerView();
+
+
     }
 
     private void getViewIds(View view) {

@@ -16,7 +16,7 @@ import java.util.List;
 @Parcel
 public class Move {
 
-    public String name, id, moveType, cuisine, genre;
+    public String name, id, moveType, cuisine, genre, subCategory;
     public Boolean didSave, didFavorite, didComplete;
     public int price_level;
     public Double lat, lng;
@@ -47,7 +47,7 @@ public class Move {
         move.lat = parseObject.getDouble("lat");
         move.lng = parseObject.getDouble("lng");
 
-        move.genre = parseObject.getString("genre");
+        move.subCategory = parseObject.getString("subcategory");
         move.price_level = parseObject.getInt("price_level");
 
         move.didSave = parseObject.getBoolean("didSave");
@@ -80,6 +80,9 @@ public class Move {
             this.lat = location.getDouble("lat");
             this.lng = location.getDouble("lng");
         } else {
+            String jsonGenre = jsonObject.getJSONArray("classifications").getJSONObject(0).getJSONObject("genre").getString("name");
+            this.genre = (jsonGenre.equals("Undefined") || jsonGenre.equals("Other")) ? "" : jsonGenre;
+
             this.lat = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
             this.lng = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
         }
@@ -108,6 +111,7 @@ public class Move {
         currObj.put("name", this.name);
         currObj.put("placeId", this.id);
         currObj.put("moveType", this.moveType);
+        currObj.put("subcategory", this.subCategory);
         currObj.put("user", ParseUser.getCurrentUser());
         currObj.put("didComplete", this.didComplete);
         currObj.put("didSave", this.didSave);

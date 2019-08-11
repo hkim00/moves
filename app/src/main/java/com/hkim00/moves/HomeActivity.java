@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     private final static int HISTORY_TAG = 0;
     private final static int SEARCH_TAG = 1;
     private final static int HOME_TAG = 2;
-    private final static int PROFILE_TAG = 2;
+    private final static int PROFILE_TAG = 3;
 
     public static int screenWidth;
     public static AsyncHttpClient client;
@@ -254,6 +254,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             checkForCurrentLocation();
+
+            HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.flContainer);
+            fragment.reloadFromHomeActivity();
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }
