@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="112dp"
         android:text="MOVES"
-        android:textColor="#FDD835"
+        android:textColor="@color/theme"
         android:textSize="55dp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@id/etUsername"

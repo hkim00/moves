@@ -9,14 +9,14 @@
 
     <TextView
         android:id="@+id/tvMoves2"
-        android:layout_width="154dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="90dp"
         android:fontFamily="@font/roboto_black_italic"
         android:gravity="center"
         android:text="MOVES"
         android:textColor="@color/theme"
-        android:textSize="45dp"
+        android:textSize="55sp"
         android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -27,6 +27,7 @@
         android:id="@+id/etPassword2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:cursorVisible="false"
         android:fontFamily="@font/roboto"
         android:hint="Password"
@@ -41,7 +42,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto"
         android:hint="Username"
@@ -54,7 +54,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="78dp"
         android:fontFamily="@font/roboto_medium"
         android:text="Welcome to"
         android:textAlignment="center"
@@ -117,11 +117,12 @@
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:srcCompat="@drawable/profilepic" />
 
     <Button
         android:id="@+id/btnProfilePic"
-        style="@android:style/Widget.DeviceDefault.Light.Button"
+        style="@android:style/Widget.DeviceDefault.Light.Button.Borderless.Small"
         android:layout_width="125dp"
         android:layout_height="125dp"
         android:layout_marginTop="32dp"

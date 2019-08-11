@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActionBar;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.hkim00.moves.adapters.UserAdapter;
@@ -30,6 +33,8 @@ public class SelectUsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_users);
 
+        setupActionBar();
+
         setupRecyclerView();
 
         getFriends();
@@ -40,6 +45,17 @@ public class SelectUsersActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    private void setupActionBar() {
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
+        getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
     }
 
 

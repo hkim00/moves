@@ -140,7 +140,7 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         photoFile = getPhotoFileUri(photoFileName);
 
-        Uri fileProvider = FileProvider.getUriForFile(SignUpActivity.this, "com.codepath.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(SignUpActivity.this, "com.hkim00.moves", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         if (intent.resolveActivity(this.getPackageManager()) != null) {
@@ -164,7 +164,7 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoFile = getPhotoFileUri(photoFileName);
 
-        Uri fileProvider = FileProvider.getUriForFile(SignUpActivity.this, "com.codepath.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(SignUpActivity.this, "com.hkim00.moves", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         if (intent.resolveActivity(getPackageManager()) != null) {
