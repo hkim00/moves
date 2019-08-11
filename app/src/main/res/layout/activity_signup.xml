@@ -9,16 +9,17 @@
 
     <TextView
         android:id="@+id/tvMoves2"
-        android:layout_width="wrap_content"
+        android:layout_width="154dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="100dp"
+        android:fontFamily="@font/roboto_black_italic"
+        android:gravity="center"
         android:text="MOVES"
-        android:textColor="#FDD835"
+        android:textColor="@color/theme"
         android:textSize="45dp"
         android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,92 +27,107 @@
         android:id="@+id/etPassword2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:cursorVisible="false"
+        android:fontFamily="@font/roboto"
         android:hint="Password"
         android:inputType="textPassword|textWebPassword"
         app:layout_constraintEnd_toEndOf="@+id/etUsername2"
-        app:layout_constraintStart_toStartOf="@id/etUsername2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/etUsername2"
         app:layout_constraintTop_toBottomOf="@id/etUsername2" />
 
     <EditText
         android:id="@+id/etUsername2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
+        android:fontFamily="@font/roboto"
         android:hint="Username"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/ivProfilePic"
-        app:layout_constraintTop_toBottomOf="@+id/ivProfilePic" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddPhoto" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="164dp"
-        android:layout_marginTop="20dp"
-        android:text="Smart move!"
+        android:layout_marginTop="88dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Welcome to"
         android:textAlignment="center"
+        android:textColor="@color/quantum_vanillagreen900"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMoves2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnGetStarted"
-        android:layout_width="106dp"
-        android:layout_height="47dp"
+        android:layout_width="145dp"
+        android:layout_height="51dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:background="#FDD835"
+        android:layout_marginBottom="8dp"
+        android:background="@color/theme"
+        android:fontFamily="@font/roboto_medium"
         android:text="Get Started!"
         android:textColor="#F4F4F4"
+        android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etPassword2" />
+        app:layout_constraintTop_toBottomOf="@id/etPassword2"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="122dp"
-        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto"
         android:text="We can take it from here :)"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView2" />
-
-    <ImageView
-        android:id="@+id/ivProfilePic"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMoves2" />
 
     <Button
         android:id="@+id/btnAddPhoto"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="add photo"
-        android:textColor="#2196F3"
-        app:layout_constraintBottom_toBottomOf="@+id/ivProfilePic"
-        app:layout_constraintStart_toEndOf="@+id/ivProfilePic"
-        app:layout_constraintTop_toTopOf="@+id/ivProfilePic" />
+        android:textColor="@color/theme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnProfilePic" />
+
+    <ImageView
+        android:id="@+id/ivProfilePic"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="32dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
         android:id="@+id/btnProfilePic"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivProfilePic"
-        app:layout_constraintEnd_toEndOf="@+id/ivProfilePic"
-        app:layout_constraintStart_toStartOf="@+id/ivProfilePic"
-        app:layout_constraintTop_toTopOf="@+id/ivProfilePic" />
+        style="@android:style/Widget.DeviceDefault.Light.Button"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
