@@ -32,7 +32,6 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private ImageView ivMoveImage;
     private ConstraintLayout clMove;
     private TextView tvDetail1;
-    private TextView tvDetail2;
     public Move move;
 
     public MovesViewHolder (@NonNull View itemView) {
@@ -41,7 +40,6 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         tvTitle = itemView.findViewById(R.id.tvTitle);
         ivMoveImage = itemView.findViewById(R.id.ivMoveImg);
         tvDetail1 = itemView.findViewById(R.id.tvDetail1);
-        tvDetail2 = itemView.findViewById(R.id.tvDetail2);
         itemView.setOnClickListener(this);
     }
 
@@ -50,19 +48,21 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         this.move = move;
 
         tvTitle.setText(move.name);
-        tvDetail1.setText(move.distanceFromLocation(context) + "mi   •");
+
+        String distanceFromMove = move.distanceFromLocation(context);
+        tvDetail1.setText(distanceFromMove.equals("") ? "" : distanceFromMove + "mi");
+
         if (move.moveType.equals("food")) {
             String price = "";
-            if (move.price_level < 0) {
-                price = "Unknown";
-            } else {
+            if (move.price_level > 0) {
                 for (int i = 0; i < move.price_level; i++) {
                     price += '$';
                 }
             }
-            tvDetail2.setText(price);
+
+            tvDetail1.append(price.equals("") ? "" : "  •  " + price);
         } else {
-            tvDetail2.setText(move.genre);
+            tvTitle.append("  •  " + move.genre);
         }
 
         if (move.photo != null && move.moveType.equals("food")) {

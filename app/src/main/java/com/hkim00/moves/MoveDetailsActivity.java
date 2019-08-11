@@ -118,7 +118,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private void getMoveDetails() {
         subCategory = move.subCategory;
-
         progressBar.setVisibility(View.VISIBLE);
         if (move.moveType.equals("food")) {
             getFoodDetails();

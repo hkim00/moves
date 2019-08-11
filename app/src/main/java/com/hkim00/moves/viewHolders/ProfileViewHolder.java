@@ -44,8 +44,8 @@ public class ProfileViewHolder extends RecyclerView.ViewHolder {
         currUser = ParseUser.getCurrentUser();
         tvName.setText(currUser.getUsername());
 
-        String formatDate = new SimpleDateFormat("yyyy-MM-dd").format(currUser.getCreatedAt());
-        tvDateJoined.setText("Date joined: " + formatDate);
+        String formatDate = new SimpleDateFormat("MMM d yyyy").format(currUser.getCreatedAt());
+        tvDateJoined.setText("Joined: " + formatDate);
 
         if (currUser.has("profilePhoto")) {
             ParseFile profileImage = currUser.getParseFile("profilePhoto");

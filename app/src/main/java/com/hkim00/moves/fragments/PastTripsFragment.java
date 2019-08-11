@@ -1,46 +1,24 @@
 package com.hkim00.moves.fragments;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.OrientationHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.litho.Column;
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.Recycler;
-import com.facebook.litho.widget.RecyclerBinder;
-import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.hkim00.moves.R;
-import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.adapters.TripAdapter;
-import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Trip;
-import com.hkim00.moves.specs.MoveItem;
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;

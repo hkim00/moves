@@ -19,7 +19,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,12 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.CalendarActivity;
 import com.hkim00.moves.HomeActivity;
-import com.hkim00.moves.LocationActivity;
-import com.hkim00.moves.MovesActivity;
 import com.hkim00.moves.R;
-import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.adapters.MoveCategoryAdapter;
-import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.MoveCategory;
@@ -50,7 +45,6 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -478,6 +472,7 @@ public class HomeFragment extends Fragment {
         params.put("apikey", getString(R.string.api_key_tm));
         params.put("postalCode", location.postalCode);
         params.put("sort", "date,asc");
+        params.put("size", "10");
 
         if (dates.size() != 0) {
             params.put("localStartDateTime", Trip.getAPIDateFormat(dates.get(0), dates.get(dates.size() - 1)));
@@ -491,6 +486,8 @@ public class HomeFragment extends Fragment {
             updateRecycler(new ArrayList<>());
             return;
         }
+
+
 
         for (String pref : uniqueTotalPref) {
             params.put("keyword", pref);
