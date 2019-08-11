@@ -75,6 +75,10 @@ public class TransportationViewHolder extends RecyclerView.ViewHolder implements
         lyftButton.setApiConfig(apiConfig);
         UserLocation currLocation = UserLocation.getCurrentLocation(context);
 
+        if (currLocation.lat == null || currLocation.lng == null) {
+            return;
+        }
+
         RideParams.Builder rideParamsBuilder = new RideParams.Builder()
                 .setPickupLocation(Double.valueOf(currLocation.lat), Double.valueOf(currLocation.lng))
                 .setDropoffLocation(mapMove.lat, mapMove.lng);
