@@ -8,22 +8,30 @@
         android:id="@+id/instructions_tv"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_margin="10dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/roboto_medium"
         android:text="Select your favorite cuisines!"
         android:textAlignment="center"
-        android:textSize="18dp" />
+        android:textColor="@color/quantum_vanillagreen900"
+        android:textSize="24sp" />
 
     <Button
         android:id="@+id/done_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Done" />
+        android:layout_width="202dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/theme"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Done"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cat_rv"
         android:layout_width="match_parent"
-        android:layout_height="574dp">
-    </androidx.recyclerview.widget.RecyclerView>
+        android:layout_height="574dp"></androidx.recyclerview.widget.RecyclerView>
 
 
 </LinearLayout>
