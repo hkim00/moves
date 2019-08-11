@@ -164,7 +164,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 move.parseObject.put("didSave", move.didSave);
                 move.parseObject.saveInBackground();
             } else {
-                move.saveToParse();
+                move.saveToParse(getApplicationContext());
             }
         }
     }
@@ -178,7 +178,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 move.parseObject.put("didFavorite", move.didFavorite);
                 move.parseObject.saveInBackground();
             } else {
-                move.saveToParse();
+                move.saveToParse(getApplicationContext());
             }
         }
     }

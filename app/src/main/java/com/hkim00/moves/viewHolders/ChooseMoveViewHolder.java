@@ -89,13 +89,13 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
                 move.parseObject.put("didComplete", move.didComplete);
                 move.parseObject.put("didSave", move.didSave);
 
-                if (move.photoReferences.get(0) != null) {
-                    move.parseObject.put("photoRef", move.photoReferences.get(0));
+                if (move.movePhotos.get(0) != null) {
+                    move.parseObject.put("photoUrl", move.movePhotos.get(0).getPhotoURL(context));
                 }
 
                 move.parseObject.saveInBackground();
             } else {
-                move.saveToParse();
+                move.saveToParse(context);
             }
         }
     }
