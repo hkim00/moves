@@ -569,7 +569,8 @@ public class HomeFragment extends Fragment {
             } else {
                 if (totalPref.size() == 0) {
                     JSONArray currUserPrefList = currUser.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
-                    JSONArray friendPrefList = friend.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
+                    JSONArray friendPrefList = new JSONArray();
+                    friendPrefList = friend.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
                     if (currUserPrefList != null || friendPrefList != null) {
                         for (int i = 0; i < currUserPrefList.length(); i++) {
                             addToPref(totalPref, currUserPrefList, params);
