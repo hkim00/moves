@@ -142,6 +142,9 @@ public class Move {
             }
         } else {
             currObj.put("genre", ((Event) this).genre);
+            if (this.photo != null) {
+                currObj.put("photoRef", this.photo);
+            }
         }
 
 

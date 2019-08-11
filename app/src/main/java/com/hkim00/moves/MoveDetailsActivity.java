@@ -52,6 +52,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private static String subCategory;
 
     private boolean isTrip;
+    private String eventPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,6 +252,10 @@ public class MoveDetailsActivity extends AppCompatActivity {
     }
 
     private void getEventDetails() {
+        if (move.photo != null) {
+            eventPhoto = move.photo;
+        }
+
         String API_BASE_URL_TMASTER = "https://app.ticketmaster.com/discovery/v2/events";
         String apiUrl = API_BASE_URL_TMASTER + "/" + move.id + ".json";
 
@@ -266,6 +271,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     Event moveResult = new Event();
                     moveResult.fromDetailsJSON(response);
                     move = moveResult;
+                    move.photo = eventPhoto;
 
                     moves.clear();
                     moves.add(move);

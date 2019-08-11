@@ -1,5 +1,6 @@
 package com.hkim00.moves.models;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -22,6 +23,11 @@ public class Event extends Move {
     public void fromJSON(JSONObject jsonObject, String moveType) throws JSONException {
         super.fromJSON(jsonObject, moveType);
         this.genre = jsonObject.getJSONArray("classifications").getJSONObject(0).getJSONObject("genre").getString("name");
+
+        JSONArray imagesArr = jsonObject.getJSONArray("images");
+        if (imagesArr.length() > 0) {
+            super.photo = imagesArr.getJSONObject(0).getString("url");
+        }
     }
 
     public void fromDetailsJSON(JSONObject jsonObject) throws JSONException {

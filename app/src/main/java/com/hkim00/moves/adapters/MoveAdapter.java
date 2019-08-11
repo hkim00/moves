@@ -109,9 +109,19 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
                     Glide.with(context)
                             .load(photoUrl)
                             .into(ivMoveImage);
+                }else {
+                    ivMoveImage.setImageResource(R.drawable.placeholder);
                 }
             } else {
                 tvDetail2.setText(move.genre);
+
+                if (move.photo != null) {
+                    Glide.with(context)
+                            .load(move.photo)
+                            .into(ivMoveImage);
+                }  else {
+                    ivMoveImage.setImageResource(R.drawable.placeholder);
+                }
             }
 
         }
