@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -21,6 +22,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static com.hkim00.moves.util.ParseUtil.getParseQuery;
 
@@ -30,6 +32,10 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
     private TextView tvChooseMove;
     private Button btnChooseMove;
     private Move move;
+
+    private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
+
+    private boolean isTrip;
 
 
     public ChooseMoveViewHolder(@NonNull View itemView) {
@@ -42,9 +48,25 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
         setupButtons();
     }
 
-    public void bind(Context context, Move move) {
+    public void bind(Context context, Move move, boolean isTrip) {
         this.context = context;
         this.move = move;
+        this.isTrip = isTrip;
+
+        tvChooseMove.setText(isTrip ? "Add to Trip" : "Choose Move");
+
+        if (isTrip) {
+            selectedMoves = TripActivity.selectedMoves;
+            newSelectedMoves = TripActivity.newSelectedMoves;
+            deleteFromServerMoves = TripActivity.deleteFromServerMoves;
+
+            if (selectedMoves.contains(move)) {
+                tvChooseMove.setText("Remove From Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.cancel_red));
+            } else {
+                tvChooseMove.setText("Add To Trip");
+            }
+        }
     }
 
     private void setupButtons() {
@@ -72,10 +94,46 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void showMoveWasChosen() {
-        tvChooseMove.setText("Move Chosen");
-        tvChooseMove.setTextColor(ContextCompat.getColor(context, R.color.black));
-        vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
+        if (!isTrip) {
+            tvChooseMove.setText("Move Chosen");
+            tvChooseMove.setTextColor(ContextCompat.getColor(context, R.color.black));
+            vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
 
-        MoveDetailsActivity.changeSaveToFav();
+            MoveDetailsActivity.changeSaveToFav();
+        } else {
+            saveToTrip();
+        }
+    }
+
+    private void saveToTrip() {
+        if (TripActivity.isEditingTrip) {
+            if ((selectedMoves.contains(move) && newSelectedMoves.contains(move))) {
+                selectedMoves.remove(move);
+                newSelectedMoves.remove(move);
+                tvChooseMove.setText("Add to Trip");
+            } else if (selectedMoves.contains(move) && !newSelectedMoves.contains(move)) {
+                selectedMoves.remove(move);
+                deleteFromServerMoves.add(move);
+                tvChooseMove.setText("Add to Trip");
+            } else if (!selectedMoves.contains(move) && newSelectedMoves.contains(move)) {
+                newSelectedMoves.remove(move);
+                tvChooseMove.setText("Add to Trip");
+            } else {
+                selectedMoves.add(move);
+                newSelectedMoves.add(move);
+                tvChooseMove.setText("Remove From Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.cancel_red));
+            }
+        } else {
+
+            if (!selectedMoves.contains(move)) {
+                selectedMoves.add(move);
+                tvChooseMove.setText("Remove From Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.cancel_red));
+            } else {
+                selectedMoves.remove(move);
+                tvChooseMove.setText("Add to Trip");
+            }
+        }
     }
 }
