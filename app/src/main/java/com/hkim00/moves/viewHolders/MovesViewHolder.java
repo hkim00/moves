@@ -64,12 +64,14 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         } else {
             tvDetail2.setText(move.genre);
         }
-        String maxWidth = "100";
-        String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + move.photo + "&key=" + context.getString(R.string.api_key);
+        if (move.photo != null) {
+            String maxWidth = "100";
+            String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + move.photo + "&key=" + context.getString(R.string.api_key);
 
-        Glide.with(context)
-                .load(photoUrl)
-                .into(ivMoveImage);
+            Glide.with(context)
+                    .load(photoUrl)
+                    .into(ivMoveImage);
+        }
     }
 
     @Override
