@@ -2,6 +2,7 @@ package com.hkim00.moves;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
@@ -30,6 +31,7 @@ import com.hkim00.moves.util.StatusCodeHandler;
 import com.hkim00.moves.util.UncaughtExceptionHandler;
 import com.hkim00.moves.fragments.SearchFragment;
 import com.loopj.android.http.AsyncHttpClient;
+import com.parse.ParseUser;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -140,7 +142,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
 
                 case R.id.action_profile:
-                    setupClearActionBar();
+                    setUpLogOut();
                     fragment = new ProfileFragment();
 
                     if (currentFrag != PROFILE_TAG) {
@@ -164,7 +166,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupHomeFragmentActionBar() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -183,8 +184,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupAddTrip() {
-        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar_at);
@@ -194,6 +193,24 @@ public class HomeActivity extends AppCompatActivity {
         Button btnRight = findViewById(R.id.btnRight);
         btnRight.setOnClickListener(view -> goToNewTrip());
     }
+
+
+    private void setUpLogOut() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_rt);
+        getSupportActionBar().setElevation(2);
+
+        Button btnRight = findViewById(R.id.btnRight);
+
+        ImageView ivRight = findViewById(R.id.ivRight);
+        ivRight.setImageResource(R.drawable.logout_icon);
+        btnRight.setOnClickListener(view -> logout());
+    }
+
     private void goToSearchActivity() {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
@@ -218,6 +235,19 @@ public class HomeActivity extends AppCompatActivity {
         screenWidth = size.x;
     }
 
+    private void logout() {
+        ParseUser.logOut();
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("location", 0); //0 for private mode
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+
+        final Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -228,5 +258,4 @@ public class HomeActivity extends AppCompatActivity {
             new StatusCodeHandler(TAG, requestCode);
         }
     }
-
 }

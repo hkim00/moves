@@ -2,6 +2,7 @@ package com.hkim00.moves.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -104,6 +105,7 @@ public class HomeFragment extends Fragment {
     private ProgressBar progressBar;
 
     private String distanceFoodString, distanceEventString;
+    private boolean isTimerRunning;
 
     @Nullable
     @Override
@@ -146,7 +148,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkForPostalCode() {
-        if (location.postalCode.equals("")) {
+        if (location.postalCode.equals(null)) {
 
             if (location.lat.equals(null) && location.lng.equals(null)) {
                 Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
@@ -236,6 +238,7 @@ public class HomeFragment extends Fragment {
         dates = new ArrayList<>();
         distanceEventString = "";
         distanceFoodString = "";
+        isTimerRunning = false;
 
         tvNoMoves.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
@@ -304,7 +307,7 @@ public class HomeFragment extends Fragment {
         cardView.setVisibility(View.INVISIBLE);
 
         tvPriceLevel.setVisibility((isFoodType && priceLevel != 0) ? View.VISIBLE : View.INVISIBLE);
-        ivPrice.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
+        ivPrice.setVisibility((!isFoodType) ? View.INVISIBLE : (priceLevel != 0) ? View.INVISIBLE : View.VISIBLE);
         btnPrice.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
 
         ivDistance.setImageResource(isFoodType ? R.drawable.place : R.drawable.schedule);
@@ -313,22 +316,31 @@ public class HomeFragment extends Fragment {
             ivDistance.setVisibility((distanceFoodString != "") ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setVisibility((distanceFoodString != "") ? View.VISIBLE : View.INVISIBLE);
             tvDistance.setText((distanceFoodString != "") ? distanceFoodString : "");
-
-            if (foodResults.size() == 0) {
-                getNearbyRestaurants(new ArrayList<>(), false, isFriendMove);
-            } else {
-                updateRecycler(foodResults);
-            }
         } else {
             ivDistance.setVisibility((distanceEventString != "") ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setVisibility((distanceEventString != "") ? View.VISIBLE : View.INVISIBLE);
             tvDistance.setText((distanceEventString != "") ? distanceEventString : "");
+        }
 
-            if (eventResults.size() == 0) {
-                getNearbyEvents(new ArrayList<>(), false, isFriendMove);
+        if (location.lat != null || location.lng != null) {
+            tvNoMoves.setVisibility(View.INVISIBLE);
+
+            if (isFoodType) {
+                if (foodResults.size() == 0) {
+                    getNearbyRestaurants(new ArrayList<>(), false);
+                } else {
+                    updateRecycler(foodResults);
+                }
             } else {
-                updateRecycler(eventResults);
+                if (eventResults.size() == 0) {
+                    getNearbyEvents(new ArrayList<>(), false);
+                } else {
+                    updateRecycler(eventResults);
+                }
             }
+        } else {
+            tvNoMoves.setVisibility(View.VISIBLE);
+            tvNoMoves.setText("Choose a location to get started");
         }
     }
 
@@ -358,6 +370,7 @@ public class HomeFragment extends Fragment {
             tvDistance.setVisibility((distanceString.equals("")) ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setText((distanceString.equals("")) ? "" : distanceString + "mi");
             distanceFoodString = (distanceString.equals("")) ? "" : distanceString + "mi";
+            filterPlaced();
         }
 
         @Override
@@ -418,6 +431,9 @@ public class HomeFragment extends Fragment {
                 tvPriceLevel.setText("$$$$");
             }
         }
+
+        filterPlaced();
+        toggleRightPopup("price");
     }
 
     // helper method for getting prefs from user and adding them as params and to the list of total pref
@@ -434,7 +450,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void getNearbyEvents(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+    private void getNearbyEvents(List<String> totalPref, Boolean isRisky) {
         progressBar.setVisibility(View.VISIBLE);
         checkForPostalCode();
 
@@ -446,99 +462,110 @@ public class HomeFragment extends Fragment {
         params.put("postalCode", location.postalCode);
         params.put("sort", "date,asc");
 
+        Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, false);
+        Log.i("HomeFragment", uniqueTotalPref.toString());
+
+        if (uniqueTotalPref.size() == 0) {
+            progressBar.setVisibility(View.INVISIBLE);
+            updateRecycler(new ArrayList<>());
+            return;
+        }
+
+        for (String pref : uniqueTotalPref) {
+            params.put("keyword", pref);
+
+            HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                    List<Move> moves = new ArrayList<>();
+
+                    if (response.has("_embedded")) {
+                        try {
+                            JSONArray jsonArray = (response.getJSONObject("_embedded")).getJSONArray("events");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                try {
+                                    Event event = new Event();
+                                    event.fromJSON(jsonArray.getJSONObject(i), moveType);
+                                    moves.add(event);
+                                } catch (JSONException e) {
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            if (moves.size() > 0) {
+                                MoveCategory moveCategory = new MoveCategory(pref, moves);
+                                eventResults.add(moveCategory);
+                                progressBar.setVisibility(View.INVISIBLE);
+
+                                updateRecycler(eventResults);
+                            }
+
+                        } catch (JSONException e) {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Log.e(TAG, "Error getting events");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    new StatusCodeHandler(TAG, statusCode);
+                    Log.i(TAG, errorResponse.toString());
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    new StatusCodeHandler(TAG, statusCode);
+                    Log.i(TAG, errorResponse.toString());
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    new StatusCodeHandler(TAG, statusCode);
+                    Log.i(TAG, responseString);
+                }
+            });
+        }
+    }
+
+    private Set<String> getUniquePrefs(List<String> totalPref, RequestParams params, boolean isRisky, boolean isFood) {
         if (!isRisky) {
             if (!isFriendMove) {
                 if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
+                    JSONArray currUserPrefList = currUser.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
                     if (currUserPrefList != null) {
                         addToPref(totalPref, currUserPrefList, params);
-                    }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        params.put("keyword", totalPref.get(i));
                     }
                 }
             } else {
                 if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("eventPrefList");
-                    JSONArray friendPrefList = friend.getJSONArray("eventPrefList");
+                    JSONArray currUserPrefList = currUser.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
+                    JSONArray friendPrefList = friend.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
                     if (currUserPrefList != null || friendPrefList != null) {
-                        addToPref(totalPref, currUserPrefList, params);
-                        addToPref(totalPref, friendPrefList, params);
-                    }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        params.put("keyword", totalPref.get(i));
+                        for (int i = 0; i < currUserPrefList.length(); i++) {
+                            addToPref(totalPref, currUserPrefList, params);
+                        }
+                        for (int i = 0; i < friendPrefList.length(); i++) {
+                            addToPref(totalPref, friendPrefList, params);
+                        }
                     }
                 }
             }
         }
 
-        Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
-        Log.i("HomeFragment", uniqueTotalPref.toString());
-
-        HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                progressBar.setVisibility(View.INVISIBLE);
-
-                List<Move> moves = new ArrayList<>();
-
-                if (response.has("_embedded")) {
-                    try {
-                        JSONArray jsonArray = (response.getJSONObject("_embedded")).getJSONArray("events");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            try {
-                                Event event = new Event();
-                                event.fromJSON(jsonArray.getJSONObject(i), moveType);
-                                moves.add(event);
-                            } catch (JSONException e) {
-                                progressBar.setVisibility(View.INVISIBLE);
-                                e.printStackTrace();
-                            }
-                        }
-
-                        if (moves.size() > 0) {
-                            MoveCategory moveCategory = new MoveCategory("", moves);
-                            eventResults.add(moveCategory);
-                            progressBar.setVisibility(View.INVISIBLE);
-
-                            updateRecycler(eventResults);
-                        }
-
-                    } catch (JSONException e) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        Log.e(TAG, "Error getting events");
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                progressBar.setVisibility(View.INVISIBLE);
-                new StatusCodeHandler(TAG, statusCode);
-                Log.i(TAG, errorResponse.toString());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                progressBar.setVisibility(View.INVISIBLE);
-                new StatusCodeHandler(TAG, statusCode);
-                Log.i(TAG, errorResponse.toString());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                progressBar.setVisibility(View.INVISIBLE);
-                new StatusCodeHandler(TAG, statusCode);
-                Log.i(TAG, responseString);
-            }
-        });
+        Set<String> uniqueTotalPref = new HashSet<>(totalPref);
+        return  uniqueTotalPref;
     }
 
-    private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky, Boolean isFriendMove) {
+    private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky) {
         progressBar.setVisibility(View.VISIBLE);
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
@@ -554,42 +581,9 @@ public class HomeFragment extends Fragment {
         if (priceLevel > 0) {
             params.put("maxprice", priceLevel);
         }
-
         params.put("key", getString(R.string.api_key));
 
-        if (!isRisky) {
-            if (!isFriendMove) {
-                if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
-                    if (currUserPrefList != null) {
-                        addToPref(totalPref, currUserPrefList, params);
-                    }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        String pref = totalPref.get(i);
-                    }
-                }
-            } else {
-                if (totalPref.size() == 0) {
-                    JSONArray currUserPrefList = currUser.getJSONArray("foodPrefList");
-                    JSONArray friendPrefList = friend.getJSONArray("foodPrefList");
-                    if (currUserPrefList != null || friendPrefList != null) {
-                        for (int i = 0; i < currUserPrefList.length(); i++) {
-                            addToPref(totalPref, currUserPrefList, params);
-                        }
-                        for (int i = 0; i < friendPrefList.length(); i++) {
-                            addToPref(totalPref, friendPrefList, params);
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < totalPref.size(); i++) {
-                        String pref = totalPref.get(i);
-                    }
-                }
-            }
-        }
-
-        Set<String> uniqueTotalPref = new HashSet<>(totalPref); //convert totalpref list to set to remove duplicates
+        Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, true);
         Log.i("HomeFragment", uniqueTotalPref.toString());
 
         if (uniqueTotalPref.size() == 0) {
@@ -600,6 +594,7 @@ public class HomeFragment extends Fragment {
 
         for (String pref : uniqueTotalPref) {
             params.put("keyword", pref);
+
             HomeActivity.client.get(apiUrl, params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -659,12 +654,41 @@ public class HomeFragment extends Fragment {
     }
 
 
+    private void filterPlaced() {
+        if (location.lat != null || location.lng != null) {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTimer();
+            }
+        }
+    }
+
+    private void startTimer() {
+        new CountDownTimer(500, 500) { //0.5 seconds
+
+            public void onTick(long millisUntilFinished) { }
+
+            public void onFinish() {
+                progressBar.setVisibility(View.VISIBLE);
+                if (moveType.equals("food")) {
+                    foodResults.clear();
+                    getNearbyRestaurants(new ArrayList<>(), false);
+                } else {
+                    eventResults.clear();
+                    getNearbyEvents(new ArrayList<>(), false);
+                }
+                isTimerRunning = false;
+            }
+        }.start();
+    }
+
     private void updateRecycler(List<MoveCategory> replacementArray) {
         moveResults.clear();
         moveResults.addAll(replacementArray);
         adapter.notifyDataSetChanged();
 
         tvNoMoves.setVisibility(replacementArray.size() == 0 ? View.VISIBLE : View.INVISIBLE);
+        tvNoMoves.setText("No moves found");
     }
 
     @Override
@@ -673,6 +697,14 @@ public class HomeFragment extends Fragment {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             location = UserLocation.getCurrentLocation(getContext());
+
+            if (moveType.equals("food")) {
+                foodResults.clear();
+            } else {
+                eventResults.clear();
+            }
+
+            toggleMoveType(moveType.equals("food"));
         } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
                 ivDistance.setVisibility(View.INVISIBLE);

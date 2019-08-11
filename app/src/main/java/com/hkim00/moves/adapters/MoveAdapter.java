@@ -89,7 +89,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
         public void bind(Move move) {
             tvTitle.setText(move.name);
-            tvDetail1.setText(move.distanceFromLocation(context) + "mi   •");
+            tvDetail1.setText(move.distanceFromLocation(context) + "mi  •");
             if (move.moveType.equals("food")) {
 
                 String price = "";
