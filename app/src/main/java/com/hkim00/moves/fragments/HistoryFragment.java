@@ -32,6 +32,7 @@ import com.facebook.yoga.YogaEdge;
 
 import com.hkim00.moves.HomeActivity;
 import com.hkim00.moves.R;
+import com.hkim00.moves.adapters.HistoryAdapter;
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.models.Cuisine;
 import com.hkim00.moves.models.Event;
@@ -58,7 +59,7 @@ public class HistoryFragment extends Fragment {
     private static RecyclerBinder recyclerBinder;
     private static Context context;
     private RecyclerView rvMoves;
-    private MoveAdapter movesAdapter;
+    private HistoryAdapter movesAdapter;
 
     @Nullable
     @Override
@@ -105,7 +106,7 @@ public class HistoryFragment extends Fragment {
 
         pastMoves = new ArrayList<>();
 
-        movesAdapter = new MoveAdapter(getContext(), pastMoves);
+        movesAdapter = new HistoryAdapter(getContext(), pastMoves);
         rvMoves.setAdapter(movesAdapter);
     }
 }

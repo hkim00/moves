@@ -46,6 +46,8 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public void bind(Context context, Move move) {
         this.context = context;
+        this.move = move;
+
         tvTitle.setText(move.name);
         tvDetail1.setText(move.distanceFromLocation(context) + "mi   •");
         if (move.moveType.equals("food")) {

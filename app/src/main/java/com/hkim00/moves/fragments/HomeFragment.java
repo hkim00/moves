@@ -96,7 +96,7 @@ public class HomeFragment extends Fragment {
     private TextView tvFriend;
     private Boolean isFriendMove = false;
 
-    private Button btnAddFriends, btnAddFriend;
+    private Button btnAddFriend;
 
     private TextView tvNoMoves;
     private RecyclerView rvMoveResults;
@@ -132,6 +132,7 @@ public class HomeFragment extends Fragment {
         if (bundle != null) {
             friend = bundle.getParcelable("friend");
             ivAddFriends.setVisibility(View.INVISIBLE);
+            tvFriend.setVisibility(View.VISIBLE);
             tvFriend.setText(friend.getUsername());
             isFriendMove = true;
         }
@@ -148,7 +149,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkForPostalCode() {
-        if (location.postalCode.equals(null)) {
+        if (location.postalCode.equals(null) || location.postalCode.equals("")) {
 
             if (location.lat.equals(null) && location.lng.equals(null)) {
                 Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
@@ -169,8 +170,10 @@ public class HomeFragment extends Fragment {
                         UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), false, location, response);
                         location.postalCode = newLocation.postalCode;
 
-                        if (newLocation.equals("")) {
+                        if (newLocation.postalCode.equals(null)) {
                             Log.e(TAG, "No postal code found.");
+                        } else {
+                            toggleMoveType(false);
                         }
                     }
 
@@ -226,7 +229,6 @@ public class HomeFragment extends Fragment {
         tvFriend = view.findViewById(R.id.tvFriend);
         ivAddFriends = view.findViewById(R.id.ivAddFriends);
 
-        btnAddFriends = view.findViewById(R.id.btnAddFriends);
         btnAddFriend = view.findViewById(R.id.btnAddFriends);
 
         tvNoMoves = view.findViewById(R.id.tvNoMoves);
@@ -257,6 +259,7 @@ public class HomeFragment extends Fragment {
         priceLevel = 0;
 
         tvFriend.setText("");
+        tvFriend.setVisibility(View.INVISIBLE);
 
         moveType = "";
     }
@@ -278,7 +281,18 @@ public class HomeFragment extends Fragment {
 
         btnEvents.setOnClickListener(view -> toggleMoveType(false));
 
-        btnAddFriends.setOnClickListener(view -> {
+        btnAddFriend.setOnClickListener(view -> addFriend());
+    }
+
+
+    private void addFriend() {
+        if (tvFriend.getVisibility() == View.VISIBLE) {
+            isFriendMove = false;
+            ivAddFriends.setVisibility(View.VISIBLE);
+            tvFriend.setVisibility(View.INVISIBLE);
+
+            filterPlaced();
+        } else {
             Fragment fragment = new SearchFragment();
             ((SearchFragment) fragment).isAddFriend = true;
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -286,9 +300,8 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.replace(R.id.flContainer, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
-        });
+        }
     }
-
 
     private void distanceAction() {
         if (moveType.equals("food")) {
@@ -452,7 +465,11 @@ public class HomeFragment extends Fragment {
 
     private void getNearbyEvents(List<String> totalPref, Boolean isRisky) {
         progressBar.setVisibility(View.VISIBLE);
-        checkForPostalCode();
+
+        if (location.postalCode.equals(null) || location.postalCode.equals("")) {
+            checkForPostalCode();
+            return;
+        }
 
         String apiUrl = API_BASE_URL_TM + ".json";
 
@@ -461,6 +478,10 @@ public class HomeFragment extends Fragment {
         params.put("apikey", getString(R.string.api_key_tm));
         params.put("postalCode", location.postalCode);
         params.put("sort", "date,asc");
+
+        if (dates.size() != 0) {
+            params.put("localStartDateTime", Trip.getAPIDateFormat(dates.get(0), dates.get(dates.size() - 1)));
+        }
 
         Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, false);
         Log.i("HomeFragment", uniqueTotalPref.toString());
@@ -489,6 +510,7 @@ public class HomeFragment extends Fragment {
                                 try {
                                     Event event = new Event();
                                     event.fromJSON(jsonArray.getJSONObject(i), moveType);
+                                    event.subCategory = pref;
                                     moves.add(event);
                                 } catch (JSONException e) {
                                     progressBar.setVisibility(View.INVISIBLE);
@@ -548,7 +570,8 @@ public class HomeFragment extends Fragment {
             } else {
                 if (totalPref.size() == 0) {
                     JSONArray currUserPrefList = currUser.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
-                    JSONArray friendPrefList = friend.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
+                    JSONArray friendPrefList = new JSONArray();
+                    friendPrefList = friend.getJSONArray((isFood) ? "foodPrefList" : "eventPrefList");
                     if (currUserPrefList != null || friendPrefList != null) {
                         for (int i = 0; i < currUserPrefList.length(); i++) {
                             addToPref(totalPref, currUserPrefList, params);
@@ -570,7 +593,7 @@ public class HomeFragment extends Fragment {
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
         String distanceString = etDistance.getText().toString().trim();
-        distance = (distanceString.equals("")) ? MoveCategoriesHelper.milesToMeters(1) : MoveCategoriesHelper.milesToMeters(Float.valueOf(distanceString));
+        distance = (distanceString.equals("")) ? MoveCategoriesHelper.milesToMeters(2) : MoveCategoriesHelper.milesToMeters(Float.valueOf(distanceString));
 
         RequestParams params = new RequestParams();
         params.put("key", getString(R.string.api_key));
@@ -610,7 +633,7 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < results.length(); i++) {
                             Restaurant restaurant = new Restaurant();
                             restaurant.fromJSON(results.getJSONObject(i), "food");
-                            restaurant.cuisine = pref;
+                            restaurant.subCategory = pref;
                             moves.add(restaurant);
                         }
 
@@ -722,6 +745,8 @@ public class HomeFragment extends Fragment {
                 tvDistance.setVisibility(View.INVISIBLE);
                 tvDistance.setText("");
             }
+
+            filterPlaced();
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }

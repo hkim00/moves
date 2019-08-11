@@ -85,7 +85,7 @@ public class UserLocation {
         location.lat = String.valueOf(place.getLatLng().latitude);
         location.lng = String.valueOf(place.getLatLng().longitude);
 
-        String postalCode = "";
+        String postalCode = null;
 
         List<AddressComponent> addressComponents = place.getAddressComponents().asList();
         for (int i = 0; i < addressComponents.size(); i++) {
@@ -109,7 +109,7 @@ public class UserLocation {
         location.name = "Current location";
         location.lat = String.valueOf(locationResult.getLastLocation().getLatitude());
         location.lng = String.valueOf(locationResult.getLastLocation().getLongitude());
-        location.postalCode = "";
+        location.postalCode = null;
 
         saveLocation(context, isTrip, location);
 
@@ -123,7 +123,7 @@ public class UserLocation {
             JSONArray results = response.getJSONArray("results");
 
             if (results.length() > 0) {
-                String postalCode = "";
+                String postalCode = null;
                 boolean didFindPostal = false;
 
                 for (int i = 0; i < results.length(); i++) {

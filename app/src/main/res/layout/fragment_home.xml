@@ -222,12 +222,13 @@
 
     <TextView
         android:id="@+id/tvFriend"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="25dp"
         android:layout_marginTop="10dp"
         android:text="Friend"
-        android:textSize="20sp"
+        android:textAlignment="textStart"
         android:textColor="#000000"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/btnAddFriends"
         app:layout_constraintStart_toStartOf="@+id/btnAddFriends"

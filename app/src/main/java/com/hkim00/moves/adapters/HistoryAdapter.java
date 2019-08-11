@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,20 +23,15 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
-public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
     private final Context context;
     private final List<Move> moves;
 
-    private boolean isTrip;
-    private boolean isHome;
-
-    public MoveAdapter(Context context, List<Move> moves) {
+    public HistoryAdapter(Context context, List<Move> moves) {
         this.context = context;
         this.moves = moves;
-
-        this.isTrip = context instanceof TripActivity;
-        this.isHome = context instanceof HomeActivity; }
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -50,14 +44,13 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
     @NonNull
     @Override
-
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate((isHome) ? R.layout.item_home_move : R.layout.item_move, parent, false);
-        return new ViewHolder(view);
+    public HistoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_move, parent, false);
+        return new HistoryAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MoveAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Move move = moves.get(position);
         holder.bind(move);
         holder.move = move;
@@ -106,7 +99,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             }
             ivMoveImage.setImageResource(R.drawable.mexican);
         }
-        
+
         @Override
         public void onClick(View v) {
             goToMoveDetails();
@@ -116,7 +109,6 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
             Intent intent = new Intent(context, MoveDetailsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("move", Parcels.wrap(move));
-            intent.putExtra("isTrip", isTrip);
             context.startActivity(intent);
 
             if (context instanceof Activity) {

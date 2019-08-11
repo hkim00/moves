@@ -39,6 +39,7 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
         this.context = context;
 
         tvName.setText(move.name);
+        tvCuisine.setText(move.subCategory);
 
         ratingBar.setVisibility((move.moveType.equals("food")) ? View.VISIBLE : View.INVISIBLE);
         ivTime.setVisibility((move.moveType.equals("food")) ? View.GONE : View.VISIBLE);
@@ -56,8 +57,6 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setFoodView(Move move) {
-        tvCuisine.setText(move.cuisine);
-
         Restaurant restaurant = (Restaurant) move;
 
         if (restaurant.price_level < 0) {
