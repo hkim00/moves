@@ -28,13 +28,13 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".Intro1Activity" />
+
         <activity android:name=".Intro2Activity" />
         <activity android:name=".Intro3Activity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.codepath.fileprovider"
+            android:authorities="com.hkim00.moves"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
