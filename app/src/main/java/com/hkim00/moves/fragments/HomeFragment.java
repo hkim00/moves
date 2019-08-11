@@ -478,6 +478,7 @@ public class HomeFragment extends Fragment {
         params.put("apikey", getString(R.string.api_key_tm));
         params.put("postalCode", location.postalCode);
         params.put("sort", "date,asc");
+        params.put("size", "10");
 
         if (dates.size() != 0) {
             params.put("localStartDateTime", Trip.getAPIDateFormat(dates.get(0), dates.get(dates.size() - 1)));
@@ -491,6 +492,8 @@ public class HomeFragment extends Fragment {
             updateRecycler(new ArrayList<>());
             return;
         }
+
+
 
         for (String pref : uniqueTotalPref) {
             params.put("keyword", pref);
