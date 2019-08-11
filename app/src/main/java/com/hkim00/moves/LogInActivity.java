@@ -1,5 +1,6 @@
 package com.hkim00.moves;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +24,8 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
+
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
         setContentView(R.layout.activity_login);
 
