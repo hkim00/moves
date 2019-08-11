@@ -32,7 +32,12 @@ public class UserLocation {
 
     public String name, lat, lng, postalCode;
 
-    public UserLocation() {}
+    public UserLocation() {
+        name = null;
+        lat = null;
+        lng = null;
+        postalCode = null;
+    }
 
 
     public static UserLocation getCurrentLocation(Context context) {

@@ -148,7 +148,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkForPostalCode() {
-        if (location.postalCode.equals("")) {
+        if (location.postalCode.equals(null)) {
 
             if (location.lat.equals(null) && location.lng.equals(null)) {
                 Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
@@ -307,7 +307,7 @@ public class HomeFragment extends Fragment {
         cardView.setVisibility(View.INVISIBLE);
 
         tvPriceLevel.setVisibility((isFoodType && priceLevel != 0) ? View.VISIBLE : View.INVISIBLE);
-        ivPrice.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
+        ivPrice.setVisibility((!isFoodType) ? View.INVISIBLE : (priceLevel != 0) ? View.INVISIBLE : View.VISIBLE);
         btnPrice.setVisibility(isFoodType ? View.VISIBLE : View.INVISIBLE);
 
         ivDistance.setImageResource(isFoodType ? R.drawable.place : R.drawable.schedule);
@@ -316,22 +316,31 @@ public class HomeFragment extends Fragment {
             ivDistance.setVisibility((distanceFoodString != "") ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setVisibility((distanceFoodString != "") ? View.VISIBLE : View.INVISIBLE);
             tvDistance.setText((distanceFoodString != "") ? distanceFoodString : "");
-
-            if (foodResults.size() == 0) {
-                getNearbyRestaurants(new ArrayList<>(), false);
-            } else {
-                updateRecycler(foodResults);
-            }
         } else {
             ivDistance.setVisibility((distanceEventString != "") ? View.INVISIBLE : View.VISIBLE);
             tvDistance.setVisibility((distanceEventString != "") ? View.VISIBLE : View.INVISIBLE);
             tvDistance.setText((distanceEventString != "") ? distanceEventString : "");
+        }
 
-            if (eventResults.size() == 0) {
-                getNearbyEvents(new ArrayList<>(), false);
+        if (location.lat != null || location.lng != null) {
+            tvNoMoves.setVisibility(View.INVISIBLE);
+
+            if (isFoodType) {
+                if (foodResults.size() == 0) {
+                    getNearbyRestaurants(new ArrayList<>(), false);
+                } else {
+                    updateRecycler(foodResults);
+                }
             } else {
-                updateRecycler(eventResults);
+                if (eventResults.size() == 0) {
+                    getNearbyEvents(new ArrayList<>(), false);
+                } else {
+                    updateRecycler(eventResults);
+                }
             }
+        } else {
+            tvNoMoves.setVisibility(View.VISIBLE);
+            tvNoMoves.setText("Choose a location to get started");
         }
     }
 
@@ -647,9 +656,11 @@ public class HomeFragment extends Fragment {
 
 
     private void filterPlaced() {
-        if (!isTimerRunning) {
-            isTimerRunning = true;
-            startTimer();
+        if (location.lat != null || location.lng != null) {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTimer();
+            }
         }
     }
 
@@ -678,6 +689,7 @@ public class HomeFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
         tvNoMoves.setVisibility(replacementArray.size() == 0 ? View.VISIBLE : View.INVISIBLE);
+        tvNoMoves.setText("No moves found");
     }
 
     @Override
@@ -686,6 +698,7 @@ public class HomeFragment extends Fragment {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             location = UserLocation.getCurrentLocation(getContext());
+            toggleMoveType(moveType.equals("food"));
         } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
                 ivDistance.setVisibility(View.INVISIBLE);

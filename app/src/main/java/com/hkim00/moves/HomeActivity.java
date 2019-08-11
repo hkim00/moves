@@ -166,7 +166,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupHomeFragmentActionBar() {
         androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -185,8 +184,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupAddTrip() {
-        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar_at);
