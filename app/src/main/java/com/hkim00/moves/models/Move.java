@@ -88,6 +88,9 @@ public class Move {
 
     public String distanceFromLocation(Context context) {
         UserLocation location = UserLocation.getCurrentLocation(context);
+        if (location.lat == null || location.lng == null) {
+            return "";
+        }
 
         double theta = Double.valueOf(location.lng) - lng;
         double dist = Math.sin(Math.toRadians(Double.valueOf(location.lat))) * Math.sin(Math.toRadians(lat)) + Math.cos(Math.toRadians(Double.valueOf(location.lat))) * Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(theta));

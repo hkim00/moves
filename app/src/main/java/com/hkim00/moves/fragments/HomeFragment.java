@@ -465,7 +465,6 @@ public class HomeFragment extends Fragment {
         Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, false);
         Log.i("HomeFragment", uniqueTotalPref.toString());
 
-
         if (uniqueTotalPref.size() == 0) {
             progressBar.setVisibility(View.INVISIBLE);
             updateRecycler(new ArrayList<>());
@@ -473,6 +472,7 @@ public class HomeFragment extends Fragment {
         }
 
         for (String pref : uniqueTotalPref) {
+            params.put("keyword", pref);
 
             HomeActivity.clientTM.get(apiUrl, params, new JsonHttpResponseHandler() {
                 @Override
@@ -582,7 +582,6 @@ public class HomeFragment extends Fragment {
             params.put("maxprice", priceLevel);
         }
         params.put("key", getString(R.string.api_key));
-
 
         Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, true);
         Log.i("HomeFragment", uniqueTotalPref.toString());
@@ -698,6 +697,13 @@ public class HomeFragment extends Fragment {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             location = UserLocation.getCurrentLocation(getContext());
+
+            if (moveType.equals("food")) {
+                foodResults.clear();
+            } else {
+                eventResults.clear();
+            }
+
             toggleMoveType(moveType.equals("food"));
         } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
