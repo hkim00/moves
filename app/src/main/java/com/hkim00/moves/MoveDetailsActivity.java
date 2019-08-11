@@ -49,7 +49,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
     private static ImageView ivRight;
 
-    private static String category;
+    private static String subCategory;
 
     private boolean isTrip;
     private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
@@ -122,7 +122,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
 
     private void getMoveDetails() {
-        category = (getIntent().hasExtra("category")) ? getIntent().getStringExtra("category") : "";
+        subCategory = move.subCategory;
+        //category = (getIntent().hasExtra("category")) ? getIntent().getStringExtra("category") : "";
 
         progressBar.setVisibility(View.VISIBLE);
         if (move.moveType.equals("food")) {
@@ -211,7 +212,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     result = response.getJSONObject("result");
                     Restaurant moveResult = new Restaurant();
                     moveResult.fromJSON(result, "food");
-                    moveResult.cuisine = category;
+                    moveResult.subCategory = subCategory;
                     move = moveResult;
 
                     moves.clear();

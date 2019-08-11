@@ -47,7 +47,7 @@ public class Move {
         move.lat = parseObject.getDouble("lat");
         move.lng = parseObject.getDouble("lng");
 
-        move.genre = parseObject.getString("genre");
+        move.subCategory = parseObject.getString("subcategory");
         move.price_level = parseObject.getInt("price_level");
 
         move.didSave = parseObject.getBoolean("didSave");
@@ -111,6 +111,7 @@ public class Move {
         currObj.put("name", this.name);
         currObj.put("placeId", this.id);
         currObj.put("moveType", this.moveType);
+        currObj.put("subcategory", this.subCategory);
         currObj.put("user", ParseUser.getCurrentUser());
         currObj.put("didComplete", this.didComplete);
         currObj.put("didSave", this.didSave);

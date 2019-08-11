@@ -510,6 +510,7 @@ public class HomeFragment extends Fragment {
                                 try {
                                     Event event = new Event();
                                     event.fromJSON(jsonArray.getJSONObject(i), moveType);
+                                    event.subCategory = pref;
                                     moves.add(event);
                                 } catch (JSONException e) {
                                     progressBar.setVisibility(View.INVISIBLE);
@@ -632,7 +633,7 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < results.length(); i++) {
                             Restaurant restaurant = new Restaurant();
                             restaurant.fromJSON(results.getJSONObject(i), "food");
-                            restaurant.cuisine = pref;
+                            restaurant.subCategory = pref;
                             moves.add(restaurant);
                         }
 
