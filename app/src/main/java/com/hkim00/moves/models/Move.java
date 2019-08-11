@@ -80,6 +80,9 @@ public class Move {
             this.lat = location.getDouble("lat");
             this.lng = location.getDouble("lng");
         } else {
+            String jsonGenre = jsonObject.getJSONArray("classifications").getJSONObject(0).getJSONObject("genre").getString("name");
+            this.genre = (jsonGenre.equals("Undefined") || jsonGenre.equals("Other")) ? "" : jsonGenre;
+
             this.lat = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("latitude");
             this.lng = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("location").getDouble("longitude");
         }
