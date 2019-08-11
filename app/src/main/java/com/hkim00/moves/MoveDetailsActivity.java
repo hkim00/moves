@@ -207,7 +207,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     result = response.getJSONObject("result");
                     Restaurant moveResult = new Restaurant();
                     moveResult.fromJSON(result, "food");
-                    moveResult.subCategory = subCategory;
+                    moveResult.subCategory = (subCategory == null) ? moveResult.cuisine : subCategory;
                     move = moveResult;
 
                     moves.clear();

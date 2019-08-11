@@ -37,16 +37,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private RecyclerView rvProfileFragment;
     private static ProfileAdapter movesAdapter;
-    private static List<Move> saveMoves, favMoves, moves;
-
-    private Button btnFood;
-    private TextView tvFood;
-    private View vFoodView;
-
-    private static boolean didCheckSave = false;
 
     private ParseUser user;
-    private boolean isFriend = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,14 +71,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupView() {
         rvProfileFragment = findViewById(R.id.rvMoves);
-
         rvProfileFragment.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-        moves = new ArrayList<>();
-        saveMoves = new ArrayList<>();
-        favMoves = new ArrayList<>();
-
-        movesAdapter = new ProfileAdapter(getApplicationContext(), moves, user);
+        movesAdapter = new ProfileAdapter(getApplicationContext(), new ArrayList<>(), user);
         rvProfileFragment.setAdapter(movesAdapter);
     }
 }

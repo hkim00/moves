@@ -112,7 +112,7 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
                     ivMoveImage.setImageResource(R.drawable.placeholder);
                 }
             } else {
-                tvTitle.append("  •  " + move.genre);
+                tvDetail1.append((move.genre.equals("")) ? "" : "  •  " + move.genre);
 
                 if (move.photo != null) {
                     Glide.with(context)
