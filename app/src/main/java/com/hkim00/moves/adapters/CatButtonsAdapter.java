@@ -65,11 +65,14 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
             if (position != RecyclerView.NO_POSITION) {
                 CategoryButton categoryButton = catButtons.get(position);
                 categoryButton.isPref = !categoryButton.isPref;
+                v.setBackgroundColor(v.getResources().getColor((categoryButton.isPref ? R.color.quantum_vanillagreen900: R.color.white)));
+                tvCuisine.setTextColor(v.getResources().getColor((categoryButton.isPref ? R.color.white : R.color.black)));
             }
         }
 
         public void bind(CategoryButton categoryButton) {
-            // TODO: image database? Looks like Google Places uses reviewer images as official listing photo
+            itemView.setBackgroundColor(context.getResources().getColor((categoryButton.isPref ? R.color.quantum_vanillagreen900 : R.color.white)));
+            tvCuisine.setTextColor(context.getResources().getColor((categoryButton.isPref ? R.color.white : R.color.black)));
             tvCuisine.setText(categoryButton.type);
             ivCuisine.setImageResource(R.drawable.mexican);
         }
