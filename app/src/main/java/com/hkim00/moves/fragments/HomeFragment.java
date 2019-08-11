@@ -149,9 +149,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkForPostalCode() {
-        if (location.postalCode.equals(null) || location.postalCode.equals("")) {
+        if (location.postalCode == null ) {
 
-            if (location.lat.equals(null) && location.lng.equals(null)) {
+            if (location.lat == null && location.lng == null) {
                 Toast.makeText(getContext(), "Set a location", Toast.LENGTH_LONG).show();
                 return;
 
@@ -170,7 +170,7 @@ public class HomeFragment extends Fragment {
                         UserLocation newLocation = UserLocation.addingPostalCodeFromJSON(getContext(), false, location, response);
                         location.postalCode = newLocation.postalCode;
 
-                        if (newLocation.postalCode.equals(null)) {
+                        if (newLocation.postalCode == null) {
                             Log.e(TAG, "No postal code found.");
                         } else {
                             toggleMoveType(false);
@@ -466,7 +466,7 @@ public class HomeFragment extends Fragment {
     private void getNearbyEvents(List<String> totalPref, Boolean isRisky) {
         progressBar.setVisibility(View.VISIBLE);
 
-        if (location.postalCode.equals(null) || location.postalCode.equals("")) {
+        if (location.postalCode == null) {
             checkForPostalCode();
             return;
         }
