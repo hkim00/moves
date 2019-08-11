@@ -1,5 +1,7 @@
 package com.hkim00.moves;
 
+import android.app.ActionBar;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,11 +12,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.adapters.ProfileAdapter;
+import com.hkim00.moves.fragments.ProfileFragment;
 import com.hkim00.moves.models.Move;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -30,35 +35,21 @@ public class ProfileActivity extends AppCompatActivity {
 
     private final static String TAG = "ProfileActivity";
 
-    private Button btnSaved, btnFavorites, btnLogout;
-    private ImageView ivProfilePic;
-    private RecyclerView rvFavorites;
-    private RecyclerView rvSaved;
-
-    private TextView tvName;
-
-    private MoveAdapter Faveadapter;
-    private MoveAdapter Saveadapter;
-    private List<Move> rFaveList;
-    private List<Move> rSaveList;
+    private RecyclerView rvProfileFragment;
+    private static ProfileAdapter movesAdapter;
 
     private ParseUser user;
-    private boolean isFriend = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_profile);
 
-        findViewIds();
+        user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
 
-        setupButtons();
+        setupView();
 
-        setupRecyclerView();
-
-        fillUserInfo();
-
-        checkStatus();
+        setupActionBar();
     }
 
     @Override
@@ -67,161 +58,23 @@ public class ProfileActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
+    private void setupActionBar() {
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
+        getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
-    private void fillUserInfo() {
-        user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
-        tvName.setText(user.getUsername());
-
-        if (user.has("profilePhoto")) {
-            ParseFile profileImage = user.getParseFile("profilePhoto");
-            if (profileImage != null) {
-
-                Glide.with(getApplicationContext())
-                        .load(profileImage.getUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePic);
-            }
-        }
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
     }
 
-    private void findViewIds() {
-        ivProfilePic = findViewById(R.id.ivProfilePic);
-        btnSaved = findViewById(R.id.btnSave);
-        btnFavorites = findViewById(R.id.btnFavorite);
-
-        tvName = findViewById(R.id.tvName);
-
-        btnLogout.setEnabled(false);
-        btnLogout.setText("Loading");
+    private void setupView() {
+        rvProfileFragment = findViewById(R.id.rvMoves);
+        rvProfileFragment.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        movesAdapter = new ProfileAdapter(getApplicationContext(), new ArrayList<>(), user);
+        rvProfileFragment.setAdapter(movesAdapter);
     }
-
-    private void setupButtons() {
-        btnFavorites.setOnClickListener(view -> toggleTabs(true));
-
-        btnSaved.setOnClickListener(view -> toggleTabs(false));
-
-        btnLogout.setOnClickListener(view -> {
-            if (isFriend) {
-                unFriendUser();
-            } else {
-                friendUser();
-            }
-        });
-    }
-
-    private void setupRecyclerView() {
-        rvFavorites.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
-        rvSaved.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
-
-        //TODO: need to account for two different adapters (Events vs. Restaurant)
-        rFaveList = new ArrayList<>();
-        Faveadapter = new MoveAdapter(getApplicationContext(), rFaveList);
-        rvFavorites.setAdapter(Faveadapter);
-
-        rSaveList = new ArrayList<>();
-        Saveadapter = new MoveAdapter(getApplicationContext(), rSaveList);
-        rvSaved.setAdapter(Saveadapter);
-    }
-
-    private void toggleTabs(boolean isFav) {
-        rvFavorites.setVisibility((isFav) ? View.VISIBLE : View.INVISIBLE);
-        rvSaved.setVisibility((!isFav) ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    private void checkStatus() {
-        ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
-        friendQuery.countInBackground((count, e) -> {
-            if (e == null) {
-                btnLogout.setEnabled(true);
-
-                if (count > 0) {
-                    showIsFriendButton();
-                } else {
-                    showIsNotFriendButton();
-                }
-            } else {
-                Log.e(TAG, "Error checking if user follows");
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Error checking follow status", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void friendUser() {
-        showIsFriendButton();
-
-        ParseObject friendObject = new ParseObject("Friend");
-        friendObject.put("isPending", false); //have pending option if we want to send friend request and not just make automatic friends
-        friendObject.put("sender", ParseUser.getCurrentUser());
-        friendObject.put("receiver", user);
-        friendObject.saveInBackground(e -> {
-            if (e != null) {
-                Log.e(TAG, "Error friending user");
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Error friending user", Toast.LENGTH_SHORT).show();
-
-                showIsNotFriendButton();
-            }
-        });
-    }
-
-    private void unFriendUser() {
-        showIsNotFriendButton();
-
-        ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
-        friendQuery.findInBackground((objects, e) -> {
-            if (e == null) {
-                for (ParseObject object : objects) {
-                    object.deleteInBackground(e1 -> {
-                        if (e1 != null) {
-                            Log.e(TAG, "Error unfriending user");
-                            e1.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Error unfriending user", Toast.LENGTH_SHORT).show();
-
-                            showIsFriendButton();
-                        }
-                    });
-                }
-            } else {
-                Log.e(TAG, "Error unfriending user");
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Error unfriending user", Toast.LENGTH_SHORT).show();
-
-                showIsFriendButton();
-            }
-        });
-    }
-
-
-    private List<ParseQuery<ParseObject>> getSenderOrReceiverQueries() {
-        ParseQuery<ParseObject> senderQuery = ParseQuery.getQuery("Friend");
-        senderQuery.whereEqualTo("sender", ParseUser.getCurrentUser());
-        senderQuery.whereEqualTo("receiver", user);
-        senderQuery.whereEqualTo("isPending", false);
-
-        ParseQuery<ParseObject> receiverQuery = ParseQuery.getQuery("Friend");
-        receiverQuery.whereEqualTo("sender", user);
-        receiverQuery.whereEqualTo("receiver", ParseUser.getCurrentUser());
-        receiverQuery.whereEqualTo("isPending", false);
-
-        List<ParseQuery<ParseObject>> friendQueries = new ArrayList<>();
-        friendQueries.add(senderQuery);
-        friendQueries.add(receiverQuery);
-
-        return friendQueries;
-    }
-
-
-    private void showIsFriendButton() {
-        btnLogout.setText("Unfriend");
-        isFriend = true;
-    }
-
-    private void showIsNotFriendButton() {
-        btnLogout.setText("Friend");
-        isFriend = false;
-    }
-
 }
 
 

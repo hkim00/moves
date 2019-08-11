@@ -23,7 +23,6 @@ public class Move {
     public int price_level;
     public Double lat, lng;
     public ParseObject parseObject;
-    public List<String> photoReferences;
     public List<MovePhoto> movePhotos;
 
     public boolean didCheckHTTPDetails = false;
@@ -46,7 +45,7 @@ public class Move {
         move.name = parseObject.getString("name");
         move.id = parseObject.getString("placeId");
         move.moveType = parseObject.getString("moveType");
-        move.photo = parseObject.getString("photoRef");
+        move.photo = parseObject.getString("photoUrl");
 
         move.lat = parseObject.getDouble("lat");
         move.lng = parseObject.getDouble("lng");
@@ -125,7 +124,7 @@ public class Move {
         return String.valueOf(dist);
     }
 
-    public void saveToParse() {
+    public void saveToParse(Context context) {
         ParseObject currObj = new ParseObject("Move");
         currObj.put("name", this.name);
         currObj.put("placeId", this.id);
@@ -141,13 +140,13 @@ public class Move {
         if (this.moveType.equals("food")){
             currObj.put("price_level", ((Restaurant) this).price_level);
 
-            if (this.photoReferences.get(0) != null) {
-                currObj.put("photoRef", this.photoReferences.get(0));
+            if (((Restaurant) this).movePhotos != null) {
+                currObj.put("photoUrl", ((Restaurant) this).movePhotos.get(0).getPhotoURL(context));
             }
         } else {
             currObj.put("genre", ((Event) this).genre);
             if (this.photo != null) {
-                currObj.put("photoRef", this.photo);
+                currObj.put("photoUrl", this.photo);
             }
         }
 

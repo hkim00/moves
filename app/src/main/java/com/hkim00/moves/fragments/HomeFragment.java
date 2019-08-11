@@ -334,13 +334,13 @@ public class HomeFragment extends Fragment {
 
             if (isFoodType) {
                 if (foodResults.size() == 0) {
-                    getNearbyRestaurants(new ArrayList<>(), false);
+                    getNearbyRestaurants(false);
                 } else {
                     updateRecycler(foodResults);
                 }
             } else {
                 if (eventResults.size() == 0) {
-                    getNearbyEvents(new ArrayList<>(), false);
+                    getNearbyEvents(false);
                 } else {
                     updateRecycler(eventResults);
                 }
@@ -457,7 +457,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void getNearbyEvents(List<String> totalPref, Boolean isRisky) {
+    private void getNearbyEvents(Boolean isRisky) {
         progressBar.setVisibility(View.VISIBLE);
 
         if (location.postalCode == null) {
@@ -478,7 +478,7 @@ public class HomeFragment extends Fragment {
             params.put("localStartDateTime", Trip.getAPIDateFormat(dates.get(0), dates.get(dates.size() - 1)));
         }
 
-        Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, false);
+        Set<String> uniqueTotalPref = getUniquePrefs(params, isRisky, false);
         Log.i("HomeFragment", uniqueTotalPref.toString());
 
         if (uniqueTotalPref.size() == 0) {
@@ -555,7 +555,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private Set<String> getUniquePrefs(List<String> totalPref, RequestParams params, boolean isRisky, boolean isFood) {
+    private Set<String> getUniquePrefs(RequestParams params, boolean isRisky, boolean isFood) {
+        List<String> totalPref = new ArrayList<>();
+
         if (!isRisky) {
             if (!isFriendMove) {
                 if (totalPref.size() == 0) {
@@ -585,7 +587,7 @@ public class HomeFragment extends Fragment {
         return  uniqueTotalPref;
     }
 
-    private void getNearbyRestaurants(List<String> totalPref, Boolean isRisky) {
+    private void getNearbyRestaurants(Boolean isRisky) {
         progressBar.setVisibility(View.VISIBLE);
         String apiUrl = API_BASE_URL + "/place/nearbysearch/json";
 
@@ -603,8 +605,8 @@ public class HomeFragment extends Fragment {
         }
         params.put("key", getString(R.string.api_key));
 
-        Set<String> uniqueTotalPref = getUniquePrefs(totalPref, params, isRisky, true);
-        Log.i("HomeFragment", uniqueTotalPref.toString());
+        Set<String> uniqueTotalPref = getUniquePrefs(params, isRisky, true);
+        Log.i(TAG, uniqueTotalPref.toString());
 
         if (uniqueTotalPref.size() == 0) {
             progressBar.setVisibility(View.INVISIBLE);
@@ -692,10 +694,10 @@ public class HomeFragment extends Fragment {
                 progressBar.setVisibility(View.VISIBLE);
                 if (moveType.equals("food")) {
                     foodResults.clear();
-                    getNearbyRestaurants(new ArrayList<>(), false);
+                    getNearbyRestaurants(false);
                 } else {
                     eventResults.clear();
-                    getNearbyEvents(new ArrayList<>(), false);
+                    getNearbyEvents(false);
                 }
                 isTimerRunning = false;
             }

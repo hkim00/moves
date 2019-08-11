@@ -129,6 +129,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void checkIfInParse() {
         if (move != null) {
             ParseQuery<ParseObject> detailsQuery = getParseQuery(ParseUser.getCurrentUser(), move);
+            detailsQuery.addDescendingOrder("createdAt");
+            detailsQuery.setLimit(1);
             detailsQuery.findInBackground(((objects, e) -> {
                 progressBar.setVisibility(View.INVISIBLE);
                 if (e == null) {
@@ -164,7 +166,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 move.parseObject.put("didSave", move.didSave);
                 move.parseObject.saveInBackground();
             } else {
-                move.saveToParse();
+                move.saveToParse(getApplicationContext());
             }
         }
     }
@@ -178,7 +180,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                 move.parseObject.put("didFavorite", move.didFavorite);
                 move.parseObject.saveInBackground();
             } else {
-                move.saveToParse();
+                move.saveToParse(getApplicationContext());
             }
         }
     }
@@ -205,7 +207,7 @@ public class MoveDetailsActivity extends AppCompatActivity {
                     result = response.getJSONObject("result");
                     Restaurant moveResult = new Restaurant();
                     moveResult.fromJSON(result, "food");
-                    moveResult.subCategory = subCategory;
+                    moveResult.subCategory = (subCategory == null) ? moveResult.cuisine : subCategory;
                     move = moveResult;
 
                     moves.clear();
