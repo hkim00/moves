@@ -63,6 +63,8 @@ public class LocationActivity extends AppCompatActivity implements
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final int CONNECTION_FAILURE = 2;
 
+    private TextView tvOr;
+
     private PlacesClient placesClient;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -86,6 +88,11 @@ public class LocationActivity extends AppCompatActivity implements
         setupAutoCompleteSearch();
 
         isTrip = getIntent().getBooleanExtra("isTrip", false);
+
+        if (isTrip) {
+            tvOr.setVisibility(View.INVISIBLE);
+            btnCurrentLocation.setVisibility(View.INVISIBLE);
+        }
 
         btnCurrentLocation.setOnClickListener(view -> getCurrentLocation());
     }
@@ -112,6 +119,7 @@ public class LocationActivity extends AppCompatActivity implements
     private void getViewIds() {
         btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
         autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        tvOr = findViewById(R.id.tvOr);
     }
 
 
