@@ -51,7 +51,7 @@ public class TripActivity extends AppCompatActivity {
 
     private EditText etTrip;
     private TextView tvLocation, tvCalendar, tvFood, tvEvents, tvSelected, tvFriends, tvSelectFriends;
-    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnSave, btnFriends, btnSelectFriends;
+    private Button btnLocation, btnCalendar, btnFood, btnEvents, btnSelected, btnFriends, btnSelectFriends;
     private View vFoodView, vEventsView, vSelectedView, vFriendsView;
 
     private ProgressBar pb;
@@ -72,6 +72,7 @@ public class TripActivity extends AppCompatActivity {
     public static boolean isEditingTrip;
     private boolean didCheckSavedSelected, didCheckForFriends;
 
+    Button btnRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,12 +103,16 @@ public class TripActivity extends AppCompatActivity {
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
+        getSupportActionBar().setCustomView(R.layout.action_bar_trip);
         getSupportActionBar().setElevation(2);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         Button btnLeft = findViewById(R.id.btnLeft);
         btnLeft.setOnClickListener(view -> onBackPressed());
+
+        btnRight = findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(view -> saveTrip());
+        btnRight.setTextColor(getResources().getColor(R.color.light_grey));
     }
 
     private void getViewIds() {
@@ -136,7 +141,6 @@ public class TripActivity extends AppCompatActivity {
 
         pb = findViewById(R.id.pb);
         rvMoves = findViewById(R.id.rvMoves);
-        btnSave = findViewById(R.id.btnSave);
     }
 
 
@@ -152,6 +156,7 @@ public class TripActivity extends AppCompatActivity {
         newSelectedMoves = new ArrayList<>();
         deleteFromServerMoves = new ArrayList<>();
         selectedFriends = new ArrayList<>();
+        newSelectedFriends = new ArrayList<>();
 
         serverMoves = new ArrayList<>();
 
@@ -171,8 +176,6 @@ public class TripActivity extends AppCompatActivity {
         btnEvents.setOnClickListener(view -> toggleSection("events"));
         btnSelected.setOnClickListener(view -> toggleSection("selected"));
         btnFriends.setOnClickListener(view -> toggleSection("friends"));
-
-        btnSave.setOnClickListener(view -> saveTrip());
     }
 
     private void toggleSection(String type) {
@@ -258,7 +261,7 @@ public class TripActivity extends AppCompatActivity {
 
             isEditingTrip = false;
 
-            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            btnRight.setTextColor(getResources().getColor(R.color.light_grey));
 
             toggleMovesView(false);
         }
@@ -379,7 +382,7 @@ public class TripActivity extends AppCompatActivity {
 
     private boolean isReadyToSave(boolean needsToast) {
         if (etTrip.getText().toString().trim().equals("") || location.lat == null || dates.size() == 0) {
-            btnSave.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            btnRight.setTextColor(getResources().getColor(R.color.light_grey));
             if (needsToast) {
                 String toastTitle = "";
 
@@ -397,7 +400,7 @@ public class TripActivity extends AppCompatActivity {
             return false;
         }
 
-        btnSave.setBackgroundColor(getResources().getColor(R.color.selected_blue));
+        btnRight.setTextColor(getResources().getColor(R.color.theme));
         return true;
     }
 
@@ -407,7 +410,8 @@ public class TripActivity extends AppCompatActivity {
         } else if (isEditingTrip) {
             saveUpdates();
         } else {
-            btnSave.setEnabled(false);
+            pb.setVisibility(View.VISIBLE);
+            btnRight.setEnabled(false);
 
             ParseObject trip = new ParseObject("Trip");
 
@@ -415,7 +419,7 @@ public class TripActivity extends AppCompatActivity {
             trip.put("locationName", location.name);
             trip.put("lat", location.lat);
             trip.put("lng", location.lng);
-            trip.put("postalCode", location.postalCode);
+            trip.put("postalCode", (location.postalCode == null) ? "" : location.postalCode);
             trip.put("owner", ParseUser.getCurrentUser());
 
             trip.put("startDay", dates.get(0).getDay());
@@ -426,8 +430,9 @@ public class TripActivity extends AppCompatActivity {
             trip.put("endYear", dates.get(dates.size() - 1).getYear());
 
             trip.saveInBackground((e) -> {
-                btnSave.setEnabled(true);
+                btnRight.setEnabled(true);
                 if (e == null) {
+                    pb.setVisibility(View.INVISIBLE);
                     Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
 
                     UserLocation.clearCurrentTripLocation(getApplicationContext());
@@ -437,6 +442,7 @@ public class TripActivity extends AppCompatActivity {
 
                     onBackPressed();
                 } else {
+                    pb.setVisibility(View.INVISIBLE);
                     Toast.makeText(getApplicationContext(), "error saving trip", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();
@@ -446,7 +452,8 @@ public class TripActivity extends AppCompatActivity {
     }
 
     private void saveUpdates() {
-        btnSave.setEnabled(false);
+        pb.setVisibility(View.VISIBLE);
+        btnRight.setEnabled(false);
         ParseObject trip = currentTrip.parseObject;
 
         trip.put("name", etTrip.getText().toString().trim());
@@ -464,13 +471,15 @@ public class TripActivity extends AppCompatActivity {
         trip.put("endYear", dates.get(dates.size() - 1).getYear());
 
         trip.saveInBackground((e) -> {
-            btnSave.setEnabled(true);
+            btnRight.setEnabled(true);
             if (e == null) {
+                pb.setVisibility(View.INVISIBLE);
                 UserLocation.clearCurrentTripLocation(getApplicationContext());
                 saveTripMoves(trip);
 
                 onBackPressed();
             } else {
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), "error updating trip", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();

@@ -111,13 +111,16 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
                 selectedMoves.remove(move);
                 newSelectedMoves.remove(move);
                 tvChooseMove.setText("Add to Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.theme));
             } else if (selectedMoves.contains(move) && !newSelectedMoves.contains(move)) {
                 selectedMoves.remove(move);
                 deleteFromServerMoves.add(move);
                 tvChooseMove.setText("Add to Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.theme));
             } else if (!selectedMoves.contains(move) && newSelectedMoves.contains(move)) {
                 newSelectedMoves.remove(move);
                 tvChooseMove.setText("Add to Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.theme));
             } else {
                 selectedMoves.add(move);
                 newSelectedMoves.add(move);
@@ -133,6 +136,7 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
             } else {
                 selectedMoves.remove(move);
                 tvChooseMove.setText("Add to Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.theme));
             }
         }
     }

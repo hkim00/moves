@@ -16,9 +16,9 @@
         android:textAlignment="center"
         android:textColor="#22A02D"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/textView9"
-        app:layout_constraintStart_toStartOf="@+id/textView9"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintEnd_toEndOf="@+id/tvOr"
+        app:layout_constraintStart_toStartOf="@+id/tvOr"
+        app:layout_constraintTop_toBottomOf="@+id/tvOr" />
 
     <fragment
         android:id="@+id/autocomplete_fragment"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/tvOr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

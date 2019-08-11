@@ -219,6 +219,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void goToLocationActivity() {
         Intent intent = new Intent(this, LocationActivity.class);
+        intent.putExtra("isTrip", false);
         startActivityForResult(intent, LOCATION_REQUEST_CODE);
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }

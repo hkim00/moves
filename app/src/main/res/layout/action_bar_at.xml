@@ -19,12 +19,12 @@
         android:id="@+id/ivRight"
         android:layout_width="30dp"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView3"
-        app:srcCompat="@drawable/add_24px_sharp" />
+        app:srcCompat="@drawable/add" />
 
     <Button
         android:id="@+id/btnRight"
