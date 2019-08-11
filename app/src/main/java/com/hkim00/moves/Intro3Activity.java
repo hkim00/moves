@@ -1,6 +1,8 @@
 package com.hkim00.moves;
 
+import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -29,6 +31,8 @@ public class Intro3Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro3);
 
+        setupActionBar();
+
         getViewIds();
 
         setupRecyclerView();
@@ -36,6 +40,18 @@ public class Intro3Activity extends AppCompatActivity {
         setupButtons();
     }
 
+    private void setupActionBar() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
+        getSupportActionBar().setElevation(2);
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
+    }
 
     private void getViewIds() {
         rvCategories = findViewById(R.id.cat_rv);
@@ -80,5 +96,13 @@ public class Intro3Activity extends AppCompatActivity {
             finish();
             overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, Intro2Activity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 }

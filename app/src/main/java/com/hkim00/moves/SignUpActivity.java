@@ -1,9 +1,11 @@
 package com.hkim00.moves;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.ColorDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,6 +56,8 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
         setContentView(R.layout.activity_signup);
 
+        setupActionBar();
+
         getViewIds();
 
         setupButtons();
@@ -75,7 +79,6 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         btnAddPhoto = findViewById(R.id.btnAddPhoto);
         btnProfilePic = findViewById(R.id.btnProfilePic);
     }
-
 
     private void setupButtons() {
         btnGetSarted.setOnClickListener(view -> signup());
@@ -104,7 +107,6 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         });
     }
 
-
     private void showAlertDialog() {
         FragmentManager fm = getSupportFragmentManager();
         PhotoAlertDialogFragment alertDialog = PhotoAlertDialogFragment.newInstance("Get photo from photo library or camera");
@@ -121,7 +123,18 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         }
     }
 
+    private void setupActionBar() {
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.action_bar_lt);
+        getSupportActionBar().setElevation(2);
+
+        Button btnLeft = findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(view -> onBackPressed());
+    }
 
     private void launchCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -135,11 +148,10 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
         }
     }
 
-
     private File getPhotoFileUri(String fileName) {
         File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
             Log.d(TAG, "failed to create directory");
         }
 
@@ -147,7 +159,6 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
 
         return file;
     }
-
 
     private void launchPhotoPicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -160,7 +171,6 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
             startActivityForResult(intent, PICK_PHOTO_CODE);
         }
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -211,7 +221,6 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
             }
         }
     }
-
 
     /*
      * Code rotate from CodePath
