@@ -29,11 +29,13 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private Context context;
     private List<Move> moves;
+    private boolean isTrip;
 
 
-    public MoveDetailsAdapter(Context context, List<Move> moves) {
+    public MoveDetailsAdapter(Context context, List<Move> moves, boolean isTrip) {
         this.context = context;
         this.moves = moves;
+        this.isTrip = isTrip;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         else if (position == CHOOSE_MOVE_POSITION) {
             final ChooseMoveViewHolder viewHolder = (ChooseMoveViewHolder) holder;
-            viewHolder.bind(context, moves.get(0));
+            viewHolder.bind(context, moves.get(0), isTrip);
         }
 
         else if (position == TRANSPORTATION_POSITION) {
@@ -103,13 +105,13 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemCount() {
         if (moves.get(0).didCheckHTTPDetails && moves.get(0).moveType.equals("food")) {
-//            Restaurant restaurant = (Restaurant) moves.get(0);
+            Restaurant restaurant = (Restaurant) moves.get(0);
 
-//            return (restaurant.photoReferences.size() > 0) ? 4 : 3;
+            return (restaurant.photoReferences.size() > 0) ? 4 : 3;
         } else if (moves.get(0).didCheckHTTPDetails && moves.get(0).moveType.equals("event")) {
             Event event = (Event) moves.get(0);
 
-//            return (event.venueName != null && event.venuePhotoUrl != null) ? 4 : 3;
+            return (event.venueName != null && event.venuePhotoUrl != null) ? 4 : 3;
         }
 
         return 3;

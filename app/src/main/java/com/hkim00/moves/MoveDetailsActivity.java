@@ -52,13 +52,6 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private static String subCategory;
 
     private boolean isTrip;
-    private List<Move> selectedMoves, newSelectedMoves, deleteFromServerMoves;
-
-
-    Restaurant restaurant;
-    Event event;
-    MoveText prefCuisine;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,18 +105,18 @@ public class MoveDetailsActivity extends AppCompatActivity {
 
         moves = new ArrayList<>();
         move = Parcels.unwrap(getIntent().getParcelableExtra("move"));
+        isTrip = getIntent().getBooleanExtra("isTrip", false);
         moves.add(move);
 
         rvMove.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-        adapter = new MoveDetailsAdapter(MoveDetailsActivity.this, moves);
+        adapter = new MoveDetailsAdapter(MoveDetailsActivity.this, moves, isTrip);
         rvMove.setAdapter(adapter);
     }
 
 
     private void getMoveDetails() {
         subCategory = move.subCategory;
-        //category = (getIntent().hasExtra("category")) ? getIntent().getStringExtra("category") : "";
 
         progressBar.setVisibility(View.VISIBLE);
         if (move.moveType.equals("food")) {

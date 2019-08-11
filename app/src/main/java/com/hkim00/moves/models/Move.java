@@ -111,7 +111,7 @@ public class Move {
         currObj.put("name", this.name);
         currObj.put("placeId", this.id);
         currObj.put("moveType", this.moveType);
-        currObj.put("subcategory", this.subCategory);
+        currObj.put("subcategory", (this.subCategory == null) ? "" : this.subCategory);
         currObj.put("user", ParseUser.getCurrentUser());
         currObj.put("didComplete", this.didComplete);
         currObj.put("didSave", this.didSave);
