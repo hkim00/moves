@@ -691,21 +691,24 @@ public class HomeFragment extends Fragment {
         tvNoMoves.setText("No moves found");
     }
 
+    public void reloadFromHomeActivity() {
+        location = UserLocation.getCurrentLocation(getContext());
+
+        if (moveType.equals("food")) {
+            foodResults.clear();
+            toggleMoveType(true);
+        } else {
+            eventResults.clear();
+            toggleMoveType(false);
+        }
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
-            location = UserLocation.getCurrentLocation(getContext());
-
-            if (moveType.equals("food")) {
-                foodResults.clear();
-            } else {
-                eventResults.clear();
-            }
-
-            toggleMoveType(moveType.equals("food"));
-        } else if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
+        if (resultCode == RESULT_OK && requestCode == CALENDAR_REQUEST_CODE) {
             if (dates.size() > 0) {
                 ivDistance.setVisibility(View.INVISIBLE);
 

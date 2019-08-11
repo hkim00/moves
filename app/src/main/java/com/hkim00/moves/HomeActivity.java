@@ -254,6 +254,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
             checkForCurrentLocation();
+
+            HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.flContainer);
+            fragment.reloadFromHomeActivity();
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }
