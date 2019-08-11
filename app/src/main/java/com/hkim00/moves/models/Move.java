@@ -16,11 +16,14 @@ import java.util.List;
 @Parcel
 public class Move {
 
-    public String name, id, moveType, cuisine, genre, subCategory;
+
+    public String name, id, moveType, cuisine, genre, subCategory, photo;
+
     public Boolean didSave, didFavorite, didComplete;
     public int price_level;
     public Double lat, lng;
     public ParseObject parseObject;
+    public List<String> photoReferences;
 
     public boolean didCheckHTTPDetails = false;
 
@@ -43,6 +46,7 @@ public class Move {
         move.name = parseObject.getString("name");
         move.id = parseObject.getString("placeId");
         move.moveType = parseObject.getString("moveType");
+        move.photo = parseObject.getString("photoRef");
 
         move.lat = parseObject.getDouble("lat");
         move.lng = parseObject.getDouble("lng");
@@ -79,6 +83,17 @@ public class Move {
             JSONObject location = jsonObject.getJSONObject("geometry").getJSONObject("location");
             this.lat = location.getDouble("lat");
             this.lng = location.getDouble("lng");
+
+            photoReferences = new ArrayList<>();
+            if (jsonObject.has("photos")) {
+                JSONArray photosJSONArray = jsonObject.getJSONArray("photos");
+
+                for (int i = 0; i < photosJSONArray.length(); i++) {
+                    String photoReference = photosJSONArray.getJSONObject(i).getString("photo_reference");
+                    photoReferences.add(photoReference);
+                }
+            }
+
         } else {
             String jsonGenre = jsonObject.getJSONArray("classifications").getJSONObject(0).getJSONObject("genre").getString("name");
             this.genre = (jsonGenre.equals("Undefined") || jsonGenre.equals("Other")) ? "" : jsonGenre;
@@ -121,9 +136,15 @@ public class Move {
         currObj.put("lng", this.lng);
         if (this.moveType.equals("food")){
             currObj.put("price_level", ((Restaurant) this).price_level);
+
+            if (this.photoReferences.get(0) != null) {
+                currObj.put("photoRef", this.photoReferences.get(0));
+            }
         } else {
             currObj.put("genre", ((Event) this).genre);
         }
+
+
 
         currObj.saveInBackground(e -> {
             if (e == null) {

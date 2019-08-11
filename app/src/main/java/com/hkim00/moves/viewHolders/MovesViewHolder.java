@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.ProfileAdapter;
@@ -63,7 +64,12 @@ public class MovesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         } else {
             tvDetail2.setText(move.genre);
         }
-        ivMoveImage.setImageResource(R.drawable.mexican);
+        String maxWidth = "100";
+        String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + move.photo + "&key=" + context.getString(R.string.api_key);
+
+        Glide.with(context)
+                .load(photoUrl)
+                .into(ivMoveImage);
     }
 
     @Override
