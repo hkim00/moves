@@ -39,13 +39,11 @@ public class MoveCategoriesHelper {
                 "Indian",
                 "American",
                 "Greek",
-                "LatinAmerican",
                 "French",
                 "Japanese",
                 "Vietnamese",
                 "African",
                 "Halal",
-                "German",
                 "German",
                 "Korean",
                 "Lebanese",
@@ -65,31 +63,6 @@ public class MoveCategoriesHelper {
                 "Opera");
     }
 
-    public static List<String> getPreferenceDiff(String type, List<String> preference) {
-        List<String> c = type.equals("food") ? foodCategoriesList : eventCategoriesList;
-
-        Collections.sort(c);
-        Collections.sort(preference);
-
-        List<String> nonPreferred = new ArrayList<>();
-
-        int i = 0;
-        int a = 0;
-        while (i < c.size()) {
-            if (!c.get(i).equals(preference.get(a))) {
-                nonPreferred.add(c.get(i));
-            } else {
-                if (a < preference.size() - 1) {
-                    a++;
-                }
-            }
-            i++;
-
-        }
-        return nonPreferred;
-    }
-
-
     public static List<String> JSONArrayToList(JSONArray jsonArray) {
 
         List<String> stringList = new ArrayList<String>();
@@ -104,7 +77,6 @@ public class MoveCategoriesHelper {
         }
         return stringList;
     }
-
 
     public static String getUserFoodPreferenceString(List<String> nonPreferredList) {
         if (ParseUser.getCurrentUser().getJSONArray("foodPrefList") == null || ParseUser.getCurrentUser().getJSONArray("foodPrefList").length() == 0) {
