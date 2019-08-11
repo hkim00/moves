@@ -62,6 +62,7 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
 
             if (selectedMoves.contains(move)) {
                 tvChooseMove.setText("Remove From Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.cancel_red));
             } else {
                 tvChooseMove.setText("Add To Trip");
             }
@@ -93,12 +94,11 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void showMoveWasChosen() {
-        tvChooseMove.setText((isTrip) ? "" : "Move Chosen");
-
-        tvChooseMove.setTextColor(ContextCompat.getColor(context, R.color.black));
-        vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
-
         if (!isTrip) {
+            tvChooseMove.setText("Move Chosen");
+            tvChooseMove.setTextColor(ContextCompat.getColor(context, R.color.black));
+            vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
+
             MoveDetailsActivity.changeSaveToFav();
         } else {
             saveToTrip();
@@ -122,12 +122,14 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
                 selectedMoves.add(move);
                 newSelectedMoves.add(move);
                 tvChooseMove.setText("Remove From Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.cancel_red));
             }
         } else {
 
             if (!selectedMoves.contains(move)) {
                 selectedMoves.add(move);
                 tvChooseMove.setText("Remove From Trip");
+                vChooseMoveView.setBackgroundColor(ContextCompat.getColor(context, R.color.cancel_red));
             } else {
                 selectedMoves.remove(move);
                 tvChooseMove.setText("Add to Trip");
