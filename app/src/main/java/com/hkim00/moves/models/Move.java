@@ -24,11 +24,11 @@ public class Move {
     public Double lat, lng;
     public ParseObject parseObject;
     public List<String> photoReferences;
+    public List<MovePhoto> movePhotos;
 
     public boolean didCheckHTTPDetails = false;
 
     public Move() {
-
         didComplete = false;
         didSave = false;
         didFavorite = false;
@@ -84,13 +84,17 @@ public class Move {
             this.lat = location.getDouble("lat");
             this.lng = location.getDouble("lng");
 
-            photoReferences = new ArrayList<>();
+            movePhotos = new ArrayList<>();
             if (jsonObject.has("photos")) {
                 JSONArray photosJSONArray = jsonObject.getJSONArray("photos");
 
                 for (int i = 0; i < photosJSONArray.length(); i++) {
-                    String photoReference = photosJSONArray.getJSONObject(i).getString("photo_reference");
-                    photoReferences.add(photoReference);
+                    MovePhoto movePhoto = new MovePhoto();
+                    movePhoto.maxWidth = photosJSONArray.getJSONObject(i).getString("width");
+                    movePhoto.photoInfo = photosJSONArray.getJSONObject(i).getString("photo_reference");
+                    movePhoto.photoMoveType = moveType;
+
+                    movePhotos.add(movePhoto);
                 }
             }
 

@@ -20,6 +20,7 @@ import com.hkim00.moves.MoveDetailsActivity;
 import com.hkim00.moves.R;
 import com.hkim00.moves.TripActivity;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MovePhoto;
 
 import org.parceler.Parcels;
 
@@ -100,12 +101,11 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
                 tvDetail1.append(price.equals("") ? "" : "  •  " + price);
 
-                if (move.photoReferences != null) {
-                    String maxWidth = "100";
-                    String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + move.photoReferences.get(0) + "&key=" + context.getString(R.string.api_key);
+                if (move.movePhotos.size() > 0) {
+                    MovePhoto movePhoto = move.movePhotos.get(0);
 
                     Glide.with(context)
-                            .load(photoUrl)
+                            .load(movePhoto.getPhotoURL(context))
                             .into(ivMoveImage);
                 } else {
                     ivMoveImage.setImageResource(R.drawable.placeholder);

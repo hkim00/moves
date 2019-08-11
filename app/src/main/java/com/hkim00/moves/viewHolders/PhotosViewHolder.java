@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.PhotoAdapter;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.MovePhoto;
 import com.hkim00.moves.models.Restaurant;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class PhotosViewHolder extends RecyclerView.ViewHolder {
         rvPhotos = itemView.findViewById(R.id.rvPhotos);
     }
 
-    private void setupRecyclerView(List<String> photoReferences) {
+    private void setupRecyclerView(List<MovePhoto> photoReferences) {
         rvPhotos.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         adapter = new PhotoAdapter(context, photoReferences);
         rvPhotos.setAdapter(adapter);
@@ -37,8 +38,8 @@ public class PhotosViewHolder extends RecyclerView.ViewHolder {
         if (move.lat != null) {
             Restaurant restaurant = (Restaurant) move;
 
-            if (restaurant.photoReferences.size() > 0) {
-                setupRecyclerView(restaurant.photoReferences);
+            if (restaurant.movePhotos.size() > 0) {
+                setupRecyclerView(restaurant.movePhotos);
             }
         }
     }

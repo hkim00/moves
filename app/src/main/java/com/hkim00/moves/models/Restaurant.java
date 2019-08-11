@@ -14,7 +14,7 @@ public class Restaurant extends Move {
     public Integer price_level;
     public Double rating;
     public String id, cuisine;
-    public List<String> photoReferences;
+    public List<MovePhoto> movePhotos;
 
     public Restaurant() {
         super();
@@ -35,13 +35,17 @@ public class Restaurant extends Move {
 
         this.rating = (jsonObject.has("rating")) ? jsonObject.getDouble("rating") : -1;
 
-        photoReferences = new ArrayList<>();
+        movePhotos = new ArrayList<>();
         if (jsonObject.has("photos")) {
             JSONArray photosJSONArray = jsonObject.getJSONArray("photos");
 
             for (int i = 0; i < photosJSONArray.length(); i++) {
-                String photoReference = photosJSONArray.getJSONObject(i).getString("photo_reference");
-                photoReferences.add(photoReference);
+                MovePhoto movePhoto = new MovePhoto();
+                movePhoto.maxWidth = photosJSONArray.getJSONObject(i).getString("width");
+                movePhoto.photoInfo = photosJSONArray.getJSONObject(i).getString("photo_reference");
+                movePhoto.photoMoveType = moveType;
+
+                movePhotos.add(movePhoto);
             }
         }
     }
