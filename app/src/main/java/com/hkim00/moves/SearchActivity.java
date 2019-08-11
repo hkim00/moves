@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hkim00.moves.adapters.MoveAdapter;
+import com.hkim00.moves.adapters.SearchUserAdapter;
 import com.hkim00.moves.adapters.UserAdapter;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.UserLocation;
@@ -53,7 +54,7 @@ public class SearchActivity extends AppCompatActivity {
     private List<ParseUser> userResults;
 
     private MoveAdapter moveAdapter;
-    private UserAdapter userAdapter;
+    private SearchUserAdapter userAdapter;
 
     private UserLocation location;
     private boolean isTimerRunning;
@@ -91,13 +92,11 @@ public class SearchActivity extends AppCompatActivity {
 
 
     private void setupActionBar() {
-        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
-
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.action_bar_lt);
         getSupportActionBar().setElevation(2);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar_grey)));
 
         Button btnLeft = findViewById(R.id.btnLeft);
         btnLeft.setOnClickListener(view -> onBackPressed());
@@ -136,7 +135,7 @@ public class SearchActivity extends AppCompatActivity {
         userResults = new ArrayList<>();
 
         moveAdapter = new MoveAdapter(this, moveResults);
-        userAdapter = new UserAdapter(this, userResults);
+        userAdapter = new SearchUserAdapter(this, userResults);
 
         rvSearchResults.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rvSearchResults.setAdapter(userAdapter);

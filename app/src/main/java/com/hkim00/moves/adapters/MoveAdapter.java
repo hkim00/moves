@@ -39,7 +39,8 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
         this.moves = moves;
 
         this.isTrip = context instanceof TripActivity;
-        this.isHome = context instanceof HomeActivity; }
+        this.isHome = context instanceof HomeActivity;
+    }
 
     @Override
     public int getItemViewType(int position) {

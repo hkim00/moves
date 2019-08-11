@@ -129,6 +129,8 @@ public class MoveDetailsActivity extends AppCompatActivity {
     private void checkIfInParse() {
         if (move != null) {
             ParseQuery<ParseObject> detailsQuery = getParseQuery(ParseUser.getCurrentUser(), move);
+            detailsQuery.addDescendingOrder("createdAt");
+            detailsQuery.setLimit(1);
             detailsQuery.findInBackground(((objects, e) -> {
                 progressBar.setVisibility(View.INVISIBLE);
                 if (e == null) {

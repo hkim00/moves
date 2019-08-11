@@ -38,7 +38,9 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -583,7 +585,6 @@ public class TripActivity extends AppCompatActivity {
         });
     }
 
-
     private void getNearbyRestaurants() {
         pb.setVisibility(View.VISIBLE);
 
@@ -594,6 +595,7 @@ public class TripActivity extends AppCompatActivity {
         params.put("location",location.lat + "," + location.lng);
         params.put("radius", (distance > 50000) ? 50000 : distance);
         params.put("type","restaurant");
+
 
         String userFoodPref = MoveCategoriesHelper.getUserFoodPreferenceString(new ArrayList<>());
 

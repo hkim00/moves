@@ -1,14 +1,11 @@
 package com.hkim00.moves.fragments;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.hkim00.moves.LogInActivity;
 
 import com.hkim00.moves.R;
 import com.hkim00.moves.adapters.ProfileAdapter;
@@ -31,16 +26,14 @@ import java.util.List;
 
 public class ProfileFragment extends Fragment {
     public final static String TAG = "ProfileFragment";
-    ParseUser currUser;
-
-    private Button btnSaved, btnFavorites, btnLogout;
-    private TextView tvName, tvDateJoined;
-    private ImageView ivProfilePic;
-    private static ImageView ivSaved, ivFavorites;
 
     private RecyclerView rvProfileFragment;
     private static ProfileAdapter movesAdapter;
     private static List<Move> saveMoves, favMoves, moves;
+
+    private Button btnFood;
+    private TextView tvFood;
+    private View vFoodView;
 
     private static boolean didCheckSave = false;
 
@@ -55,24 +48,19 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getViewIds(view);
-
-        setupRecyclerView();
-
-
+        setupRecyclerView(view);
     }
 
-    private void getViewIds(View view) {
+
+    private void setupRecyclerView(View view) {
         rvProfileFragment = view.findViewById(R.id.rvMoves);
-    }
-
-
-    private void setupRecyclerView() {
         rvProfileFragment.setLayoutManager(new LinearLayoutManager(getContext()));
 
         moves = new ArrayList<>();
+        saveMoves = new ArrayList<>();
+        favMoves = new ArrayList<>();
 
-        movesAdapter = new ProfileAdapter(getContext(), moves);
+        movesAdapter = new ProfileAdapter(ProfileFragment.this.getContext(), moves, ParseUser.getCurrentUser());
         rvProfileFragment.setAdapter(movesAdapter);
     }
 
@@ -125,5 +113,4 @@ public class ProfileFragment extends Fragment {
             getMoveLists("favMoves");
         }
     }
-
 }
