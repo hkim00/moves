@@ -96,6 +96,8 @@ public class TripActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }

@@ -37,6 +37,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private final static String TAG = "HomeActivity";
     public static final int LOCATION_REQUEST_CODE = 20;
+    public static final int TRIP_REQUEST_CODE = 40;
 
     private final static int HISTORY_TAG = 0;
     private final static int SEARCH_TAG = 1;
@@ -226,7 +227,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void goToNewTrip() {
         Intent intent = new Intent(this, TripActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, TRIP_REQUEST_CODE);
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
     }
 
@@ -259,6 +260,9 @@ public class HomeActivity extends AppCompatActivity {
 
             HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.flContainer);
             fragment.reloadFromHomeActivity();
+        } else if (resultCode == RESULT_OK && requestCode == TRIP_REQUEST_CODE) {
+            PastTripsFragment fragment = (PastTripsFragment) getSupportFragmentManager().findFragmentById(R.id.flContainer);
+            fragment.getNextTrip();
         } else {
             new StatusCodeHandler(TAG, requestCode);
         }

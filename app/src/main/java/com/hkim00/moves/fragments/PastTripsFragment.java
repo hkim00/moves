@@ -1,5 +1,6 @@
 package com.hkim00.moves.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,9 +24,12 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class PastTripsFragment extends Fragment {
     public final static String TAG = "PastTripsFragment";
+    public static final int LOCATION_REQUEST_CODE = 20;
 
     private static ArrayList<Trip> upcomingTrips;
     private RecyclerView rvUpcomingTrips;
@@ -59,7 +63,7 @@ public class PastTripsFragment extends Fragment {
         rvUpcomingTrips.setAdapter(tripAdapter);
     }
 
-    private void getNextTrip() {
+    public void getNextTrip() {
         ParseQuery<ParseObject> tripQuery = ParseQuery.getQuery("Trip");
         tripQuery.whereEqualTo("owner", ParseUser.getCurrentUser());
         tripQuery.orderByDescending("createdAt");
@@ -79,11 +83,20 @@ public class PastTripsFragment extends Fragment {
                     upcomingTrips.addAll(trips);
                     tripAdapter.notifyDataSetChanged();
                 }
-            }
-            else {
+            } else {
                 Log.e(TAG, "Error finding upcoming trips.");
                 e.printStackTrace();
             }
         });
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE) {
+            getNextTrip();
+        }
     }
 }
