@@ -102,14 +102,24 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
 
                 tvDetail1.append(price.equals("") ? "" : "  •  " + price);
 
-                if (move.movePhotos.size() > 0) {
-                    MovePhoto movePhoto = move.movePhotos.get(0);
+                if (move.movePhotos != null) {
+                    if (move.movePhotos.size() > 0) {
+                        MovePhoto movePhoto = move.movePhotos.get(0);
 
-                    Glide.with(context)
-                            .load(movePhoto.getPhotoURL(context))
-                            .into(ivMoveImage);
+                        Glide.with(context)
+                                .load(movePhoto.getPhotoURL(context))
+                                .into(ivMoveImage);
+                    } else {
+                        ivMoveImage.setImageResource(R.drawable.placeholder);
+                    }
                 } else {
-                    ivMoveImage.setImageResource(R.drawable.placeholder);
+                    if (move.photo != null) {
+                        Glide.with(context)
+                                .load(move.photo)
+                                .into(ivMoveImage);
+                    } else {
+                        ivMoveImage.setImageResource(R.drawable.placeholder);
+                    }
                 }
             } else {
                 tvDetail1.append((move.genre.equals("")) ? "" : "  •  " + move.genre);

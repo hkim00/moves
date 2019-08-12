@@ -18,7 +18,6 @@ public class Move {
 
 
     public String name, id, moveType, cuisine, genre, subCategory, photo;
-
     public Boolean didSave, didFavorite, didComplete;
     public int price_level;
     public Double lat, lng;
@@ -35,7 +34,7 @@ public class Move {
 
     @Override
     public boolean equals(Object obj) {
-        return (((Move) obj).id.equals(this.id)) ? true : false;
+        return ((Move) obj).id.equals(this.id);
     }
 
   

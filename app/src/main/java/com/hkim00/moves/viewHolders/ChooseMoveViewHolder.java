@@ -70,7 +70,15 @@ public class ChooseMoveViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setupButtons() {
-        btnChooseMove.setOnClickListener(view -> chooseMove());
+        btnChooseMove.setOnClickListener(view -> btnPress());
+    }
+
+    private void btnPress() {
+        if (isTrip) {
+            saveToTrip();
+        } else {
+            chooseMove();
+        }
     }
 
     private void chooseMove() {
