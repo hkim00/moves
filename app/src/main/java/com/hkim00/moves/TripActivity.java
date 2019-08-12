@@ -20,8 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.UserAdapter;
+
 import com.hkim00.moves.fragments.HomeFragment;
+
+import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
+import com.hkim00.moves.models.Restaurant;
 import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
 import com.hkim00.moves.util.MoveCategoriesHelper;
@@ -583,6 +587,16 @@ public class TripActivity extends AppCompatActivity {
         move.put("placeId", selectedMove.id);
         move.put("trip", trip);
         move.put("moveType", (selectedMove.moveType));
+
+        if (selectedMove.moveType.equals("food")){
+            if (((Restaurant) selectedMove).movePhotos != null) {
+                move.put("photoUrl", ((Restaurant) selectedMove).movePhotos.get(0).getPhotoURL(getApplicationContext()));
+            }
+        } else {
+            if (selectedMove.photo != null) {
+                move.put("photoUrl", selectedMove.photo);
+            }
+        }
 
         move.saveInBackground((e) -> {
             if (e != null) {
