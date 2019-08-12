@@ -92,17 +92,24 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
 
         user.signUpInBackground(e -> {
             if (e == null) {
-                if (photoFile != null || ivProfilePic.getDrawable() != null) {
+                if (photoFile != null) {
                     user.put("profilePhoto", new ParseFile(photoFile));
+                    user.saveInBackground();
+                } else {
                     user.saveInBackground();
                 }
 
-                Log.i(TAG, "Sign Up Worked!");
+                Log.i(TAG, "Signup successful!");
                 Intent intent = new Intent(SignUpActivity.this, Intro2Activity.class);
                 startActivity(intent);
                 finish();
             } else {
                 Log.e(TAG, e.getMessage());
+                if (etUsername.getText().toString().equals("") || etPassword.getText().toString().equals("")) {
+                    Toast.makeText(this, "Please fill out all fields!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
