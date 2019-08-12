@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/instructions_tv"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto_medium"
         android:text="Select your favorite event types!"
