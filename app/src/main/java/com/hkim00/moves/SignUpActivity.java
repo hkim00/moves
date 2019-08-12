@@ -92,8 +92,10 @@ public class SignUpActivity extends AppCompatActivity implements PhotoAlertDialo
 
         user.signUpInBackground(e -> {
             if (e == null) {
-                if (photoFile != null || ivProfilePic.getDrawable() != null) {
+                if (photoFile != null) {
                     user.put("profilePhoto", new ParseFile(photoFile));
+                    user.saveInBackground();
+                } else {
                     user.saveInBackground();
                 }
 
