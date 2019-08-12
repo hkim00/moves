@@ -77,7 +77,7 @@ public class MoveDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (position == DETAILS_POSITION) {
             final DetailsViewHolder viewHolder = (DetailsViewHolder) holder;
-            viewHolder.bind(context, moves.get(0));
+            viewHolder.bind(context, moves.get(0), isTrip);
         }
 
         else if (position == CHOOSE_MOVE_POSITION) {

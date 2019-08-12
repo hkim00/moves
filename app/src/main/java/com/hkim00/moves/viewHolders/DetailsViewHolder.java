@@ -13,6 +13,7 @@ import com.hkim00.moves.R;
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
+import com.hkim00.moves.models.UserLocation;
 
 public class DetailsViewHolder extends RecyclerView.ViewHolder {
     private Context context;
@@ -35,7 +36,7 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(Context context, Move move) {
+    public void bind(Context context, Move move, boolean isTrip) {
         this.context = context;
 
         tvName.setText(move.name);
@@ -46,7 +47,7 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
         tvTime.setVisibility((move.moveType.equals("food")) ? View.GONE : View.VISIBLE);
 
         if (move.didCheckHTTPDetails) {
-            tvDistance.setText(move.distanceFromLocation(context) + " mi");
+            tvDistance.setText(distanceFromLocation(context, move, isTrip) + " mi");
 
             if (move.moveType.equals("food")) {
                 setFoodView(move);
@@ -55,6 +56,30 @@ public class DetailsViewHolder extends RecyclerView.ViewHolder {
             }
         }
     }
+
+    private String distanceFromLocation(Context context, Move move, boolean isTrip) {
+        UserLocation location = new UserLocation();
+        if (isTrip) {
+            location = UserLocation.getTripCurrentLocation(context);
+        } else {
+            location = UserLocation.getCurrentLocation(context);
+        }
+
+        if (location.lat == null || location.lng == null) {
+            return "";
+        }
+
+        double theta = Double.valueOf(location.lng) - move.lng;
+        double dist = Math.sin(Math.toRadians(Double.valueOf(location.lat))) * Math.sin(Math.toRadians(move.lat)) + Math.cos(Math.toRadians(Double.valueOf(location.lat))) * Math.cos(Math.toRadians(move.lat)) * Math.cos(Math.toRadians(theta));
+        dist = Math.acos(dist);
+        dist = Math.toDegrees(dist);
+        dist = dist * 60 * 1.1515;
+
+        dist = Math.round(dist * 10) / 10.0;
+
+        return String.valueOf(dist);
+    }
+
 
     private void setFoodView(Move move) {
         Restaurant restaurant = (Restaurant) move;

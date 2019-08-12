@@ -55,6 +55,19 @@ public class UserLocation {
         return location;
     }
 
+    public static UserLocation getTripCurrentLocation(Context context) {
+        UserLocation location = new UserLocation();
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(TRIP_LOCATION, 0); //0 for private mode
+
+        location.name = sharedPreferences.getString(TRIP_NAME , null);
+        location.lat = sharedPreferences.getString(TRIP_LAT , null);
+        location.lng = sharedPreferences.getString(TRIP_LNG , null);
+        location.postalCode = sharedPreferences.getString(TRIP_POSTAL_CODE, null);
+
+        return location;
+    }
+
 
     public static UserLocation clearCurrentTripLocation(Context context) {
         UserLocation location = new UserLocation();
