@@ -8,7 +8,9 @@ import android.app.ActionBar;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hkim00.moves.adapters.UserAdapter;
@@ -19,6 +21,8 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.View.INVISIBLE;
+
 public class SelectUsersActivity extends AppCompatActivity {
 
     private final static String TAG = "SelectUsersActivity";
@@ -27,6 +31,7 @@ public class SelectUsersActivity extends AppCompatActivity {
     private UserAdapter adapter;
     private List<ParseUser> users;
 
+    private TextView tvNoFriends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +76,17 @@ public class SelectUsersActivity extends AppCompatActivity {
 
 
     private void getFriends() {
+        tvNoFriends = findViewById(R.id.tvNoFriends);
+        tvNoFriends.setVisibility(INVISIBLE);
         ParseQuery<ParseObject> friendQuery = ParseQuery.or(getSenderOrReceiverQueries());
         friendQuery.include("receiver");
         friendQuery.include("sender");
         friendQuery.addDescendingOrder("createdAt");
         friendQuery.findInBackground(((objects, e) -> {
             if (e == null) {
+                if (objects.size() == 0) {
+                    tvNoFriends.setVisibility(View.VISIBLE);
+                }
                 for (int i = 0; i < objects.size(); i++) {
                     ParseUser sender = objects.get(i).getParseUser("sender");
                     ParseUser receiver = objects.get(i).getParseUser("receiver");

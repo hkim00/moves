@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.UserAdapter;
+import com.hkim00.moves.fragments.HomeFragment;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Trip;
 import com.hkim00.moves.models.UserLocation;
@@ -406,6 +407,7 @@ public class TripActivity extends AppCompatActivity {
         return true;
     }
 
+
     private void saveTrip() {
         if (!isReadyToSave(true)) {
             return;
@@ -452,6 +454,8 @@ public class TripActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
     private void saveUpdates() {
         pb.setVisibility(View.VISIBLE);
