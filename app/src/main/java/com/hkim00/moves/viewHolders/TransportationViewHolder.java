@@ -52,6 +52,7 @@ public class TransportationViewHolder extends RecyclerView.ViewHolder implements
         mMap = map;
         mUiSettings = mMap.getUiSettings();
         mUiSettings.setZoomControlsEnabled(true);
+        mUiSettings.setMapToolbarEnabled(true);
 
         LatLng moveLatLng = new LatLng(mapMove.lat, mapMove.lng);
         map.addMarker(new MarkerOptions().position(moveLatLng).title(mapMove.name));
