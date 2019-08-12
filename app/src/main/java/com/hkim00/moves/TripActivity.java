@@ -20,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hkim00.moves.adapters.MoveAdapter;
 import com.hkim00.moves.adapters.UserAdapter;
+
+import com.hkim00.moves.fragments.HomeFragment;
+
 import com.hkim00.moves.models.Event;
 import com.hkim00.moves.models.Move;
 import com.hkim00.moves.models.Restaurant;
@@ -97,6 +100,8 @@ public class TripActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
@@ -232,7 +237,7 @@ public class TripActivity extends AppCompatActivity {
         didCheckSavedSelected = false;
         didCheckForFriends = false;
 
-        tvSelectFriends.setTextColor(getResources().getColor(R.color.selected_blue));
+        tvSelectFriends.setTextColor(getResources().getColor(R.color.theme));
 
         if (getIntent().hasExtra("trip")) {
             currentTrip = Parcels.unwrap(getIntent().getParcelableExtra("trip"));
@@ -260,8 +265,8 @@ public class TripActivity extends AppCompatActivity {
         } else {
             location = UserLocation.clearCurrentTripLocation(this);
 
-            tvLocation.setTextColor(getResources().getColor(R.color.selected_blue));
-            tvCalendar.setTextColor(getResources().getColor(R.color.selected_blue));
+            tvLocation.setTextColor(getResources().getColor(R.color.theme));
+            tvCalendar.setTextColor(getResources().getColor(R.color.theme));
 
             isEditingTrip = false;
 
@@ -408,6 +413,7 @@ public class TripActivity extends AppCompatActivity {
         return true;
     }
 
+
     private void saveTrip() {
         if (!isReadyToSave(true)) {
             return;
@@ -437,7 +443,7 @@ public class TripActivity extends AppCompatActivity {
                 btnRight.setEnabled(true);
                 if (e == null) {
                     pb.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getApplicationContext(), "trip saved", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Trip Saved!", Toast.LENGTH_LONG).show();
 
                     UserLocation.clearCurrentTripLocation(getApplicationContext());
 
@@ -454,6 +460,8 @@ public class TripActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
     private void saveUpdates() {
         pb.setVisibility(View.VISIBLE);
@@ -484,7 +492,7 @@ public class TripActivity extends AppCompatActivity {
                 onBackPressed();
             } else {
                 pb.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(), "error updating trip", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Error updating trip!", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();
             }
@@ -519,6 +527,7 @@ public class TripActivity extends AppCompatActivity {
         });
     }
 
+
     private void getSavedTripMoves(Trip trip) {
         ParseQuery<ParseObject> moveQuery = ParseQuery.getQuery("Move");
         moveQuery.whereEqualTo("trip", trip.parseObject);
@@ -546,6 +555,7 @@ public class TripActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void saveTripMoves(ParseObject trip) {
         if (isEditingTrip && deleteFromServerMoves.size() > 0) {
@@ -590,12 +600,13 @@ public class TripActivity extends AppCompatActivity {
 
         move.saveInBackground((e) -> {
             if (e != null) {
-                Toast.makeText(getApplicationContext(), "error saving move " + selectedMove.name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Error saving move: " + selectedMove.name, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();
             }
         });
     }
+
 
     private void getNearbyRestaurants() {
         pb.setVisibility(View.VISIBLE);
@@ -656,8 +667,6 @@ public class TripActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 
     private void getNearbyEvents() {
@@ -733,6 +742,7 @@ public class TripActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void checkForPostalCode() {
         if (location.postalCode.equals("")) {
