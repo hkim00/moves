@@ -80,7 +80,11 @@ public class LogInActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.right_in, R.anim.left_out);
             } else {
                 Log.e(TAG, e.getMessage());
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                if (username.equals("") || password.equals("")) {
+                    Toast.makeText(this, "Please type in a username/password!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
