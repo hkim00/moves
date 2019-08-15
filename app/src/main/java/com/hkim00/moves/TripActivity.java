@@ -745,7 +745,7 @@ public class TripActivity extends AppCompatActivity {
 
 
     private void checkForPostalCode() {
-        if (location.postalCode.equals("")) {
+        if (location.postalCode == null) {
 
             if (location.lat.equals("0.0") && location.lng.equals("0.0")) {
                 Toast.makeText(getApplicationContext(), "Set a location", Toast.LENGTH_LONG).show();

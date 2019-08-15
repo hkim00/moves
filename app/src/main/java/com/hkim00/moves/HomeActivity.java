@@ -255,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE ) {
+        if (resultCode == RESULT_OK && requestCode == LOCATION_REQUEST_CODE) {
             checkForCurrentLocation();
 
             HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.flContainer);

@@ -122,7 +122,9 @@ public class MoveAdapter extends RecyclerView.Adapter<MoveAdapter.ViewHolder>{
                     }
                 }
             } else {
-                tvDetail1.append((move.genre.equals("")) ? "" : "  •  " + move.genre);
+                if (move.genre != null) {
+                    tvDetail1.append((move.genre.equals("")) ? "" : "  •  " + move.genre);
+                }
 
                 if (move.photo != null) {
                     Glide.with(context)
