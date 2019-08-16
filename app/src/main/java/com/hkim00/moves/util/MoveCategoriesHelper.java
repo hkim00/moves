@@ -49,8 +49,7 @@ public class MoveCategoriesHelper {
                 "Ethiopian",
                 "Pakistani",
                 "Turkish",
-                "Caribbean",
-                "Indonesian");
+                "Caribbean");
 
         eventCategoriesList = Arrays.asList(
                 "Music",
