@@ -41,7 +41,6 @@ public class MoveCategoriesHelper {
                 "Greek",
                 "French",
                 "Japanese",
-                "Vietnamese",
                 "African",
                 "Halal",
                 "German",

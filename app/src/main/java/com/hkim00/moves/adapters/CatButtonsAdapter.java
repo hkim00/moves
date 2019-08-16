@@ -109,9 +109,6 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
             if (tvCuisine.getText() == "Japanese") {
                 ivCuisine.setImageResource(R.drawable.japanese);
             }
-            if (tvCuisine.getText() == "Vietnamese") {
-                ivCuisine.setImageResource(R.drawable.vietnamese);
-            }
             if (tvCuisine.getText() == "African") {
                 ivCuisine.setImageResource(R.drawable.african);
             }
@@ -129,9 +126,6 @@ public class CatButtonsAdapter extends RecyclerView.Adapter<CatButtonsAdapter.Vi
             }
             if (tvCuisine.getText() == "Ethiopian") {
                 ivCuisine.setImageResource(R.drawable.ethiopian);
-            }
-            if (tvCuisine.getText() == "Vietnamese") {
-                ivCuisine.setImageResource(R.drawable.vietnamese);
             }
             if (tvCuisine.getText() == "Turkish") {
                 ivCuisine.setImageResource(R.drawable.turkish);
