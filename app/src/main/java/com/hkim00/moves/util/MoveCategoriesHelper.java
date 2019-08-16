@@ -49,7 +49,6 @@ public class MoveCategoriesHelper {
                 "Lebanese",
                 "Ethiopian",
                 "Pakistani",
-                "Spanish",
                 "Turkish",
                 "Caribbean",
                 "Indonesian");
